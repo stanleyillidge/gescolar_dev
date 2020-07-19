@@ -170,7 +170,7 @@ class UnoState extends State<Uno> {
           floatingActionButton: Stack(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(bottom: 50),
+                padding: EdgeInsets.only(bottom: 30),
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
@@ -182,7 +182,7 @@ class UnoState extends State<Uno> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(bottom: 130),
+                padding: EdgeInsets.only(bottom: 110),
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
