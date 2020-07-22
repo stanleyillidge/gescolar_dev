@@ -14,7 +14,7 @@ class CollapsingNavigationDrawer extends StatefulWidget {
 class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
     with SingleTickerProviderStateMixin {
   double maxWidth = 210;
-  double minWidth = 70;
+  double minWidth = 52;
   // double _width = 210;
   int duration = 230;
   bool isCollapsed = false;
@@ -455,7 +455,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                       icon: AnimatedIcons.close_menu,
                       progress: _animationController,
                       color: selectedColor,
-                      size: 50.0,
+                      size: 25.0,
                     ),
                   ),
                   SizedBox(

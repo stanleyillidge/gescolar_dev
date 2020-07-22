@@ -1,10 +1,13 @@
-// import 'dart:js';
+import 'dart:io';
 // import 'dart:html';
 
+// import 'dart:html';
+import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 // import 'package:getwidget/getwidget.dart';
 // import 'dart:math';
 // import 'package:gescolar/widgets/expandable/expandable.dart';
@@ -90,14 +93,39 @@ const List<Condition> blockWidthConstraints = [
   Condition.largerThan(name: "4K", value: BoxConstraints(maxWidth: 1281)),
 ];
 
-List<dynamic> _size = [Size(200, 300), Size(200, 200), Size(200, 400)];
+List<dynamic> _size = [Size(400, 300), Size(400, 200), Size(400, 400)];
 List<double> _height = [0, 0, 0];
+var maskTelefono = MaskTextInputFormatter(
+    mask: "(###) ### ## ##", filter: {"#": RegExp(r'[0-9]')});
+var maskCedula =
+    MaskTextInputFormatter(mask: "### ###", filter: {"#": RegExp(r'[0-9]')});
+var maskRut = MaskTextInputFormatter(
+    mask: "### ### - #", filter: {"#": RegExp(r'[0-9]')});
 
-class UnoState extends State<Uno> {
+class UnoState extends State<Uno> with TickerProviderStateMixin {
   var crossAxisCount = 4;
+  List<bool> _enableBtn = [false, false, false];
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initDataBases());
+  }
+
+  String dropdownValue = 'calendarioA';
+
+  List<dynamic> _formKeys = [
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>()
+  ];
+
+  File _logo;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    PickedFile pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      _logo = File(pickedFile.path);
+    });
   }
 
   @override
@@ -119,22 +147,6 @@ class UnoState extends State<Uno> {
           ],
         ),
         home: Scaffold(
-          /* appBar: AppBar(
-            title: Text("Animate Content"),
-          ), */
-          /* body: Row(
-            children: <Widget>[
-              Column(
-                children: [_acordeonSta(0)],
-              ),
-              Column(
-                children: [_acordeonSta(1)],
-              ),
-              Column(
-                children: [_acordeonSta(2)],
-              ),
-            ],
-          ), */
           body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Row(
@@ -150,15 +162,15 @@ class UnoState extends State<Uno> {
                       children: <Widget>[
                         ResponsiveConstraints(
                           constraintsWhen: blockWidthConstraints,
-                          child: _acordeonSta(0),
+                          child: _ImageView(),
                         ),
                         ResponsiveConstraints(
                           constraintsWhen: blockWidthConstraints,
-                          child: _acordeonSta(1),
+                          child: _formulario(0),
                         ),
                         ResponsiveConstraints(
                           constraintsWhen: blockWidthConstraints,
-                          child: _acordeonSta(2),
+                          child: _acordeonSta("Otro", 2),
                         ),
                       ],
                     ),
@@ -201,8 +213,201 @@ class UnoState extends State<Uno> {
     );
   }
 
-  _acordeonSta(index) {
-    // _size[index].h
+  Widget _ImageView() {
+    if (_logo == null) {
+      return CircleAvatar(
+        radius: 80.0,
+        backgroundImage: AssetImage('images/home.png'),
+      );
+    } else {
+      return CircleAvatar(
+        radius: 80.0,
+        backgroundImage: FileImage(_logo),
+      );
+    }
+  }
+
+  _formulario(index) {
+    FocusNode myFocusNode;
+    myFocusNode = FocusNode();
+    var _textIsVaalid = false;
+    return Form(
+      key: _formKeys[index],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextFormField(
+            autofocus: true,
+            autovalidate: true,
+            autocorrect: true,
+            onChanged: (value) => {
+              setState(() {
+                _enableBtn[index] = true;
+              })
+            },
+            // decoration: InputDecoration(labelText: "Nombre de la institución"),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              labelText: "Nombre de la institución",
+            ),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Please enter some text';
+              }
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                labelText: "Misión",
+              ),
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
+            child: DropdownButton<String>(
+              value: dropdownValue,
+              icon: Icon(Icons.arrow_downward),
+              iconSize: 16,
+              elevation: 16,
+              style: TextStyle(color: Colors.deepPurple),
+              underline: Container(
+                height: 2,
+                color: Colors.deepPurpleAccent,
+              ),
+              onChanged: (String newValue) {
+                setState(() {
+                  dropdownValue = newValue;
+                });
+              },
+              items: <String>['calendarioA', 'calendarioB']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ),
+          TextField(
+            inputFormatters: [maskTelefono],
+            autocorrect: false,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+                labelText: "Telefono",
+                hintText: "(123) 123 45 67",
+                // fillColor: Colors.white,
+                filled: true),
+          ),
+          TextField(
+            // textDirection: TextDirection.rtl,
+            /* onChanged: (value) => {
+              print(value.length),
+              if (value.length == 11)
+                {maskCedula.updateMask("# ### ### - #")}
+              else if (value.length == 13)
+                {maskCedula.updateMask("## ### ### - #")}
+              else if (value.length == 14)
+                {maskCedula.updateMask("### ### ### - #")}
+              else if (value.length == 15)
+                {maskCedula.updateMask("# ### ### ### - #")}
+              else if (value.length < 14)
+                {maskCedula.updateMask("## ### ### - #")}
+              else if (value.length < 13)
+                {maskCedula.updateMask("# ### ### - #")}
+              else if (value.length < 11)
+                {maskCedula.updateMask("### ### - #")}
+            }, */
+            // inputFormatters: [maskCedula],
+            autocorrect: false,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+                labelText: "Rut",
+                // hintText: "84 091 141",
+                // fillColor: Colors.white,
+                filled: true),
+          ),
+          TextField(
+            autocorrect: false,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(labelText: "Nit", filled: true),
+          ),
+          TextField(
+            autocorrect: false,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(labelText: "Dane", filled: true),
+          ),
+          /* TextField(
+            // textDirection: TextDirection.rtl,
+            onChanged: (value) => {
+              print(value.length),
+              if (value.length == 7)
+                {maskCedula.updateMask("#.###.###")}
+              else if (value.length == 8)
+                {maskCedula.updateMask("##.###.###")}
+              else if (value.length == 10)
+                {maskCedula.updateMask("###.###.###")}
+              else if (value.length == 11)
+                {maskCedula.updateMask("#.###.###.###")}
+              else if (value.length < 10)
+                {maskCedula.updateMask("##.###.###")}
+              else if (value.length < 8)
+                {maskCedula.updateMask("#.###.###")}
+              else if (value.length < 7)
+                {maskCedula.updateMask("###.###")}
+            },
+            inputFormatters: [maskCedula],
+            autocorrect: false,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+                labelText: "Cedula",
+                // hintText: "84 091 141",
+                // fillColor: Colors.white,
+                filled: true),
+          ), */
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
+            child: AnimatedOpacity(
+              // If the widget is visible, animate to 0.0 (invisible).
+              // If the widget is hidden, animate to 1.0 (fully visible).
+              opacity: _enableBtn[index] ? 1.0 : 0.0,
+              duration: Duration(milliseconds: 250),
+              // The green box must be a child of the AnimatedOpacity widget.
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: RaisedButton(
+                  onPressed: () {
+                    // devolverá true si el formulario es válido, o falso si
+                    // el formulario no es válido.
+                    if (_formKeys[index].currentState.validate()) {
+                      // Si el formulario es válido, queremos mostrar un Snackbar
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(content: Text('Guardando los datos')));
+                    }
+                  },
+                  child: Text('Guardar'),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _acordeonSta(title, index) {
+    var _isExpanded = true;
+    if (_height[index] != _size[index].h) {
+      _isExpanded = !_isExpanded;
+    }
     return Card(
       elevation: 2.5,
       child: Column(
@@ -218,17 +423,28 @@ class UnoState extends State<Uno> {
             child: Container(
               constraints: BoxConstraints(maxWidth: _size[index].w),
               padding: EdgeInsets.only(top: 5),
-              child: Text("CLICK ME"),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Text(
+                  title,
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
               color: Colors.blueAccent,
               height: 25.0,
               width: _size[index].w,
             ),
           ),
           AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 250),
             curve: Curves.decelerate,
-            child: Text("Toggle Me"),
-            height: _height[index],
+            child: !_isExpanded
+                ? null
+                : Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: _formulario(index),
+                  ),
+            // height: _height[index],
             color: Colors.tealAccent,
             width: _size[index].w,
           )
