@@ -25,7 +25,7 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
   @override
   void initState() {
     super.initState();
-    widthAnimation = Tween<double>(begin: 210, end: 52)
+    widthAnimation = Tween<double>(begin: 210, end: 50)
         // .animate(widget.animationController);
         .animate(CurvedAnimation(
             parent: widget.animationController, curve: Curves.decelerate));
@@ -40,8 +40,6 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
     return InkWell(
       onTap: widget.onTap,
       child: Container(
-        // duration: Duration(milliseconds: widget.duration),
-        // curve: Curves.decelerate,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(16.0)),
           color: widget.isSelected
@@ -49,15 +47,15 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
               : Colors.transparent,
         ),
         width: widthAnimation.value,
-        margin: EdgeInsets.symmetric(horizontal: 8.0),
-        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        margin: EdgeInsets.symmetric(horizontal: 6),
+        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Icon(
               widget.icon,
               color: widget.isSelected ? selectedColor : Colors.grey[350],
-              size: 20.0,
+              size: 25.0,
             ),
             SizedBox(width: sizedBoxAnimation.value),
             (widthAnimation.value >= 200)

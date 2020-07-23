@@ -1,12 +1,12 @@
 import 'dart:io';
 // import 'dart:html';
-
-// import 'dart:html';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 // import 'package:getwidget/getwidget.dart';
 // import 'dart:math';
@@ -119,19 +119,44 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
   ];
 
   File _logo;
+  Image _logow;
   final picker = ImagePicker();
 
   Future getImage() async {
-    PickedFile pickedFile = await picker.getImage(source: ImageSource.gallery);
-    setState(() {
-      _logo = File(pickedFile.path);
-    });
+    print('getImage');
+    if (kIsWeb) {
+      Image fromPicker =
+          await ImagePickerWeb.getImage(outputType: ImageType.widget);
+      if (fromPicker != null) {
+        setState(() {
+          _logow = fromPicker;
+          _logo = File('uno');
+        });
+      }
+    } else {
+      PickedFile pickedFile =
+          await picker.getImage(source: ImageSource.gallery);
+      setState(() {
+        _logo = File(pickedFile.path);
+      });
+    }
   }
 
+  var size;
   @override
   Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
+    double _formWidth = 220.0;
+    double _top = 20;
+    double _left = 40;
+    if (size.width > 450) {
+      _formWidth = (size.width * 0.25);
+      _top = 50;
+      _left = 80;
+      print('Laptop');
+    }
     return Container(
-      padding: EdgeInsets.only(top: 50, left: 80),
+      padding: EdgeInsets.only(top: _top, left: _left),
       child: MaterialApp(
         builder: (context, widget) => ResponsiveWrapper.builder(
           ClampingScrollWrapper.builder(context, widget),
@@ -166,11 +191,11 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                         ),
                         ResponsiveConstraints(
                           constraintsWhen: blockWidthConstraints,
-                          child: _formulario(0),
+                          child: _formulario(0, _formWidth),
                         ),
                         ResponsiveConstraints(
                           constraintsWhen: blockWidthConstraints,
-                          child: _acordeonSta("Otro", 2),
+                          child: _formulario(1, _formWidth),
                         ),
                       ],
                     ),
@@ -214,196 +239,286 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
   }
 
   Widget _ImageView() {
-    if (_logo == null) {
-      return CircleAvatar(
-        radius: 80.0,
-        backgroundImage: AssetImage('images/home.png'),
-      );
-    } else {
-      return CircleAvatar(
-        radius: 80.0,
-        backgroundImage: FileImage(_logo),
-      );
+    const _padding = 10.0;
+    if (kIsWeb) {
+      if (_logow == null) {
+        return Padding(
+          padding: size.width < 451
+              ? const EdgeInsets.only(
+                  bottom: _padding * 2, left: _padding * 5, right: _padding)
+              : const EdgeInsets.only(
+                  bottom: _padding * 2, left: _padding, right: _padding),
+          child: GestureDetector(
+            onTap: () {
+              getImage();
+            },
+            child: CircleAvatar(
+              radius: 80.0,
+              backgroundImage: AssetImage('images/home.png'),
+            ),
+          ),
+        );
+      } else {
+        return Padding(
+          padding: size.width < 450
+              ? const EdgeInsets.only(
+                  bottom: _padding * 2, left: _padding * 5, right: _padding)
+              : const EdgeInsets.only(
+                  bottom: _padding * 2, left: _padding, right: _padding),
+          child: GestureDetector(
+            onTap: () {
+              getImage();
+            },
+            child: SizedBox(
+              width: 200,
+              child: _logow,
+            ),
+          ),
+        );
+      }
     }
   }
 
-  _formulario(index) {
+  _formulario(index, width) {
     FocusNode myFocusNode;
     myFocusNode = FocusNode();
     var _textIsVaalid = false;
-    return Form(
-      key: _formKeys[index],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextFormField(
-            autofocus: true,
-            autovalidate: true,
-            autocorrect: true,
-            onChanged: (value) => {
-              setState(() {
-                _enableBtn[index] = true;
-              })
-            },
-            // decoration: InputDecoration(labelText: "Nombre de la institución"),
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              labelText: "Nombre de la institución",
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please enter some text';
-              }
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                labelText: "Misión",
-              ),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
-            child: DropdownButton<String>(
-              value: dropdownValue,
-              icon: Icon(Icons.arrow_downward),
-              iconSize: 16,
-              elevation: 16,
-              style: TextStyle(color: Colors.deepPurple),
-              underline: Container(
-                height: 2,
-                color: Colors.deepPurpleAccent,
-              ),
-              onChanged: (String newValue) {
-                setState(() {
-                  dropdownValue = newValue;
-                });
-              },
-              items: <String>['calendarioA', 'calendarioB']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-          ),
-          TextField(
-            inputFormatters: [maskTelefono],
-            autocorrect: false,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-                labelText: "Telefono",
-                hintText: "(123) 123 45 67",
-                // fillColor: Colors.white,
-                filled: true),
-          ),
-          TextField(
-            // textDirection: TextDirection.rtl,
-            /* onChanged: (value) => {
-              print(value.length),
-              if (value.length == 11)
-                {maskCedula.updateMask("# ### ### - #")}
-              else if (value.length == 13)
-                {maskCedula.updateMask("## ### ### - #")}
-              else if (value.length == 14)
-                {maskCedula.updateMask("### ### ### - #")}
-              else if (value.length == 15)
-                {maskCedula.updateMask("# ### ### ### - #")}
-              else if (value.length < 14)
-                {maskCedula.updateMask("## ### ### - #")}
-              else if (value.length < 13)
-                {maskCedula.updateMask("# ### ### - #")}
-              else if (value.length < 11)
-                {maskCedula.updateMask("### ### - #")}
-            }, */
-            // inputFormatters: [maskCedula],
-            autocorrect: false,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-                labelText: "Rut",
-                // hintText: "84 091 141",
-                // fillColor: Colors.white,
-                filled: true),
-          ),
-          TextField(
-            autocorrect: false,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(labelText: "Nit", filled: true),
-          ),
-          TextField(
-            autocorrect: false,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(labelText: "Dane", filled: true),
-          ),
-          /* TextField(
-            // textDirection: TextDirection.rtl,
-            onChanged: (value) => {
-              print(value.length),
-              if (value.length == 7)
-                {maskCedula.updateMask("#.###.###")}
-              else if (value.length == 8)
-                {maskCedula.updateMask("##.###.###")}
-              else if (value.length == 10)
-                {maskCedula.updateMask("###.###.###")}
-              else if (value.length == 11)
-                {maskCedula.updateMask("#.###.###.###")}
-              else if (value.length < 10)
-                {maskCedula.updateMask("##.###.###")}
-              else if (value.length < 8)
-                {maskCedula.updateMask("#.###.###")}
-              else if (value.length < 7)
-                {maskCedula.updateMask("###.###")}
-            },
-            inputFormatters: [maskCedula],
-            autocorrect: false,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-                labelText: "Cedula",
-                // hintText: "84 091 141",
-                // fillColor: Colors.white,
-                filled: true),
-          ), */
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
-            child: AnimatedOpacity(
-              // If the widget is visible, animate to 0.0 (invisible).
-              // If the widget is hidden, animate to 1.0 (fully visible).
-              opacity: _enableBtn[index] ? 1.0 : 0.0,
-              duration: Duration(milliseconds: 250),
-              // The green box must be a child of the AnimatedOpacity widget.
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5.0),
-                child: RaisedButton(
-                  onPressed: () {
-                    // devolverá true si el formulario es válido, o falso si
-                    // el formulario no es válido.
-                    if (_formKeys[index].currentState.validate()) {
-                      // Si el formulario es válido, queremos mostrar un Snackbar
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text('Guardando los datos')));
+    const _padding = 10.0;
+    const scale = 2;
+    bool _isDense = true;
+    if (size.width > 450) {
+      // si es laptop
+      const scale = 1;
+      _isDense = false;
+    }
+    return Padding(
+      padding: const EdgeInsets.only(left: _padding * scale),
+      child: Form(
+        key: _formKeys[index],
+        child: Container(
+          width: width,
+          // height: height * 8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
+                child: TextFormField(
+                  autofocus: true,
+                  autovalidate: true,
+                  autocorrect: true,
+                  onChanged: (value) => {
+                    setState(() {
+                      _enableBtn[index] = true;
+                    })
+                  },
+                  style: TextStyle(fontSize: 12),
+                  decoration: InputDecoration(
+                    isDense: _isDense, // Added this
+                    contentPadding: EdgeInsets.all(15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    labelText: "Nombre de la institución",
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please enter some text';
                     }
                   },
-                  child: Text('Guardar'),
                 ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
+                child: TextField(
+                  style: TextStyle(fontSize: 12),
+                  decoration: InputDecoration(
+                    isDense: _isDense, // Added this
+                    contentPadding: EdgeInsets.all(15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    labelText: "Misión",
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
+                child: DropdownButton<String>(
+                  value: dropdownValue,
+                  icon: Icon(Icons.arrow_downward),
+                  iconSize: 16,
+                  elevation: 16,
+                  style: TextStyle(color: Colors.deepPurple),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  onChanged: (String newValue) {
+                    setState(() {
+                      dropdownValue = newValue;
+                    });
+                  },
+                  items: <String>['calendarioA', 'calendarioB']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
+                child: TextFormField(
+                  inputFormatters: [maskTelefono],
+                  autocorrect: false,
+                  keyboardType: TextInputType.phone,
+                  style: TextStyle(fontSize: 12),
+                  decoration: InputDecoration(
+                      isDense: _isDense, // Added this
+                      contentPadding: EdgeInsets.all(15),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      labelText: "Telefono",
+                      hintText: "(123) 123 45 67",
+                      // fillColor: Colors.white,
+                      filled: true),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
+                child: TextFormField(
+                  // textDirection: TextDirection.rtl,
+                  /* onChanged: (value) => {
+                    print(value.length),
+                    if (value.length == 11)
+                      {maskCedula.updateMask("# ### ### - #")}
+                    else if (value.length == 13)
+                      {maskCedula.updateMask("## ### ### - #")}
+                    else if (value.length == 14)
+                      {maskCedula.updateMask("### ### ### - #")}
+                    else if (value.length == 15)
+                      {maskCedula.updateMask("# ### ### ### - #")}
+                    else if (value.length < 14)
+                      {maskCedula.updateMask("## ### ### - #")}
+                    else if (value.length < 13)
+                      {maskCedula.updateMask("# ### ### - #")}
+                    else if (value.length < 11)
+                      {maskCedula.updateMask("### ### - #")}
+                  }, */
+                  // inputFormatters: [maskCedula],
+                  autocorrect: false,
+                  keyboardType: TextInputType.phone,
+                  style: TextStyle(fontSize: 12),
+                  decoration: InputDecoration(
+                      isDense: _isDense, // Added this
+                      contentPadding: EdgeInsets.all(15),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      labelText: "Rut",
+                      // hintText: "84 091 141",
+                      // fillColor: Colors.white,
+                      filled: true),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
+                child: TextFormField(
+                  autocorrect: false,
+                  keyboardType: TextInputType.phone,
+                  style: TextStyle(fontSize: 12),
+                  decoration: InputDecoration(
+                      isDense: _isDense, // Added this
+                      contentPadding: EdgeInsets.all(15),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      labelText: "Nit",
+                      filled: true),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
+                child: TextFormField(
+                  autocorrect: false,
+                  keyboardType: TextInputType.phone,
+                  style: TextStyle(fontSize: 12),
+                  decoration: InputDecoration(
+                      isDense: _isDense, // Added this
+                      contentPadding: EdgeInsets.all(15),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      labelText: "Dane",
+                      filled: true),
+                ),
+              ),
+              /* TextField(
+                // textDirection: TextDirection.rtl,
+                onChanged: (value) => {
+                  print(value.length),
+                  if (value.length == 7)
+                    {maskCedula.updateMask("#.###.###")}
+                  else if (value.length == 8)
+                    {maskCedula.updateMask("##.###.###")}
+                  else if (value.length == 10)
+                    {maskCedula.updateMask("###.###.###")}
+                  else if (value.length == 11)
+                    {maskCedula.updateMask("#.###.###.###")}
+                  else if (value.length < 10)
+                    {maskCedula.updateMask("##.###.###")}
+                  else if (value.length < 8)
+                    {maskCedula.updateMask("#.###.###")}
+                  else if (value.length < 7)
+                    {maskCedula.updateMask("###.###")}
+                },
+                inputFormatters: [maskCedula],
+                autocorrect: false,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                    labelText: "Cedula",
+                    // hintText: "84 091 141",
+                    // fillColor: Colors.white,
+                    filled: true),
+              ), */
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
+                child: AnimatedOpacity(
+                  // If the widget is visible, animate to 0.0 (invisible).
+                  // If the widget is hidden, animate to 1.0 (fully visible).
+                  opacity: _enableBtn[index] ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 250),
+                  // The green box must be a child of the AnimatedOpacity widget.
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5.0),
+                    child: RaisedButton(
+                      onPressed: () {
+                        // devolverá true si el formulario es válido, o falso si
+                        // el formulario no es válido.
+                        if (_formKeys[index].currentState.validate()) {
+                          // Si el formulario es válido, queremos mostrar un Snackbar
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(content: Text('Guardando los datos')));
+                        }
+                      },
+                      child: Text('Guardar'),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  _acordeonSta(title, index) {
+  /* _acordeonSta(title, index) {
     var _isExpanded = true;
     if (_height[index] != _size[index].h) {
       _isExpanded = !_isExpanded;
@@ -442,7 +557,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                 ? null
                 : Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: _formulario(index),
+                    child: _formulario(index, 300),
                   ),
             // height: _height[index],
             color: Colors.tealAccent,
@@ -451,5 +566,5 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
         ],
       ),
     );
-  }
+  } */
 }

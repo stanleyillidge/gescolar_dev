@@ -14,7 +14,7 @@ class CollapsingNavigationDrawer extends StatefulWidget {
 class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
     with SingleTickerProviderStateMixin {
   double maxWidth = 210;
-  double minWidth = 52;
+  double minWidth = 50;
   // double _width = 210;
   int duration = 230;
   bool isCollapsed = false;
