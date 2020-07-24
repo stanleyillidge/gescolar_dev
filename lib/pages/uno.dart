@@ -1,5 +1,13 @@
 import 'dart:io';
+// import 'dart:io' show Platform;
+// Platform.isAndroid
+// Platform.isFuchsia
+// Platform.isIOS
+// Platform.isLinux
+// Platform.isMacOS
+// Platform.isWindows
 // import 'dart:html';
+import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,6 +101,7 @@ const List<Condition> blockWidthConstraints = [
   Condition.largerThan(name: "4K", value: BoxConstraints(maxWidth: 1281)),
 ];
 
+List<dynamic> _nivelEnsenanza = [];
 List<dynamic> _size = [Size(400, 300), Size(400, 200), Size(400, 400)];
 List<double> _height = [0, 0, 0];
 var maskTelefono = MaskTextInputFormatter(
@@ -107,10 +116,14 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
   List<bool> _enableBtn = [false, false, false];
   void initState() {
     super.initState();
+    _nivelEnsenanza = [];
     WidgetsBinding.instance.addPostFrameCallback((_) => _initDataBases());
   }
 
-  String dropdownValue = 'calendarioA';
+  String calendario = 'calendarioA';
+  String generoAtendido = 'mixto';
+
+  List _nivelEnsenanza;
 
   List<dynamic> _formKeys = [
     GlobalKey<FormState>(),
@@ -123,7 +136,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
   final picker = ImagePicker();
 
   Future getImage() async {
-    print('getImage');
+    // print(['Windows', Platform.isWindows]);
     if (kIsWeb) {
       Image fromPicker =
           await ImagePickerWeb.getImage(outputType: ImageType.widget);
@@ -191,11 +204,11 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                         ),
                         ResponsiveConstraints(
                           constraintsWhen: blockWidthConstraints,
-                          child: _formulario(0, _formWidth),
+                          child: _formulario(0, _formWidth, context),
                         ),
                         ResponsiveConstraints(
                           constraintsWhen: blockWidthConstraints,
-                          child: _formulario(1, _formWidth),
+                          child: _formulario(1, _formWidth, context),
                         ),
                       ],
                     ),
@@ -240,46 +253,33 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
 
   Widget _ImageView() {
     const _padding = 10.0;
+    var imagen = Image.asset('images/logo-.png');
     if (kIsWeb) {
-      if (_logow == null) {
-        return Padding(
-          padding: size.width < 451
-              ? const EdgeInsets.only(
-                  bottom: _padding * 2, left: _padding * 5, right: _padding)
-              : const EdgeInsets.only(
-                  bottom: _padding * 2, left: _padding, right: _padding),
-          child: GestureDetector(
-            onTap: () {
-              getImage();
-            },
-            child: CircleAvatar(
-              radius: 80.0,
-              backgroundImage: AssetImage('images/home.png'),
-            ),
-          ),
-        );
-      } else {
-        return Padding(
-          padding: size.width < 450
-              ? const EdgeInsets.only(
-                  bottom: _padding * 2, left: _padding * 5, right: _padding)
-              : const EdgeInsets.only(
-                  bottom: _padding * 2, left: _padding, right: _padding),
-          child: GestureDetector(
-            onTap: () {
-              getImage();
-            },
-            child: SizedBox(
-              width: 200,
-              child: _logow,
-            ),
-          ),
-        );
+      if (_logow != null) {
+        imagen = _logow;
       }
+      return Padding(
+        padding: size.width < 451
+            ? const EdgeInsets.only(
+                bottom: _padding * 2, left: _padding * 5, right: _padding)
+            : const EdgeInsets.only(
+                bottom: _padding * 2, left: _padding, right: _padding),
+        child: GestureDetector(
+          onTap: () {
+            getImage();
+          },
+          child: CircleAvatar(
+            radius: 80.0,
+            child: imagen,
+            backgroundColor: Colors.transparent,
+          ),
+        ),
+      );
     }
   }
 
-  _formulario(index, width) {
+  _formulario(index, width, context) {
+    var selects;
     FocusNode myFocusNode;
     myFocusNode = FocusNode();
     var _textIsVaalid = false;
@@ -304,8 +304,8 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.only(bottom: _padding),
                 child: TextFormField(
-                  autofocus: true,
-                  autovalidate: true,
+                  // autofocus: true,
+                  // autovalidate: true,
                   autocorrect: true,
                   onChanged: (value) => {
                     setState(() {
@@ -314,6 +314,16 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                   },
                   style: TextStyle(fontSize: 12),
                   decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.account_box,
+                      size: 28.0,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: () {
+                        debugPrint('222');
+                      },
+                    ),
                     isDense: _isDense, // Added this
                     contentPadding: EdgeInsets.all(15),
                     border: OutlineInputBorder(
@@ -347,8 +357,8 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.only(bottom: _padding),
                 child: DropdownButton<String>(
-                  value: dropdownValue,
-                  icon: Icon(Icons.arrow_downward),
+                  value: calendario,
+                  // icon: Icon(Icons.arrow_downward),
                   iconSize: 16,
                   elevation: 16,
                   style: TextStyle(color: Colors.deepPurple),
@@ -358,7 +368,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                   ),
                   onChanged: (String newValue) {
                     setState(() {
-                      dropdownValue = newValue;
+                      calendario = newValue;
                     });
                   },
                   items: <String>['calendarioA', 'calendarioB']
@@ -372,21 +382,105 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: _padding),
+                child: DropdownButton<String>(
+                  value: generoAtendido,
+                  // icon: Icon(Icons.arrow_downward),
+                  iconSize: 16,
+                  elevation: 16,
+                  style: TextStyle(color: Colors.deepPurple),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  onChanged: (String newGenero) {
+                    setState(() {
+                      generoAtendido = newGenero;
+                    });
+                  },
+                  items: <String>['mixto', 'masculino', 'femenino']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
+                child: MultiSelectFormField(
+                  autovalidate: false,
+                  titleText: 'Niveles de enseñanza',
+                  validator: (value) {
+                    if (value == null || value.length == 0) {
+                      return 'Por favor selecciona una o más opciones';
+                    }
+                    return null;
+                  },
+                  dataSource: [
+                    //         Preescolar: boolean;
+                    // BasicaPrimaria: boolean;
+                    // BasicaSecundaria: boolean;
+                    // EducacionBasicaAdultos: boolean;
+                    // EducacionMedia: boolean;
+                    // EducacionMediaAdultos: boolean;
+                    {
+                      "display": "Preescolar",
+                      "value": "Preescolar",
+                    },
+                    {
+                      "display": "Basica Primaria",
+                      "value": "BasicaPrimaria",
+                    },
+                    {
+                      "display": "Basica Secundaria",
+                      "value": "BasicaSecundaria",
+                    },
+                    {
+                      "display": "Educacion Basica para Adultos",
+                      "value": "EducacionBasicaAdultos",
+                    },
+                    {
+                      "display": "Educacion Media",
+                      "value": "EducacionMedia",
+                    },
+                    {
+                      "display": "Educacion Media para Adultos",
+                      "value": "EducacionMediaAdultos",
+                    },
+                  ],
+                  textField: 'display',
+                  valueField: 'value',
+                  okButtonLabel: 'OK',
+                  cancelButtonLabel: 'CANCEL',
+                  // required: true,
+                  hintText: 'Por favor selecciona una o más opciones',
+                  initialValue: _nivelEnsenanza,
+                  onSaved: (value) {
+                    if (value == null) return;
+                    setState(() {
+                      _nivelEnsenanza = value;
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _padding),
                 child: TextFormField(
                   inputFormatters: [maskTelefono],
                   autocorrect: false,
                   keyboardType: TextInputType.phone,
                   style: TextStyle(fontSize: 12),
                   decoration: InputDecoration(
-                      isDense: _isDense, // Added this
-                      contentPadding: EdgeInsets.all(15),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      labelText: "Telefono",
-                      hintText: "(123) 123 45 67",
-                      // fillColor: Colors.white,
-                      filled: true),
+                    isDense: _isDense, // Added this
+                    contentPadding: EdgeInsets.all(15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    labelText: "Telefono",
+                    hintText: "(123) 123 45 67",
+                    // fillColor: Colors.white,
+                  ),
                 ),
               ),
               Padding(
@@ -415,15 +509,15 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                   keyboardType: TextInputType.phone,
                   style: TextStyle(fontSize: 12),
                   decoration: InputDecoration(
-                      isDense: _isDense, // Added this
-                      contentPadding: EdgeInsets.all(15),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      labelText: "Rut",
-                      // hintText: "84 091 141",
-                      // fillColor: Colors.white,
-                      filled: true),
+                    isDense: _isDense, // Added this
+                    contentPadding: EdgeInsets.all(15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    labelText: "Rut",
+                    // hintText: "84 091 141",
+                    // fillColor: Colors.white,
+                  ),
                 ),
               ),
               Padding(
@@ -433,13 +527,13 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                   keyboardType: TextInputType.phone,
                   style: TextStyle(fontSize: 12),
                   decoration: InputDecoration(
-                      isDense: _isDense, // Added this
-                      contentPadding: EdgeInsets.all(15),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      labelText: "Nit",
-                      filled: true),
+                    isDense: _isDense, // Added this
+                    contentPadding: EdgeInsets.all(15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    labelText: "Nit",
+                  ),
                 ),
               ),
               Padding(
@@ -449,13 +543,13 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                   keyboardType: TextInputType.phone,
                   style: TextStyle(fontSize: 12),
                   decoration: InputDecoration(
-                      isDense: _isDense, // Added this
-                      contentPadding: EdgeInsets.all(15),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      labelText: "Dane",
-                      filled: true),
+                    isDense: _isDense, // Added this
+                    contentPadding: EdgeInsets.all(15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    labelText: "Dane",
+                  ),
                 ),
               ),
               /* TextField(
@@ -517,7 +611,6 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
       ),
     );
   }
-
   /* _acordeonSta(title, index) {
     var _isExpanded = true;
     if (_height[index] != _size[index].h) {
