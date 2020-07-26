@@ -7,18 +7,18 @@ import 'dart:io';
 // Platform.isMacOS
 // Platform.isWindows
 // import 'dart:html';
-import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:gescolar_dev/models/institucion.dart';
+import 'package:gescolar_dev/models/selecciones.dart';
+import 'package:gescolar_dev/widgets/multiselect/multiselect_formfield.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker_web/image_picker_web.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-// import 'package:getwidget/getwidget.dart';
 // import 'dart:math';
-// import 'package:gescolar/widgets/expandable/expandable.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class Uno extends StatefulWidget {
@@ -27,6 +27,8 @@ class Uno extends StatefulWidget {
     return UnoState();
   }
 }
+
+LocalStorage storage = new LocalStorage('gescolar_app');
 
 const firebaseConfig = FirebaseOptions(
   googleAppID: "1:395322918531:web:aaf5e5a050a3743d2e7db6",
@@ -57,6 +59,8 @@ _initDataBases() async {
   );
 }
 
+List<dynamic> lista = []; //solo de prueba
+
 Future<FirebaseApp> _db1() async {
   /* app = await FirebaseApp.configure(
       name: "defaultAppName", options: firebaseConfig);
@@ -71,6 +75,8 @@ Future<FirebaseApp> _db1() async {
   Firestore(app: app).collection('colegios').getDocuments().then((value) => {
         value.documents.forEach((element) {
           print(element.documentID);
+          lista.add(element.documentID);
+          storage.setItem('database1', lista);
         })
       });
 }
@@ -155,21 +161,32 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
     }
   }
 
+  _prueba() {
+    Institucion inst = Institucion(
+      nit: '123456789',
+      nombre: 'Livio Reginaldo Fischione',
+      nivelEnsenanza: NivelEnsenanza(
+          preescolar: true, basicaPrimaria: true, educacionMedia: true),
+    );
+    storage.setItem('database', inst.toJson());
+    print(['Json', inst.toJson()]);
+  }
+
   var size;
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     double _formWidth = 220.0;
-    double _top = 20;
+    double _top = 15;
     double _left = 40;
     if (size.width > 450) {
       _formWidth = (size.width * 0.25);
-      _top = 50;
+      _top = 25;
       _left = 80;
       print('Laptop');
     }
     return Container(
-      padding: EdgeInsets.only(top: _top, left: _left),
+      padding: EdgeInsets.only(top: _top, left: _left, bottom: 0),
       child: MaterialApp(
         builder: (context, widget) => ResponsiveWrapper.builder(
           ClampingScrollWrapper.builder(context, widget),
@@ -225,6 +242,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
                     onPressed: () {
+                      _prueba();
                       _db1();
                     },
                     child: Icon(Icons.add),
@@ -297,13 +315,13 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
         key: _formKeys[index],
         child: Container(
           width: width,
-          // height: height * 8,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(bottom: _padding),
                 child: TextFormField(
+                  textAlignVertical: TextAlignVertical.center,
                   // autofocus: true,
                   // autovalidate: true,
                   autocorrect: true,
@@ -312,20 +330,20 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                       _enableBtn[index] = true;
                     })
                   },
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 13),
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.account_box,
-                      size: 28.0,
+                      size: 20.0,
                     ),
-                    suffixIcon: IconButton(
+                    /* suffixIcon: IconButton(
                       icon: Icon(Icons.remove),
                       onPressed: () {
                         debugPrint('222');
                       },
-                    ),
+                    ), */
                     isDense: _isDense, // Added this
-                    contentPadding: EdgeInsets.all(15),
+                    contentPadding: EdgeInsets.all(0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -418,12 +436,6 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                     return null;
                   },
                   dataSource: [
-                    //         Preescolar: boolean;
-                    // BasicaPrimaria: boolean;
-                    // BasicaSecundaria: boolean;
-                    // EducacionBasicaAdultos: boolean;
-                    // EducacionMedia: boolean;
-                    // EducacionMediaAdultos: boolean;
                     {
                       "display": "Preescolar",
                       "value": "Preescolar",

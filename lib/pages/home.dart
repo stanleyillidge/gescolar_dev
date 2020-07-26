@@ -7,6 +7,7 @@ import 'package:gescolar_dev/pages/tres.dart';
 import 'package:gescolar_dev/pages/uno.dart';
 import 'package:gescolar_dev/widgets/custom_navigation_drawer/commons/CollapsingNavigationBloc.dart';
 import 'package:gescolar_dev/widgets/custom_navigation_drawer/custom_navigation_drawer.dart';
+// import 'package:gescolar_dev/widgets/sta_navbar/sta_navbar.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -44,6 +45,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+      // body: StaNavBar(end: 100),
     );
   }
 }
