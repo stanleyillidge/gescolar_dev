@@ -29,8 +29,8 @@ dependencies:
   flutter_bloc: ^5.0.1
   bloc: ^5.0.1
   mask_text_input_formatter: ^1.0.7
-  image_picker: ^0.6.7+4
-  image_picker_web: ^1.0.9
+  image_picker: ^0.6.7
+  image_picker_for_web: ^0.1.0
   localstorage: ^3.0.2+5
 
   google_sign_in: ^4.5.1

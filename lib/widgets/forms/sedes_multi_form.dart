@@ -13,7 +13,7 @@ class _MultiFormState extends State<MultiForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    /* return Scaffold(
       appBar: AppBar(
         elevation: .0,
         leading: Icon(
@@ -57,6 +57,41 @@ class _MultiFormState extends State<MultiForm> {
         onPressed: onAddForm,
         foregroundColor: Colors.white,
       ),
+    ); */
+    return Column(
+      children: [
+        Container(
+          width: 400,
+          height: 600,
+          /* decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF30C1FF),
+                Color(0xFF2AA7DC),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ), */
+          child: users.length <= 0
+              ? Center(
+                  child: EmptyState(
+                    title: 'Oops',
+                    message: 'Add form by tapping add button below',
+                  ),
+                )
+              : ListView.builder(
+                  addAutomaticKeepAlives: true,
+                  itemCount: users.length,
+                  itemBuilder: (_, i) => users[i],
+                ),
+        ),
+        FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: onAddForm,
+          foregroundColor: Colors.white,
+        ),
+      ],
     );
   }
 
