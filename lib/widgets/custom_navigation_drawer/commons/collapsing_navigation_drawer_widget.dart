@@ -273,6 +273,86 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                       },
                       itemBuilder: (context, counter) {
                         if (navigationItems[counter].isCollapsed) {
+                          navigationItems[counter].isExpanded = true;
+                          if (navigationItems[counter].height !=
+                              navigationItems[counter].size.h) {
+                            navigationItems[counter].isExpanded =
+                                !navigationItems[counter].isExpanded;
+                          }
+                          return Column(
+                            // mainAxisAlignment: MainAxisAlignment.center,
+                            // crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () => setState(() {
+                                  navigationItems[counter].height !=
+                                          navigationItems[counter].size.h
+                                      ? navigationItems[counter].height =
+                                          navigationItems[counter].size.h
+                                      : navigationItems[counter].height = 0.0;
+                                }),
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                      maxWidth:
+                                          navigationItems[counter].size.w),
+                                  padding: EdgeInsets.only(top: 5),
+                                  child: CollapsingListTile(
+                                    onTap: null,
+                                    isSelected: currentSelectedIndex == counter,
+                                    title: navigationItems[counter].title,
+                                    icon: navigationItems[counter].icon,
+                                    animationController: _animationController,
+                                  ),
+                                  // color: Colors.blueAccent,
+                                  // height: 25.0,
+                                  width: navigationItems[counter].size.w,
+                                ),
+                              ),
+                              AnimatedContainer(
+                                padding: EdgeInsets.only(top: 6.0),
+                                duration: const Duration(milliseconds: 340),
+                                curve: Curves.decelerate,
+                                child: !navigationItems[counter].isExpanded
+                                    ? null
+                                    : ListView.separated(
+                                        separatorBuilder: (context, index) {
+                                          return Divider(height: 6.0);
+                                        },
+                                        itemBuilder: (context, index) {
+                                          return CollapsingListTile(
+                                            onTap: () {
+                                              setState(() {
+                                                bloc.add(
+                                                    navigationItems[counter]
+                                                        .submenu[index]
+                                                        .navigationEvent);
+                                                currentSelectedIndex = counter;
+                                              });
+                                            },
+                                            isSelected:
+                                                currentSelectedIndex == counter,
+                                            title: navigationItems[counter]
+                                                .submenu[index]
+                                                .titulo,
+                                            icon: navigationItems[counter]
+                                                .submenu[index]
+                                                .icono,
+                                            animationController:
+                                                _animationController,
+                                          );
+                                        },
+                                        itemCount: navigationItems[counter]
+                                            .submenu
+                                            .length), //navigationItems[counter].submenu,
+                                height: navigationItems[counter].height *
+                                    navigationItems[counter].submenu.length,
+                                color: Colors.transparent.withOpacity(0.3),
+                                width: (navigationItems[counter].size.w) -
+                                    13, //navigationItems[counter].size.w - 13,
+                              )
+                            ],
+                          );
+
                           /* return Theme(
                             data: Theme.of(context)
                                 .copyWith(cardColor: drawerBackgroundColor),
@@ -322,7 +402,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                               ],
                             ),
                           ); */
-                          return Card(
+                          /* return Card(
                             shape: RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(15.0))),
@@ -370,7 +450,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                 ],
                               ),
                             ),
-                          );
+                          ); */
                           /* return Hero(
                             tag: "card$counter",
                             child: Card(
@@ -386,12 +466,14 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                     children: <Widget>[
                                       AspectRatio(
                                         aspectRatio: 485.0 / 384.0,
-                                        child: Image.network("https://picsum.photos/485/384?image=$counter"),
+                                        child: Image.network(
+                                            "https://picsum.photos/485/384?image=$counter"),
                                       ),
                                       Material(
                                         child: ListTile(
                                           title: Text("Item $counter"),
-                                          subtitle: Text("This is item #$counter"),
+                                          subtitle:
+                                              Text("This is item #$counter"),
                                         ),
                                       )
                                     ],
@@ -405,8 +487,9 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                       type: MaterialType.transparency,
                                       child: InkWell(
                                         onTap: () async {
-                                          await Future.delayed(Duration(milliseconds: 200));
-                                          Navigator.push(
+                                          await Future.delayed(
+                                              Duration(milliseconds: 200));
+                                          /* Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) {
@@ -414,7 +497,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                               },
                                               fullscreenDialog: true,
                                             ),
-                                          );
+                                          ); */
                                         },
                                       ),
                                     ),

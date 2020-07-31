@@ -5,6 +5,7 @@ import 'package:gescolar_dev/pages/cuatro.dart';
 import 'package:gescolar_dev/pages/dos.dart';
 import 'package:gescolar_dev/pages/tres.dart';
 import 'package:gescolar_dev/pages/uno.dart';
+import 'package:gescolar_dev/pages/sedes.dart';
 import 'package:gescolar_dev/widgets/custom_navigation_drawer/commons/CollapsingNavigationBloc.dart';
 import 'package:gescolar_dev/widgets/custom_navigation_drawer/custom_navigation_drawer.dart';
 // import 'package:gescolar_dev/widgets/sta_navbar/sta_navbar.dart';
@@ -29,6 +30,8 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, state) {
                   if (state is Dashboard) {
                     return Uno();
+                  } else if (state is SedesPage) {
+                    return Sedes();
                   } else if (state is Errors) {
                     return Dos();
                   } else if (state is Search) {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gescolar_dev/models/sedes.dart';
+import 'package:gescolar_dev/models/sede.dart';
 
 typedef OnDelete();
 
 class InstitucionForm extends StatefulWidget {
-  final User user;
+  final Sede user;
   final state = _InstitucionFormState();
   final OnDelete onDelete;
 

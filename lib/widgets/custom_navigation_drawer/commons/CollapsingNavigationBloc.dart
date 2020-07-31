@@ -5,6 +5,8 @@ abstract class NavigationStates {}
 
 class Dashboard extends NavigationStates {}
 
+class SedesPage extends NavigationStates {}
+
 class Search extends NavigationStates {}
 
 class Errors extends NavigationStates {}
@@ -15,6 +17,7 @@ class Settings extends NavigationStates {}
 
 enum NavigationEvents {
   Dashboard,
+  SedesPage,
   Search,
   Errors,
   Notifications,
@@ -30,6 +33,9 @@ class CollapsingNavigationBloc
     switch (event) {
       case NavigationEvents.Dashboard:
         yield Dashboard();
+        break;
+      case NavigationEvents.SedesPage:
+        yield SedesPage();
         break;
       case NavigationEvents.Errors:
         yield Errors();

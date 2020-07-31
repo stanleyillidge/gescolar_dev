@@ -21,7 +21,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 // import 'dart:math';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:gescolar_dev/models/sedes.dart';
+import 'package:gescolar_dev/models/sede.dart';
 
 class Uno extends StatefulWidget {
   @override
@@ -126,6 +126,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _nivelEnsenanza = [];
+    lista = [];
     WidgetsBinding.instance
         .addPostFrameCallback((_) => {_prueba(), _initDataBases()});
   }
@@ -215,11 +216,11 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
           minWidth: 450,
           defaultName: MOBILE,
           breakpoints: [
-            ResponsiveBreakpoint.autoScale(450, name: MOBILE),
+            ResponsiveBreakpoint.resize(450, name: MOBILE),
             ResponsiveBreakpoint.resize(451, name: TABLET),
-            ResponsiveBreakpoint.autoScale(999, name: TABLET),
-            ResponsiveBreakpoint.autoScale(1000, name: DESKTOP),
-            ResponsiveBreakpoint.autoScale(1281, name: "4K"),
+            ResponsiveBreakpoint.resize(999, name: TABLET),
+            ResponsiveBreakpoint.resize(1000, name: DESKTOP),
+            ResponsiveBreakpoint.resize(1281, name: "4K"),
           ],
         ),
         home: Scaffold(
@@ -710,7 +711,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
   }
 
   ///on form user deleted
-  void onDelete(User _user) {
+  void onDelete(Sede _user) {
     setState(() {
       var find = users.firstWhere(
         (it) => it.user == _user,
@@ -723,7 +724,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
   ///on add form
   void onAddForm() {
     setState(() {
-      var _user = User();
+      var _user = Sede();
       // users.add(_ImageView());
       // users.add(_formulario(0, 220.0, context));
       lista.add(UserForm(
@@ -768,7 +769,8 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
       }
     }
   }
-  /* _acordeonSta(title, index) {
+
+  _acordeonSta(title, index) {
     var _isExpanded = true;
     if (_height[index] != _size[index].h) {
       _isExpanded = !_isExpanded;
@@ -807,7 +809,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                 ? null
                 : Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: _formulario(index, 300),
+                    child: _formulario(index, 300, context),
                   ),
             // height: _height[index],
             color: Colors.tealAccent,
@@ -816,5 +818,5 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
         ],
       ),
     );
-  } */
+  }
 }

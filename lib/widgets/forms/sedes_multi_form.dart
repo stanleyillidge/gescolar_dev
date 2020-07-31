@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gescolar_dev/models/sedes.dart';
+import 'package:gescolar_dev/models/sede.dart';
 import 'package:gescolar_dev/widgets/forms/empty_state.dart';
 import 'package:gescolar_dev/widgets/forms/sedesForm.dart';
 
@@ -96,7 +96,7 @@ class _MultiFormState extends State<MultiForm> {
   }
 
   ///on form user deleted
-  void onDelete(User _user) {
+  void onDelete(Sede _user) {
     setState(() {
       var find = users.firstWhere(
         (it) => it.user == _user,
@@ -109,7 +109,7 @@ class _MultiFormState extends State<MultiForm> {
   ///on add form
   void onAddForm() {
     setState(() {
-      var _user = User();
+      var _user = Sede();
       users.add(UserForm(
         user: _user,
         onDelete: () => onDelete(_user),

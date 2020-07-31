@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gescolar_dev/models/sedes.dart';
+import 'package:gescolar_dev/models/sede.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 typedef OnDelete();
@@ -12,7 +12,7 @@ const List<Condition> blockWidthConstraints = [
 ];
 
 class UserForm extends StatefulWidget {
-  final User user;
+  final Sede user;
   final state = _UserFormState();
   final OnDelete onDelete;
 
