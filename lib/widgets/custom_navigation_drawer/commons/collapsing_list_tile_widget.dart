@@ -6,14 +6,19 @@ class CollapsingListTile extends StatefulWidget {
   final IconData icon;
   final AnimationController animationController;
   final bool isSelected;
+  bool isExpanded;
+  bool isCollapsed;
   final Function onTap;
 
-  CollapsingListTile(
-      {@required this.title,
-      @required this.icon,
-      @required this.animationController,
-      this.isSelected = false,
-      this.onTap});
+  CollapsingListTile({
+    @required this.title,
+    @required this.icon,
+    @required this.animationController,
+    this.isSelected = false,
+    this.onTap,
+    this.isExpanded,
+    this.isCollapsed,
+  });
 
   @override
   _CollapsingListTileState createState() => _CollapsingListTileState();
@@ -41,7 +46,10 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
       onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(6.0)),
+          borderRadius: widget.isExpanded
+              ? BorderRadius.only(
+                  topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))
+              : BorderRadius.all(Radius.circular(6.0)),
           color: widget.isSelected
               ? Colors.transparent.withOpacity(0.3)
               : Colors.transparent,

@@ -20,7 +20,8 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
   bool isCollapsed = false;
   AnimationController _animationController;
   Animation<double> widthAnimation;
-  int currentSelectedIndex = 0;
+  List<int> currentSelectedIndex = [0, 99];
+  int selectedIndex = 0;
 
   @override
   void initState() {
@@ -260,6 +261,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                   CollapsingListTile(
                     title: 'Techie',
                     icon: Icons.person,
+                    isExpanded: false,
                     animationController: _animationController,
                   ),
                   Divider(
@@ -273,11 +275,9 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                       },
                       itemBuilder: (context, counter) {
                         if (navigationItems[counter].isCollapsed) {
-                          navigationItems[counter].isExpanded = true;
                           if (navigationItems[counter].height !=
                               navigationItems[counter].size.h) {
-                            navigationItems[counter].isExpanded =
-                                !navigationItems[counter].isExpanded;
+                            navigationItems[counter].isExpanded = true;
                           }
                           return Column(
                             // mainAxisAlignment: MainAxisAlignment.center,
@@ -298,7 +298,9 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                   padding: EdgeInsets.only(top: 5),
                                   child: CollapsingListTile(
                                     onTap: null,
-                                    isSelected: currentSelectedIndex == counter,
+                                    isSelected:
+                                        currentSelectedIndex[0] == counter,
+                                    isExpanded: false,
                                     title: navigationItems[counter].title,
                                     icon: navigationItems[counter].icon,
                                     animationController: _animationController,
@@ -326,11 +328,17 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                                     navigationItems[counter]
                                                         .submenu[index]
                                                         .navigationEvent);
-                                                currentSelectedIndex = counter;
+                                                currentSelectedIndex[1] = index;
+                                                currentSelectedIndex[0] =
+                                                    counter;
                                               });
                                             },
                                             isSelected:
-                                                currentSelectedIndex == counter,
+                                                currentSelectedIndex[1] ==
+                                                    index,
+                                            isExpanded:
+                                                currentSelectedIndex[1] ==
+                                                    index,
                                             title: navigationItems[counter]
                                                 .submenu[index]
                                                 .titulo,
@@ -512,10 +520,11 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                               setState(() {
                                 bloc.add(
                                     navigationItems[counter].navigationEvent);
-                                currentSelectedIndex = counter;
+                                currentSelectedIndex[0] = counter;
                               });
                             },
-                            isSelected: currentSelectedIndex == counter,
+                            isSelected: currentSelectedIndex[0] == counter,
+                            isExpanded: currentSelectedIndex[0] == counter,
                             title: navigationItems[counter].title,
                             icon: navigationItems[counter].icon,
                             animationController: _animationController,
