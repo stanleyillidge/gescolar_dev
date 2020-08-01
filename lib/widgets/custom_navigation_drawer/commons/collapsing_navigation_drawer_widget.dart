@@ -16,7 +16,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
   double maxWidth = 210;
   double minWidth = 58;
   // double _width = 210;
-  int duration = 230;
+  int duration = 280;
   bool isCollapsed = false;
   AnimationController _animationController;
   Animation<double> widthAnimation;
@@ -307,14 +307,21 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                   ),
                                   // color: Colors.blueAccent,
                                   // height: 25.0,
-                                  width: (widthAnimation.value == 50)
-                                      ? (widthAnimation.value - 1)
-                                      : (navigationItems[counter].size.w),
+                                  width: widthAnimation.value,
                                 ),
                               ),
                               AnimatedContainer(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent.withOpacity(0.3),
+                                  borderRadius: !navigationItems[counter]
+                                          .isExpanded
+                                      ? null
+                                      : BorderRadius.only(
+                                          bottomLeft: Radius.circular(6.0),
+                                          bottomRight: Radius.circular(6.0)),
+                                ),
                                 padding: EdgeInsets.only(top: 6.0),
-                                duration: const Duration(milliseconds: 340),
+                                duration: const Duration(milliseconds: 50),
                                 curve: Curves.decelerate,
                                 child: !navigationItems[counter].isExpanded
                                     ? null
@@ -355,17 +362,12 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                             .length),
                                 height: navigationItems[counter].height *
                                     navigationItems[counter].submenu.length,
-                                color: (widthAnimation.value > 50)
-                                    ? Colors.transparent.withOpacity(0.25)
-                                    : Colors.transparent.withOpacity(0.3),
-                                width: (widthAnimation.value == 58)
-                                    ? (widthAnimation.value)
-                                    : (navigationItems[counter].size.w - 20),
-                                margin: (widthAnimation.value > 50)
+                                width: widthAnimation.value,
+                                margin: (widthAnimation.value == 58)
                                     ? EdgeInsets.symmetric(horizontal: 5)
                                     : EdgeInsets.symmetric(
-                                        horizontal:
-                                            (widthAnimation.value / 58)),
+                                        horizontal: ((100 / 2100) *
+                                            widthAnimation.value)),
                               )
                             ],
                           );

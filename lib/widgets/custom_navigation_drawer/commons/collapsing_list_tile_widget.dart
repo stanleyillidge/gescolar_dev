@@ -30,7 +30,7 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
   @override
   void initState() {
     super.initState();
-    widthAnimation = Tween<double>(begin: 210, end: 50)
+    widthAnimation = Tween<double>(begin: 210, end: 40)
         // .animate(widget.animationController);
         .animate(CurvedAnimation(
             parent: widget.animationController, curve: Curves.decelerate));
@@ -64,17 +64,23 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
               ? MainAxisAlignment.start
               : MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              widget.icon,
-              color: widget.isSelected ? selectedColor : Colors.grey[350],
-              size: 27.0,
+            FittedBox(
+              //Add this
+              child: Icon(
+                widget.icon,
+                color: widget.isSelected ? selectedColor : Colors.grey[350],
+                size: 27.0,
+              ),
             ),
             SizedBox(width: sizedBoxAnimation.value),
-            (widthAnimation.value >= 200)
-                ? Text(widget.title,
-                    style: widget.isSelected
-                        ? listTitleSelectedTextStyle
-                        : listTitleDefaultTextStyle)
+            (widthAnimation.value >= 209)
+                ? FittedBox(
+                    //Add this
+                    child: Text(widget.title,
+                        style: widget.isSelected
+                            ? listTitleSelectedTextStyle
+                            : listTitleDefaultTextStyle),
+                  )
                 : Container()
           ],
         ),
