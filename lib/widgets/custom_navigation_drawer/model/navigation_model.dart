@@ -26,7 +26,7 @@ class NavigationModel {
   bool isCollapsed;
   Size size;
   double height;
-  List<SubMenu> submenu;
+  List<NavigationModel> submenu;
 
   NavigationModel(
       {this.title,
@@ -48,8 +48,42 @@ List<NavigationModel> navigationItems = [
       size: Size(50, 210),
       height: 0,
       submenu: [
-        SubMenu('Sedes', Icons.accessibility_new, NavigationEvents.Dashboard),
-        SubMenu('Sedes2', Icons.accessibility_new, NavigationEvents.SedesPage)
+        NavigationModel(
+          title: "Sedes",
+          icon: Icons.error,
+          isExpanded: false,
+          isCollapsed: true,
+          size: Size(50, 200),
+          height: 0,
+          navigationEvent: NavigationEvents.Dashboard,
+          submenu: [
+            NavigationModel(
+              title: "Sedes",
+              icon: Icons.error,
+              isExpanded: false,
+              isCollapsed: false,
+              size: Size(50, 200),
+              height: 0,
+              navigationEvent: NavigationEvents.Dashboard,
+            ),
+            NavigationModel(
+                title: "Sedes2",
+                icon: Icons.bluetooth_searching,
+                isExpanded: false,
+                isCollapsed: false,
+                size: Size(50, 200),
+                height: 0,
+                navigationEvent: NavigationEvents.SedesPage)
+          ],
+        ),
+        NavigationModel(
+            title: "Sedes2",
+            icon: Icons.bluetooth_searching,
+            isExpanded: false,
+            isCollapsed: false,
+            size: Size(50, 200),
+            height: 0,
+            navigationEvent: NavigationEvents.SedesPage)
       ],
       navigationEvent: NavigationEvents.Dashboard),
   NavigationModel(

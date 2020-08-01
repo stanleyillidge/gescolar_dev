@@ -14,7 +14,7 @@ class CollapsingNavigationDrawer extends StatefulWidget {
 class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
     with SingleTickerProviderStateMixin {
   double maxWidth = 210;
-  double minWidth = 50;
+  double minWidth = 58;
   // double _width = 210;
   int duration = 230;
   bool isCollapsed = false;
@@ -280,8 +280,6 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                             navigationItems[counter].isExpanded = true;
                           }
                           return Column(
-                            // mainAxisAlignment: MainAxisAlignment.center,
-                            // crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               GestureDetector(
                                 onTap: () => setState(() {
@@ -300,14 +298,18 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                     onTap: null,
                                     isSelected:
                                         currentSelectedIndex[0] == counter,
-                                    isExpanded: false,
+                                    isExpanded: (currentSelectedIndex[0] ==
+                                            counter) &&
+                                        navigationItems[counter].isCollapsed,
                                     title: navigationItems[counter].title,
                                     icon: navigationItems[counter].icon,
                                     animationController: _animationController,
                                   ),
                                   // color: Colors.blueAccent,
                                   // height: 25.0,
-                                  width: navigationItems[counter].size.w,
+                                  width: (widthAnimation.value == 50)
+                                      ? (widthAnimation.value - 1)
+                                      : (navigationItems[counter].size.w),
                                 ),
                               ),
                               AnimatedContainer(
@@ -331,189 +333,42 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                                 currentSelectedIndex[1] = index;
                                                 currentSelectedIndex[0] =
                                                     counter;
+                                                print(widthAnimation.value);
                                               });
                                             },
                                             isSelected:
                                                 currentSelectedIndex[1] ==
                                                     index,
-                                            isExpanded:
-                                                currentSelectedIndex[1] ==
-                                                    index,
+                                            isExpanded: false,
                                             title: navigationItems[counter]
                                                 .submenu[index]
-                                                .titulo,
+                                                .title,
                                             icon: navigationItems[counter]
                                                 .submenu[index]
-                                                .icono,
+                                                .icon,
                                             animationController:
                                                 _animationController,
                                           );
                                         },
                                         itemCount: navigationItems[counter]
                                             .submenu
-                                            .length), //navigationItems[counter].submenu,
+                                            .length),
                                 height: navigationItems[counter].height *
                                     navigationItems[counter].submenu.length,
-                                color: Colors.transparent.withOpacity(0.3),
-                                width: (navigationItems[counter].size.w) -
-                                    13, //navigationItems[counter].size.w - 13,
+                                color: (widthAnimation.value > 50)
+                                    ? Colors.transparent.withOpacity(0.25)
+                                    : Colors.transparent.withOpacity(0.3),
+                                width: (widthAnimation.value == 58)
+                                    ? (widthAnimation.value)
+                                    : (navigationItems[counter].size.w - 20),
+                                margin: (widthAnimation.value > 50)
+                                    ? EdgeInsets.symmetric(horizontal: 5)
+                                    : EdgeInsets.symmetric(
+                                        horizontal:
+                                            (widthAnimation.value / 58)),
                               )
                             ],
                           );
-
-                          /* return Theme(
-                            data: Theme.of(context)
-                                .copyWith(cardColor: drawerBackgroundColor),
-                            child: ExpansionPanelList(
-                              expansionCallback: (int index, bool isExpanded) {
-                                setState(() {
-                                  // int m = 0;
-                                  // print(navigationItems.length);
-                                  for (var i = 0;
-                                      i < navigationItems.length;
-                                      i++) {
-                                    if (i != counter) {
-                                      // print(navigationItems[i].isExpanded);
-                                      navigationItems[i].isExpanded = false;
-                                    }
-                                  }
-                                  navigationItems[counter].isExpanded =
-                                      !navigationItems[counter].isExpanded;
-                                });
-                              },
-                              children: [
-                                ExpansionPanel(
-                                  headerBuilder:
-                                      (BuildContext context, bool isExpanded) {
-                                    return CollapsingListTile(
-                                      onTap: () {
-                                        setState(() {
-                                          bloc.add(navigationItems[counter]
-                                              .navigationEvent);
-                                          currentSelectedIndex = counter;
-                                        });
-                                      },
-                                      isSelected:
-                                          currentSelectedIndex == counter,
-                                      title: navigationItems[counter].title,
-                                      icon: navigationItems[counter].icon,
-                                      animationController: _animationController,
-                                    );
-                                  },
-                                  body: ListTile(
-                                    title: Text('Item 1 child'),
-                                    subtitle: Text('Details goes here'),
-                                  ),
-                                  isExpanded:
-                                      navigationItems[counter].isExpanded,
-                                ),
-                              ],
-                            ),
-                          ); */
-                          /* return Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0))),
-                            elevation: 2,
-                            margin: EdgeInsets.all(12.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ExpansionTile(
-                                backgroundColor: Colors.white,
-                                title: CollapsingListTile(
-                                  onTap: () {
-                                    setState(() {
-                                      bloc.add(navigationItems[counter]
-                                          .navigationEvent);
-                                      currentSelectedIndex = counter;
-                                    });
-                                  },
-                                  isSelected: currentSelectedIndex == counter,
-                                  title: navigationItems[counter].title,
-                                  icon: navigationItems[counter].icon,
-                                  animationController: _animationController,
-                                ),
-                                trailing: SizedBox(),
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Text("Herzlich Willkommen"),
-                                        Spacer(),
-                                        Icon(Icons.check),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Text("Das Kursmenu"),
-                                        Spacer(),
-                                        Icon(Icons.check),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ); */
-                          /* return Hero(
-                            tag: "card$counter",
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8.0),
-                                ),
-                              ),
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              child: Stack(
-                                children: <Widget>[
-                                  Column(
-                                    children: <Widget>[
-                                      AspectRatio(
-                                        aspectRatio: 485.0 / 384.0,
-                                        child: Image.network(
-                                            "https://picsum.photos/485/384?image=$counter"),
-                                      ),
-                                      Material(
-                                        child: ListTile(
-                                          title: Text("Item $counter"),
-                                          subtitle:
-                                              Text("This is item #$counter"),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Positioned(
-                                    left: 0.0,
-                                    top: 0.0,
-                                    bottom: 0.0,
-                                    right: 0.0,
-                                    child: Material(
-                                      type: MaterialType.transparency,
-                                      child: InkWell(
-                                        onTap: () async {
-                                          await Future.delayed(
-                                              Duration(milliseconds: 200));
-                                          /* Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return new PageItem(num: num);
-                                              },
-                                              fullscreenDialog: true,
-                                            ),
-                                          ); */
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ); */
                         } else {
                           return CollapsingListTile(
                             onTap: () {
@@ -524,7 +379,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                               });
                             },
                             isSelected: currentSelectedIndex[0] == counter,
-                            isExpanded: currentSelectedIndex[0] == counter,
+                            isExpanded: false,
                             title: navigationItems[counter].title,
                             icon: navigationItems[counter].icon,
                             animationController: _animationController,

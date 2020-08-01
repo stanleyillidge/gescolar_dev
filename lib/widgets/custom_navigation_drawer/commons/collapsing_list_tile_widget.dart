@@ -34,7 +34,7 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
         // .animate(widget.animationController);
         .animate(CurvedAnimation(
             parent: widget.animationController, curve: Curves.decelerate));
-    sizedBoxAnimation = Tween<double>(begin: 10, end: 0)
+    sizedBoxAnimation = Tween<double>(begin: 5, end: 0)
         //.animate(widget.animationController);
         .animate(CurvedAnimation(
             parent: widget.animationController, curve: Curves.decelerate));
@@ -55,15 +55,19 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
               : Colors.transparent,
         ),
         width: widthAnimation.value,
-        margin: EdgeInsets.symmetric(horizontal: 6),
-        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        margin: (widthAnimation.value > 50)
+            ? EdgeInsets.symmetric(horizontal: 10)
+            : EdgeInsets.symmetric(horizontal: 5),
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: (widthAnimation.value > 50)
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
           children: <Widget>[
             Icon(
               widget.icon,
               color: widget.isSelected ? selectedColor : Colors.grey[350],
-              size: 25.0,
+              size: 27.0,
             ),
             SizedBox(width: sizedBoxAnimation.value),
             (widthAnimation.value >= 200)
