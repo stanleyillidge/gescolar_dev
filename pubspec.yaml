@@ -62,6 +62,8 @@ flutter:
     - images/
     - images/logo.png
     - images/home.png
+    - images/LogoHappykids.png
+    - images/GoogleLogo.png
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

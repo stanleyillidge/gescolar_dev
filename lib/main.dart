@@ -369,6 +369,7 @@ class CustomMenuClipper extends CustomClipper<Path> {
 
 import 'package:flutter/material.dart';
 import 'package:gescolar_dev/pages/home.dart';
+import 'package:gescolar_dev/pages/login.dart';
 import 'package:localstorage/localstorage.dart';
 
 void main() {
@@ -390,7 +391,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: HomePage(),
+      home: LoginPage(),
     );
   }
 }
