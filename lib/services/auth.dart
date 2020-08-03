@@ -26,7 +26,7 @@ class AuthService {
   }
 
   // sign in with google
-  googleloginUSer() async {
+  Future googleloginUSer() async {
     try {
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
@@ -109,4 +109,17 @@ class AuthService {
       return null;
     }
   }
+  /* Future<bool> isUserLogged() async {
+      FirebaseUser firebaseUser = await getLoggedFirebaseUser();
+      if (firebaseUser != null) {
+          IdTokenResult tokenResult = await firebaseUser.getIdToken(refresh: true);
+          return tokenResult.token != null;
+      } else {
+          return false;
+      }
+  }
+
+  Future<FirebaseUser> getLoggedFirebaseUser() {
+      return firebaseAuthInstance().currentUser();
+  } */
 }

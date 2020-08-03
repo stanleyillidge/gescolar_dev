@@ -9,6 +9,9 @@ import 'dart:io';
 // import 'dart:html';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:gescolar_dev/models/institucion.dart';
+import 'package:gescolar_dev/pages/dos.dart';
+import 'package:gescolar_dev/pages/login.dart';
+import 'package:gescolar_dev/services/firebase_auth_service.dart';
 // import 'package:gescolar_dev/widgets/forms/empty_state.dart';
 import 'package:gescolar_dev/widgets/forms/sedesForm.dart';
 import 'package:gescolar_dev/widgets/forms/sedes_multi_form.dart';
@@ -324,6 +327,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                   child: FloatingActionButton(
                     onPressed: () {
                       // _prueba();
+                      _db2();
                       _db1();
                       onAddForm();
                     },
@@ -336,8 +340,21 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
+                    heroTag: 'login1',
                     onPressed: () {
-                      _db2();
+                      /* Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      ); */
+                      /* Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => LoginPage())); */
+                      FirebaseAuthService()
+                          .signOut()
+                          .then((value) => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()),
+                              ));
                     },
                     child: Icon(Icons.account_circle),
                   ),

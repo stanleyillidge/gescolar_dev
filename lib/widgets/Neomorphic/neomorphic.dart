@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
-class NeumorphicContainer extends StatefulWidget {
+class NeumorphicButton extends StatefulWidget {
   final Widget child;
   final double bevel;
   final Offset blurOffset;
   final Color color;
   final bool darkMode;
+  final String imagen;
+  final double padding;
 
-  NeumorphicContainer({
+  NeumorphicButton({
     Key key,
     this.darkMode,
+    this.imagen,
+    this.padding,
     this.child,
     this.bevel = 10.0,
     this.color,
@@ -17,10 +21,10 @@ class NeumorphicContainer extends StatefulWidget {
         super(key: key);
 
   @override
-  _NeumorphicContainerState createState() => _NeumorphicContainerState();
+  _NeumorphicButtonState createState() => _NeumorphicButtonState();
 }
 
-class _NeumorphicContainerState extends State<NeumorphicContainer> {
+class _NeumorphicButtonState extends State<NeumorphicButton> {
   bool _isPressed = false;
 
   void _onPointerDown(PointerDownEvent event) {
@@ -44,7 +48,9 @@ class _NeumorphicContainerState extends State<NeumorphicContainer> {
       onPointerUp: _onPointerUp,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
-        padding: const EdgeInsets.all(2.0),
+        padding: (widget.imagen != null)
+            ? EdgeInsets.all(2.0)
+            : EdgeInsets.all(widget.padding),
         /* decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(widget.bevel * 5),
           gradient: LinearGradient(
@@ -100,30 +106,24 @@ class _NeumorphicContainerState extends State<NeumorphicContainer> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            (widget.imagen != null)
+                ? Container(
+                    padding: const EdgeInsets.all(0.0),
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        alignment: Alignment.center,
+                        image: AssetImage(widget.imagen),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                : Container(),
             Container(
-              padding: const EdgeInsets.all(0.0),
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  alignment: Alignment.centerLeft,
-                  image: AssetImage('images/GoogleLogo.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            /* FlatButton(
-              onPressed: null,
-              padding: EdgeInsets.all(0.0),
-              child: Image.asset(
-                'images/GoogleLogo.png',
-                alignment: Alignment.centerLeft,
-                // width: 15,
-                height: 15,
-              ),
-            ), */
-            Container(
-              margin: EdgeInsets.only(left: 0, right: 5),
+              margin: (widget.imagen != null)
+                  ? EdgeInsets.only(left: 5, right: 5)
+                  : EdgeInsets.only(left: 0, right: 0),
               child: widget.child,
             ),
           ],

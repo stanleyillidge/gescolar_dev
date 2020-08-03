@@ -15,6 +15,12 @@ class FirebaseAuthService {
     if (user == null) {
       return null;
     }
+    print({
+      'uid': user.uid,
+      'email': user.email,
+      'displayName': user.displayName,
+      'photoUrl': user.photoUrl,
+    });
     return User(
       uid: user.uid,
       email: user.email,

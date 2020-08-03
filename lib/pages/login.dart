@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gescolar_dev/pages/home.dart';
+import 'package:gescolar_dev/services/auth.dart';
+import 'package:gescolar_dev/services/firebase_auth_service.dart';
 import 'package:gescolar_dev/widgets/Neomorphic/neomorphic.dart';
 
 class LoginPage extends StatefulWidget {
@@ -10,8 +13,14 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool darkMode = false;
+  /* void initState() {
+    super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => {_checkLogin()});
+  } */
   @override
   Widget build(BuildContext context) {
+    // _checkLogin(context);
     return Scaffold(
       backgroundColor: darkMode ? Colors.grey[850] : Colors.grey[300],
       body: Center(
@@ -20,13 +29,15 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             Container(
               width: 650,
-              height: 150,
               child: Column(
                 children: <Widget>[
                   Text(
                     "Plataforma de gestion escolar",
                     style: TextStyle(
-                        fontSize: 20,
+                        fontFamily:
+                            'conte', //OldBookshop // FingerPaintRegular// conte// CoalhandLuke// Cheveuxdange
+                        fontSize: 40,
+                        // fontWeight: FontWeight.bold,
                         color: darkMode ? Colors.white : Colors.black),
                   ),
                   FadeInImage.assetNetwork(
@@ -60,31 +71,31 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(top: 50, right: 3),
-                  child: Row(
-                    children: [
-                      /* Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            alignment: Alignment.center,
-                            image: AssetImage('images/GoogleLogo.png'),
-                          ),
-                        ),
-                      ), */
-                      GestureDetector(
-                        onTap: null,
-                        child: NeumorphicContainer(
-                          darkMode: darkMode,
-                          child: Text(
-                            'Google Login',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                                color: darkMode ? Colors.white : Colors.black),
-                          ),
-                        ),
+                  child: GestureDetector(
+                    onTap: () {
+                      FirebaseAuthService().signInWithGoogle().then((value) => {
+                            print(['Login Ok:', value]),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()),
+                            )
+                          });
+                    },
+                    child: NeumorphicButton(
+                      darkMode: darkMode,
+                      imagen: 'images/GoogleLogo.png',
+                      padding: 8,
+                      bevel: 5,
+                      child: Text(
+                        'Correo institucional',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                            fontFamily: 'Cheveuxdange',
+                            fontWeight: FontWeight.w600,
+                            color: darkMode ? Colors.white : Colors.black),
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 /* Padding(
@@ -125,3 +136,15 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+/* _checkLogin(context) {
+  FirebaseAuthService().currentUser().then(
+        (value) => {
+          print(['Login Ok log:', value]),
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          )
+        },
+      );
+} */
