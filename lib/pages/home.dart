@@ -29,9 +29,9 @@ class _HomePageState extends State<HomePage> {
               child: BlocBuilder<CollapsingNavigationBloc, NavigationStates>(
                 builder: (context, state) {
                   if (state is Dashboard) {
-                    return Uno();
-                  } else if (state is SedesPage) {
                     return Sedes();
+                  } else if (state is SedesPage) {
+                    return Uno();
                   } else if (state is Errors) {
                     return Dos();
                   } else if (state is Search) {

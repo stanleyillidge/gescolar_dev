@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gescolar_dev/pages/home.dart';
 import 'package:gescolar_dev/services/auth.dart';
 import 'package:gescolar_dev/services/firebase_auth_service.dart';
-import 'package:gescolar_dev/widgets/Neomorphic/neomorphic.dart';
+import 'package:gescolar_dev/widgets/Neomorphic/neoButton.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);

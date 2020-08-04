@@ -32,7 +32,7 @@ dependencies:
   image_picker: ^0.6.7
   image_picker_for_web: ^0.1.0
   localstorage: ^3.0.2+5
-
+  flutter_circular_chart: ^0.1.0
   google_sign_in: ^4.5.1
   firebase_auth: ^0.16.1
   cloud_firestore: ^0.13.7

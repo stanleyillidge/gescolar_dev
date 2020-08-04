@@ -16,7 +16,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
   double maxWidth = 210;
   double minWidth = 58;
   // double _width = 210;
-  int duration = 280;
+  int duration = 200;
   bool isCollapsed = false;
   AnimationController _animationController;
   Animation<double> widthAnimation;
@@ -321,7 +321,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
                                           bottomRight: Radius.circular(6.0)),
                                 ),
                                 padding: EdgeInsets.only(top: 6.0),
-                                duration: const Duration(milliseconds: 50),
+                                duration: const Duration(milliseconds: 200),
                                 curve: Curves.decelerate,
                                 child: !navigationItems[counter].isExpanded
                                     ? null

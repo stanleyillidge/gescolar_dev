@@ -348,13 +348,10 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
                       ); */
                       /* Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => LoginPage())); */
-                      FirebaseAuthService()
-                          .signOut()
-                          .then((value) => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
-                              ));
+                      FirebaseAuthService().signOut().then((value) =>
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage())));
                     },
                     child: Icon(Icons.account_circle),
                   ),
