@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
-import 'package:gescolar_dev/widgets/Neomorphic/neoButton.dart';
-import 'package:gescolar_dev/widgets/Neomorphic/neoCard.dart';
+// import 'package:gescolar_dev/widgets/Neomorphic/neoButton.dart';
+// import 'package:gescolar_dev/widgets/Neomorphic/neoCard.dart';
 import 'package:gescolar_dev/widgets/circular_progres/circular_progres.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 bool darkMode = false;
+String _response = 'no response';
+int _responseCount = 0;
 
 class Sedes extends StatelessWidget {
   const Sedes({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     // var size = MediaQuery.of(context).size;
-    final GlobalKey<AnimatedCircularChartState> _chartKey =
-        new GlobalKey<AnimatedCircularChartState>();
+    final HttpsCallable callable = CloudFunctions.instance
+        .getHttpsCallable(functionName: 'getFirebaseUser')
+          ..timeout = const Duration(seconds: 30);
     double radius = 100.0;
-    var _chartSize = const Size(90.0, 90.0);
-    var fecha = '5 ago de 2020';
     return Stack(
       children: [
         Positioned(
@@ -505,12 +507,12 @@ class Sedes extends StatelessWidget {
                 BoxShadow(
                     color: darkMode ? Colors.black54 : Colors.grey[300],
                     offset: Offset(2.0, 2.0),
-                    blurRadius: 7.0,
+                    blurRadius: 3.0,
                     spreadRadius: 1.0),
                 BoxShadow(
                     color: darkMode ? Colors.grey[800] : Colors.white,
                     offset: Offset(-2.0, -2.0),
-                    blurRadius: 7.0,
+                    blurRadius: 3.0,
                     spreadRadius: 1.0),
               ],
             ),
@@ -701,18 +703,6 @@ class Sedes extends StatelessWidget {
                                     circularStrokeCap: CircularStrokeCap.round,
                                   ),
                                 ),
-                                /* Text(
-                                                        '4636',
-                                                        textAlign: TextAlign.start,
-                                                        style: TextStyle(
-                                                          fontFamily: 'Spartan',
-                                                          fontWeight: FontWeight.w500,
-                                                          fontSize: 30,
-                                                          color: darkMode
-                                                              ? Colors.white
-                                                              : Colors.grey[600],
-                                                        ),
-                                                      ), */
                               ),
                             ],
                           ),
@@ -973,6 +963,33 @@ class Sedes extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: FloatingActionButton(
+            onPressed: () async {
+              try {
+                final HttpsCallableResult result = await callable.call(
+                  // <String>['JbldmJETyUMUpm2kIm0f0CyAGoW2'],
+                  <String, dynamic>{
+                    'data': 'JbldmJETyUMUpm2kIm0f0CyAGoW2',
+                  },
+                );
+                print(result.data);
+                // _response = result.data['repeat_message'];
+                // _responseCount = result.data['repeat_count'];
+              } on CloudFunctionsException catch (e) {
+                print('caught firebase functions exception');
+                print(e.code);
+                print(e.message);
+                print(e.details);
+              } catch (e) {
+                print('caught generic exception');
+                print(e);
+              }
+            },
+            child: Icon(Icons.add),
           ),
         ),
       ],
