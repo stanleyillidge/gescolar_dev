@@ -381,6 +381,7 @@ void main() {
 Widget home = HomePage();
 
 // stanley.illidge@lreginaldofischione.edu.co
+// 116675950093144953544
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   final LocalStorage storage = LocalStorage('gescolar_app');

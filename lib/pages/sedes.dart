@@ -13,176 +13,969 @@ class Sedes extends StatelessWidget {
     // var size = MediaQuery.of(context).size;
     final GlobalKey<AnimatedCircularChartState> _chartKey =
         new GlobalKey<AnimatedCircularChartState>();
-    var _chartSize = const Size(100.0, 100.0);
-    return Container(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          backgroundColor: darkMode ? Colors.grey[850] : Colors.white,
-          body: Row(
-            children: [
-              Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 50, left: 75),
-                    child: NeumorphicCard(
-                      darkMode: darkMode,
-                      // imagen: 'images/GoogleLogo.png',
-                      padding: 8,
-                      bevel: 5,
-                      child: Column(
-                        children: [
-                          Text(
-                            'Usuarios presentes en G Suiste',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              fontFamily: 'Cheveuxdange',
-                              fontWeight: FontWeight.w600,
-                              color: darkMode ? Colors.white : Colors.black,
-                            ),
-                          ),
-                          /* CircularPercentIndicator(
-                            radius: 100.0,
-                            lineWidth: 10.0,
-                            percent: 0.63,
-                            header: Text("Icon header"),
-                            center: Icon(
-                              Icons.report,
-                              size: 50.0,
-                              color: Colors.blue,
-                            ),
-                            backgroundColor: Colors.grey[200],
-                            progressColor: Colors.blue,
-                          ), */
-                          Container(
-                            width: 110,
-                            height: 110,
-                            margin: EdgeInsets.all(0),
-                            padding: EdgeInsets.all(0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(50),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey[400],
-                                    offset: Offset(2.0, 2.0),
-                                    blurRadius: 7.0,
-                                    spreadRadius: 1.0),
-                                BoxShadow(
-                                    color: Colors.white,
-                                    offset: Offset(-2.0, -2.0),
-                                    blurRadius: 7.0,
-                                    spreadRadius: 1.0),
-                              ],
-                            ),
-                            /* child: AnimatedCircularChart(
-                              key: _chartKey,
-                              size: _chartSize,
-                              initialChartData: <CircularStackEntry>[
-                                CircularStackEntry(
-                                  <CircularSegmentEntry>[
-                                    CircularSegmentEntry(
-                                      33.33,
-                                      Colors.blue[400],
-                                      rankKey: 'completed',
+    double radius = 100.0;
+    var _chartSize = const Size(90.0, 90.0);
+    var fecha = '5 ago de 2020';
+    return Stack(
+      children: [
+        Positioned(
+          top: 10,
+          left: 80,
+          /* child: Card(
+            elevation: 2,
+            // margin: EdgeInsets.only(top: 30, left: 80),
+            child: Container(
+              width: 405,
+              padding: EdgeInsets.all(10),
+              /* decoration: BoxDecoration(
+                color: darkMode ? Colors.grey[850] : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                      color: darkMode ? Colors.black54 : Colors.grey[300],
+                      offset: Offset(2.0, 2.0),
+                      blurRadius: 7.0,
+                      spreadRadius: 1.0),
+                  BoxShadow(
+                      color: darkMode ? Colors.grey[800] : Colors.white,
+                      offset: Offset(-2.0, -2.0),
+                      blurRadius: 7.0,
+                      spreadRadius: 1.0),
+                ],
+              ), */
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // mainAxisAlignment: MainAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Matriculas hasta el ',
+                        // textAlign: TextAlign.start,
+                        style: TextStyle(
+                          // fontFamily: 'ArmataRegular',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18,
+                          color: darkMode ? Colors.white : Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        '5 ago 2020',
+                        // textAlign: TextAlign.end,
+                        style: TextStyle(
+                          fontFamily: 'Spartan',
+                          fontWeight: FontWeight.w600,
+                          color: darkMode ? Colors.white : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 15, left: 5, right: 5, bottom: 5),
+                        child: Row(
+                          children: [
+                            Column(
+                              children: [
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 27.0, bottom: 8.0),
+                                      child: Text(
+                                        'Total',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontFamily: 'ArmataRegular',
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
                                     ),
-                                    CircularSegmentEntry(
-                                      66.67,
-                                      Colors.blueGrey[100],
-                                      rankKey: 'remaining',
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 30.0),
+                                      child: Text(
+                                        '4636',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontFamily: 'Spartan',
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 30,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
                                     ),
                                   ],
-                                  rankKey: 'progress',
+                                ),
+                                Row(
+                                  children: [
+                                    /* Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(right: 5.0),
+                                                    child: Text(
+                                                      'G',
+                                                      textAlign: TextAlign.start,
+                                                      style: TextStyle(
+                                                        // fontFamily: 'Cheveuxdange',
+                                                        fontWeight: FontWeight.w700,
+                                                        fontSize: 20,
+                                                        color: darkMode
+                                                            ? Colors.white
+                                                            : Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ), */
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 30.0),
+                                      child: Text(
+                                        'SIMAT',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          // fontFamily: 'Cheveuxdange',
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
-                              chartType: CircularChartType.Radial,
-                              edgeStyle: SegmentEdgeStyle.round,
-                              percentageValues: true,
-                            ), */
-                            child: CircularPercentIndicator(
-                              radius: 100.0,
-                              lineWidth: 10.0,
-                              percent: 0.63,
-                              // header: Text("Icon header"),
-                              center: Container(
-                                padding: EdgeInsets.all(7),
+                            ),
+                            Column(
+                              children: [
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 27.0, bottom: 8.0),
+                                      child: Text(
+                                        '4636',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontFamily: 'Spartan',
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 15,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 30.0),
+                                      child: Container(
+                                        width: radius,
+                                        height: radius,
+                                        margin: EdgeInsets.all(0),
+                                        padding: EdgeInsets.all(0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.grey[200],
+                                                offset: Offset(2.0, 2.0),
+                                                blurRadius: 7.0,
+                                                spreadRadius: 1.0),
+                                            BoxShadow(
+                                                color: Colors.grey[50],
+                                                offset: Offset(-2.0, -2.0),
+                                                blurRadius: 7.0,
+                                                spreadRadius: 1.0),
+                                          ],
+                                        ),
+                                        child: CircularPercentIndicator(
+                                          radius: radius - 10.0,
+                                          lineWidth: 10.0,
+                                          percent: 0.13,
+                                          // header: Text("Icon header"),
+                                          center: Text(
+                                            '100%',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontFamily: 'ArmataRegular',
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 15,
+                                              color: darkMode
+                                                  ? Colors.white
+                                                  : Colors.grey[600],
+                                            ),
+                                          ),
+                                          /* Container(
+                                                          width: radius - 28,
+                                                          height: radius - 28,
+                                                          padding: EdgeInsets.all(7),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.grey[50],
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                    50),
+                                                          ),
+                                                          child: Icon(
+                                                            Icons.group_add,
+                                                            size: 40.0,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ), */
+                                          backgroundColor: Colors.white,
+                                          progressColor: Color(0xFF3326AE),
+                                          circularStrokeCap:
+                                              CircularStrokeCap.round,
+                                        ),
+                                      ),
+                                      /* Text(
+                                                      '4636',
+                                                      textAlign: TextAlign.start,
+                                                      style: TextStyle(
+                                                        fontFamily: 'Spartan',
+                                                        fontWeight: FontWeight.w500,
+                                                        fontSize: 30,
+                                                        color: darkMode
+                                                            ? Colors.white
+                                                            : Colors.grey[600],
+                                                      ),
+                                                    ), */
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, right: 5.0),
+                                      child: Text(
+                                        'G',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          // fontFamily: 'Cheveuxdange',
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 20,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, right: 30.0),
+                                      child: Text(
+                                        'Suite',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          // fontFamily: 'Cheveuxdange',
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 27.0, bottom: 8.0),
+                                      child: Text(
+                                        '4636',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontFamily: 'Spartan',
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 15,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 30.0),
+                                      child: Container(
+                                        width: radius,
+                                        height: radius,
+                                        margin: EdgeInsets.all(0),
+                                        padding: EdgeInsets.all(0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.grey[200],
+                                                offset: Offset(2.0, 2.0),
+                                                blurRadius: 7.0,
+                                                spreadRadius: 1.0),
+                                            BoxShadow(
+                                                color: Colors.grey[50],
+                                                offset: Offset(-2.0, -2.0),
+                                                blurRadius: 7.0,
+                                                spreadRadius: 1.0),
+                                          ],
+                                        ),
+                                        child: CircularPercentIndicator(
+                                          radius: radius - 10.0,
+                                          lineWidth: 10.0,
+                                          percent: 0.13,
+                                          // header: Text("Icon header"),
+                                          center: Text(
+                                            '100%',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontFamily: 'ArmataRegular',
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 15,
+                                              color: darkMode
+                                                  ? Colors.white
+                                                  : Colors.grey[600],
+                                            ),
+                                          ),
+                                          /* Container(
+                                                          width: radius - 28,
+                                                          height: radius - 28,
+                                                          padding: EdgeInsets.all(7),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.grey[50],
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                    50),
+                                                          ),
+                                                          child: Icon(
+                                                            Icons.group_add,
+                                                            size: 40.0,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ), */
+                                          backgroundColor: Colors.white,
+                                          progressColor: Color(0xFF3326AE),
+                                          circularStrokeCap:
+                                              CircularStrokeCap.round,
+                                        ),
+                                      ),
+                                      /* Text(
+                                                      '4636',
+                                                      textAlign: TextAlign.start,
+                                                      style: TextStyle(
+                                                        fontFamily: 'Spartan',
+                                                        fontWeight: FontWeight.w500,
+                                                        fontSize: 30,
+                                                        color: darkMode
+                                                            ? Colors.white
+                                                            : Colors.grey[600],
+                                                      ),
+                                                    ), */
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    /* Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(right: 5.0),
+                                                    child: Container(
+                                                      // margin: const EdgeInsets.only(
+                                                      //     top: 10.0),
+                                                      width: 35,
+                                                      height: 35,
+                                                      decoration: BoxDecoration(
+                                                          image: DecorationImage(
+                                                              image: AssetImage(
+                                                                  'images/firebase-logo.png'))),
+                                                    ),
+                                                  ), */
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, right: 30.0),
+                                      child: Text(
+                                        'Firebase',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          // fontFamily: 'Cheveuxdange',
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            /* Container(
+                                            width: radius,
+                                            height: radius,
+                                            margin: EdgeInsets.all(0),
+                                            padding: EdgeInsets.all(0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(50),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Colors.grey[200],
+                                                    offset: Offset(2.0, 2.0),
+                                                    blurRadius: 7.0,
+                                                    spreadRadius: 1.0),
+                                                BoxShadow(
+                                                    color: Colors.grey[50],
+                                                    offset: Offset(-2.0, -2.0),
+                                                    blurRadius: 7.0,
+                                                    spreadRadius: 1.0),
+                                              ],
+                                            ),
+                                            child: CircularPercentIndicator(
+                                              radius: radius - 10.0,
+                                              lineWidth: 10.0,
+                                              percent: 0.13,
+                                              // header: Text("Icon header"),
+                                              center: Container(
+                                                width: radius - 28,
+                                                height: radius - 28,
+                                                padding: EdgeInsets.all(7),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey[50],
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                  /* boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.grey[400],
+                                                        offset: Offset(2.0, 2.0),
+                                                        blurRadius: 7.0,
+                                                        spreadRadius: 1.0),
+                                                    BoxShadow(
+                                                        color: Colors.white,
+                                                        offset: Offset(-2.0, -2.0),
+                                                        blurRadius: 7.0,
+                                                        spreadRadius: 1.0),
+                                                  ], */
+                                                ),
+                                                child: Icon(
+                                                  Icons.group_add,
+                                                  size: 40.0,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              backgroundColor: Colors.white,
+                                              progressColor: Color(0xFF3326AE),
+                                              circularStrokeCap:
+                                                  CircularStrokeCap.round,
+                                            ),
+                                          ), */
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ), */
+          child: Container(
+            width: 380,
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: darkMode ? Colors.grey[850] : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                    color: darkMode ? Colors.black54 : Colors.grey[300],
+                    offset: Offset(2.0, 2.0),
+                    blurRadius: 7.0,
+                    spreadRadius: 1.0),
+                BoxShadow(
+                    color: darkMode ? Colors.grey[800] : Colors.white,
+                    offset: Offset(-2.0, -2.0),
+                    blurRadius: 7.0,
+                    spreadRadius: 1.0),
+              ],
+            ),
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.start,
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Matriculados',
+                      // textAlign: TextAlign.start,
+                      style: TextStyle(
+                        fontFamily: 'Spartan',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        color: darkMode ? Colors.white : Color(0xFF3326AE),
+                      ),
+                    ),
+                    Text(
+                      '5 ago 2020',
+                      // textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontFamily: 'Spartan',
+                        fontWeight: FontWeight.w700,
+                        color: darkMode ? Colors.white : Color(0xFF3326AE),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Row(
+                    children: [
+                      Column(
+                        children: [
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 27.0, bottom: 8.0),
+                                child: Text(
+                                  'Total',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'ArmataRegular',
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 30.0),
+                                child: Text(
+                                  '4636',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'Spartan',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 30,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              /* Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(right: 5.0),
+                                                      child: Text(
+                                                        'G',
+                                                        textAlign: TextAlign.start,
+                                                        style: TextStyle(
+                                                          // fontFamily: 'Cheveuxdange',
+                                                          fontWeight: FontWeight.w700,
+                                                          fontSize: 20,
+                                                          color: darkMode
+                                                              ? Colors.white
+                                                              : Colors.grey,
+                                                        ),
+                                                      ),
+                                                    ), */
+                              Padding(
+                                padding: const EdgeInsets.only(right: 30.0),
+                                child: Text(
+                                  'SIMAT',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    // fontFamily: 'Cheveuxdange',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 20,
+                                    color:
+                                        darkMode ? Colors.white : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 27.0, bottom: 8.0),
+                                child: Text(
+                                  '4636',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'Spartan',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 30.0),
+                                child: Container(
+                                  width: radius,
+                                  height: radius,
+                                  margin: EdgeInsets.all(0),
+                                  padding: EdgeInsets.all(0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(50),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.grey[200],
+                                          offset: Offset(2.0, 2.0),
+                                          blurRadius: 7.0,
+                                          spreadRadius: 1.0),
+                                      BoxShadow(
+                                          color: Colors.grey[50],
+                                          offset: Offset(-2.0, -2.0),
+                                          blurRadius: 7.0,
+                                          spreadRadius: 1.0),
+                                    ],
+                                  ),
+                                  child: CircularPercentIndicator(
+                                    radius: radius - 10.0,
+                                    lineWidth: 10.0,
+                                    percent: 0.13,
+                                    // header: Text("Icon header"),
+                                    center: Text(
+                                      '100%',
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                        fontFamily: 'ArmataRegular',
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                        color: darkMode
+                                            ? Colors.white
+                                            : Colors.grey[600],
+                                      ),
+                                    ),
+                                    /* Container(
+                                                            width: radius - 28,
+                                                            height: radius - 28,
+                                                            padding: EdgeInsets.all(7),
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.grey[50],
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                      50),
+                                                            ),
+                                                            child: Icon(
+                                                              Icons.group_add,
+                                                              size: 40.0,
+                                                              color: Colors.grey,
+                                                            ),
+                                                          ), */
+                                    backgroundColor: Colors.white,
+                                    progressColor: Color(0xFF3326AE),
+                                    circularStrokeCap: CircularStrokeCap.round,
+                                  ),
+                                ),
+                                /* Text(
+                                                        '4636',
+                                                        textAlign: TextAlign.start,
+                                                        style: TextStyle(
+                                                          fontFamily: 'Spartan',
+                                                          fontWeight: FontWeight.w500,
+                                                          fontSize: 30,
+                                                          color: darkMode
+                                                              ? Colors.white
+                                                              : Colors.grey[600],
+                                                        ),
+                                                      ), */
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 10, right: 5.0),
+                                child: Text(
+                                  'G',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    // fontFamily: 'Cheveuxdange',
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 20,
+                                    color:
+                                        darkMode ? Colors.white : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 10, right: 30.0),
+                                child: Text(
+                                  'Suite',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    // fontFamily: 'Cheveuxdange',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 20,
+                                    color:
+                                        darkMode ? Colors.white : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text(
+                                  '4636',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'Spartan',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: radius,
+                                height: radius,
+                                margin: EdgeInsets.all(0),
+                                padding: EdgeInsets.all(0),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[50],
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(50),
                                   boxShadow: [
                                     BoxShadow(
-                                        color: Colors.grey[400],
+                                        color: Colors.grey[200],
                                         offset: Offset(2.0, 2.0),
                                         blurRadius: 7.0,
                                         spreadRadius: 1.0),
                                     BoxShadow(
-                                        color: Colors.white,
+                                        color: Colors.grey[50],
                                         offset: Offset(-2.0, -2.0),
                                         blurRadius: 7.0,
                                         spreadRadius: 1.0),
                                   ],
                                 ),
-                                child: Icon(
-                                  Icons.report,
-                                  size: 50.0,
-                                  color: Colors.blue,
+                                child: CircularPercentIndicator(
+                                  radius: radius - 10.0,
+                                  lineWidth: 10.0,
+                                  percent: 0.13,
+                                  // header: Text("Icon header"),
+                                  center: Text(
+                                    '100%',
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                      fontFamily: 'ArmataRegular',
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15,
+                                      color: darkMode
+                                          ? Colors.white
+                                          : Colors.grey[600],
+                                    ),
+                                  ),
+                                  /* Container(
+                                                            width: radius - 28,
+                                                            height: radius - 28,
+                                                            padding: EdgeInsets.all(7),
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.grey[50],
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                      50),
+                                                            ),
+                                                            child: Icon(
+                                                              Icons.group_add,
+                                                              size: 40.0,
+                                                              color: Colors.grey,
+                                                            ),
+                                                          ), */
+                                  backgroundColor: Colors.white,
+                                  progressColor: Color(0xFF3326AE),
+                                  circularStrokeCap: CircularStrokeCap.round,
                                 ),
                               ),
-                              backgroundColor: Colors.grey[200],
-                              progressColor: Colors.blue,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 50, left: 25),
-                    child: NeumorphicCard(
-                      darkMode: darkMode,
-                      imagen: 'images/GoogleLogo.png',
-                      padding: 8,
-                      bevel: 5,
-                      child: Column(
-                        children: [
-                          Text(
-                            'Correo institucional',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              fontFamily: 'Cheveuxdange',
-                              fontWeight: FontWeight.w600,
-                              color: darkMode ? Colors.white : Colors.black,
-                            ),
+                            ],
                           ),
-                          NeumorphicButton(
-                            darkMode: darkMode,
-                            imagen: 'images/GoogleLogo.png',
-                            padding: 8,
-                            bevel: 5,
-                            child: Text(
-                              'Correo institucional',
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  fontFamily: 'Cheveuxdange',
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      darkMode ? Colors.white : Colors.black),
-                            ),
+                          Row(
+                            children: [
+                              /* Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(right: 5.0),
+                                                      child: Container(
+                                                        // margin: const EdgeInsets.only(
+                                                        //     top: 10.0),
+                                                        width: 35,
+                                                        height: 35,
+                                                        decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                                image: AssetImage(
+                                                                    'images/firebase-logo.png'))),
+                                                      ),
+                                                    ), */
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Text(
+                                  'Firebase',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    // fontFamily: 'Cheveuxdange',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 20,
+                                    color:
+                                        darkMode ? Colors.white : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ),
+                      /* Container(
+                        width: radius,
+                        height: radius,
+                        margin: EdgeInsets.all(0),
+                        padding: EdgeInsets.all(0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey[200],
+                                offset: Offset(2.0, 2.0),
+                                blurRadius: 7.0,
+                                spreadRadius: 1.0),
+                            BoxShadow(
+                                color: Colors.grey[50],
+                                offset: Offset(-2.0, -2.0),
+                                blurRadius: 7.0,
+                                spreadRadius: 1.0),
+                          ],
+                        ),
+                        child: CircularPercentIndicator(
+                          radius: radius - 10.0,
+                          lineWidth: 10.0,
+                          percent: 0.13,
+                          // header: Text("Icon header"),
+                          center: Container(
+                            width: radius - 28,
+                            height: radius - 28,
+                            padding: EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(50),
+                              /* boxShadow: [
+                                                      BoxShadow(
+                                                          color: Colors.grey[400],
+                                                          offset: Offset(2.0, 2.0),
+                                                          blurRadius: 7.0,
+                                                          spreadRadius: 1.0),
+                                                      BoxShadow(
+                                                          color: Colors.white,
+                                                          offset: Offset(-2.0, -2.0),
+                                                          blurRadius: 7.0,
+                                                          spreadRadius: 1.0),
+                                                    ], */
+                            ),
+                            child: Icon(
+                              Icons.group_add,
+                              size: 40.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          backgroundColor: Colors.white,
+                          progressColor: Color(0xFF3326AE),
+                          circularStrokeCap: CircularStrokeCap.round,
+                        ),
+                      ), */
+                    ],
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        Positioned(
+          top: 10,
+          left: 500,
+          child: Card(
+            color: Colors.blueAccent,
+            child: Container(
+              // height: 100,
+              width: 350,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      // Container(),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.more_vert),
+                      ),
+                      Text(
+                        'Day 1',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.more_vert),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding:
+                            EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                        child: Text('data'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
