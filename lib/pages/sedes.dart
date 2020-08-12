@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:html';
+import 'dart:io' as io;
+import 'dart:typed_data';
 // import 'package:http/http.dart';
+import 'package:file_picker_web/file_picker_web.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_circular_chart/flutter_circular_chart.dart';
-// import 'package:gescolar_dev/widgets/Neomorphic/neoButton.dart';
-// import 'package:gescolar_dev/widgets/Neomorphic/neoCard.dart';
+import 'package:flutter/services.dart';
 import 'package:gescolar_dev/widgets/circular_progres/circular_progres.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
@@ -28,11 +30,11 @@ class _SedesState extends State<Sedes> {
                   firebaseUsers = a;
                 })
               }),
-          getGsuiteUsers(null).then((b) => {
+          /* getGsuiteUsers(null).then((b) => {
                 setState(() {
                   gSuiteUsers = gSuiteUsers;
                 })
-              })
+              }) */
         });
   }
 
@@ -194,26 +196,32 @@ class _SedesState extends State<Sedes> {
                                           spreadRadius: 1.0),
                                     ],
                                   ),
-                                  child: CircularPercentIndicator(
-                                    radius: radius - 10.0,
-                                    lineWidth: 10.0,
-                                    percent: 0.13,
-                                    // header: Text("Icon header"),
-                                    center: Text(
-                                      '100%',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontFamily: 'ArmataRegular',
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                        color: darkMode
-                                            ? Colors.white
-                                            : Colors.grey[600],
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _pickFiles().then((a) => {print(a)});
+                                    },
+                                    child: CircularPercentIndicator(
+                                      radius: radius - 10.0,
+                                      lineWidth: 10.0,
+                                      percent: 0.13,
+                                      // header: Text("Icon header"),
+                                      center: Text(
+                                        '100%',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontFamily: 'ArmataRegular',
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15,
+                                          color: darkMode
+                                              ? Colors.white
+                                              : Colors.grey[600],
+                                        ),
                                       ),
+                                      backgroundColor: Colors.white,
+                                      progressColor: Color(0xFF3326AE),
+                                      circularStrokeCap:
+                                          CircularStrokeCap.round,
                                     ),
-                                    backgroundColor: Colors.white,
-                                    progressColor: Color(0xFF3326AE),
-                                    circularStrokeCap: CircularStrokeCap.round,
                                   ),
                                 ),
                               ),
@@ -1534,3 +1542,89 @@ getGsuiteUsers(nextPageToken) async {
     print(e);
   }
 }
+
+Uint8List uploadedImage;
+_pickFiles() async {
+  InputElement uploadInput = FileUploadInputElement();
+  uploadInput.click();
+
+  uploadInput.onChange.listen((e) {
+    // read file content as dataURL
+    try {
+      final files = uploadInput.files;
+      if (files.length == 1) {
+        final file = files[0];
+        FileReader reader = FileReader();
+        /* {
+            "name": "gescolar_dev",
+            "short_name": "gescolar_dev",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#0175C2",
+            "theme_color": "#0175C2",
+            "description": "A new Flutter project.",
+            "orientation": "portrait-primary",
+            "prefer_related_applications": false,
+            "icons": [
+                {
+                    "src": "icons/Icon-192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                },
+                {
+                    "src": "icons/Icon-512.png",
+                    "sizes": "512x512",
+                    "type": "image/png"
+                }
+        }*/
+        reader.onLoadEnd.listen((e) {
+          try {
+            var new_data = json.decode(reader.result);
+            // uploadedImage = reader.result;
+            // io.File _file = io.File.fromRawPath(rawPath);
+            // print(reader.result);
+            print(new_data['name']);
+            /* setState(() {
+              uploadedImage = reader.result;
+            }); */
+          } catch (e) {
+            print(['Error reader', e]);
+          }
+        });
+
+        reader.onError.listen((fileEvent) {
+          const option1Text = "Some Error occured while reading the file";
+          print(option1Text);
+          /* setState(() {
+            option1Text = "Some Error occured while reading the file";
+          }); */
+        });
+        reader.readAsText(file);
+        // reader.readAsArrayBuffer(file);
+      }
+    } catch (e) {
+      print(['Error picker', e]);
+    }
+  });
+}
+/* _pickFiles() async {
+  try {
+    file = await getFile();
+    String fileContents = await file.readAsString();
+    return fileContents;
+  } catch (e) {
+    print(['_pickFiles()', e]);
+  }
+}
+
+getFile() async {
+  try {
+    var _file = await FilePicker.getFile();
+    final path = _file.relativePath;
+    print(['path', path]);
+    return File(_file.relativePath);
+  } catch (e) {
+    print(['getFiles()', e]);
+  }
+}
+ */
