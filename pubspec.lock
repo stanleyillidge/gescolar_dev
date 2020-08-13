@@ -127,20 +127,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.2.1"
-  file_picker_platform_interface:
-    dependency: transitive
-    description:
-      name: file_picker_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.3.1"
-  file_picker_web:
-    dependency: "direct main"
-    description:
-      name: file_picker_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2+1"
   firebase:
     dependency: transitive
     description:
@@ -254,6 +240,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.1+1"
+  grizzly_io:
+    dependency: "direct main"
+    description:
+      name: grizzly_io
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.2"
   http:
     dependency: transitive
     description:

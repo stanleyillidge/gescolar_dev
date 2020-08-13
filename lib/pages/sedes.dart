@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:html';
-import 'dart:io' as io;
+// import 'dart:io' as io;
 import 'dart:typed_data';
 // import 'package:http/http.dart';
-import 'package:file_picker_web/file_picker_web.dart';
+// import 'package:file_picker_web/file_picker_web.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 import 'package:gescolar_dev/widgets/circular_progres/circular_progres.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:grizzly_io/io_loader.dart';
 
 bool darkMode = false;
 var firebaseUsers = 0;
@@ -198,7 +199,8 @@ class _SedesState extends State<Sedes> {
                                   ),
                                   child: GestureDetector(
                                     onTap: () {
-                                      _pickFiles().then((a) => {print(a)});
+                                      // _startFilePicker();
+                                      _pickFiles();
                                     },
                                     child: CircularPercentIndicator(
                                       radius: radius - 10.0,
@@ -1579,11 +1581,26 @@ _pickFiles() async {
         }*/
         reader.onLoadEnd.listen((e) {
           try {
-            var new_data = json.decode(reader.result);
+            // var _json = json.decode(reader.result);
             // uploadedImage = reader.result;
+            // File datos = File(uploadedImage, 'datos.csv');
+            // _csv(file.relativePath);
             // io.File _file = io.File.fromRawPath(rawPath);
+            // String parte = getApplicationDocumentsDirectory()
+            print([file.relativePath, file.name]);
             // print(reader.result);
-            print(new_data['name']);
+            var a = reader.result.toString().split("\n");
+            var b = [];
+            a.forEach((element) {
+              b.add(element.toString().split(";"));
+            });
+            var encabezados = b[0];
+            var usuarios = {};
+            /*for (var i = 1; i < b.length; i++) {
+              b[i]
+            } */
+            print(b);
+            // print(new_data);
             /* setState(() {
               uploadedImage = reader.result;
             }); */
@@ -1601,30 +1618,38 @@ _pickFiles() async {
         });
         reader.readAsText(file);
         // reader.readAsArrayBuffer(file);
+        // reader.readAsDataUrl(file);
       }
     } catch (e) {
       print(['Error picker', e]);
     }
   });
 }
-/* _pickFiles() async {
+
+_csv(path) async {
   try {
-    file = await getFile();
-    String fileContents = await file.readAsString();
-    return fileContents;
+    final tsv = await readCsv(path, fieldSep: '|', textSep: "'");
+    print(tsv);
   } catch (e) {
-    print(['_pickFiles()', e]);
+    print(['Error _csv', e]);
   }
 }
 
-getFile() async {
-  try {
-    var _file = await FilePicker.getFile();
-    final path = _file.relativePath;
-    print(['path', path]);
-    return File(_file.relativePath);
-  } catch (e) {
-    print(['getFiles()', e]);
-  }
+_startFilePicker() async {
+  InputElement uploadInput = FileUploadInputElement();
+  uploadInput.click();
+
+  uploadInput.onChange.listen((e) {
+    // read file content as dataURL
+    final files = uploadInput.files;
+    if (files.length == 1) {
+      final file = files[0];
+      final reader = new FileReader();
+
+      reader.onLoadEnd.listen((e) {
+        print(reader.result);
+      });
+      reader.readAsDataUrl(file);
+    }
+  });
 }
- */
