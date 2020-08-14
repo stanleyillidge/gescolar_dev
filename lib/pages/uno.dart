@@ -20,7 +20,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 // import 'dart:math';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -33,7 +32,7 @@ class Uno extends StatefulWidget {
   }
 }
 
-LocalStorage storage = new LocalStorage('gescolar_app');
+// LocalStorage storage = new LocalStorage('gescolar_app');
 
 const firebaseConfig = FirebaseOptions(
   googleAppID: "1:395322918531:web:aaf5e5a050a3743d2e7db6",
@@ -81,7 +80,7 @@ Future<FirebaseApp> _db1() async {
         value.documents.forEach((element) {
           print(element.documentID);
           // lista.add(element.documentID);
-          storage.setItem('database1', element.documentID);
+          // storage.setItem('database1', element.documentID);
         })
       });
 }
@@ -185,7 +184,7 @@ class UnoState extends State<Uno> with TickerProviderStateMixin {
       nivelEnsenanza: NivelEnsenanza(
           preescolar: true, basicaPrimaria: true, educacionMedia: true),
     );
-    storage.setItem('database', inst.toJson());
+    // storage.setItem('database', inst.toJson());
     print(['Json', inst.toJson()]);
     lista.add(ResponsiveConstraints(
       constraintsWhen: blockWidthConstraints,

@@ -1,0 +1,167 @@
+{
+    "fields": [
+      {
+        "fieldName": "ANO",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "ANO"
+      },
+      {
+        "fieldName": "ESTADO",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "ESTADO"
+      },
+      {
+        "fieldName": "SEDE",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "SEDE"
+      },
+      {
+        "fieldName": "CODIGO_DANE_SEDE",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "CODIGO_DANE_SEDE"
+      },
+      {
+        "fieldName": "ZONA_SEDE",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "ZONA_SEDE"
+      },
+      {
+        "fieldName": "JORNADA",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "JORNADA"
+      },
+      {
+        "fieldName": "GRADO_COD",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "GRADO_COD"
+      },
+      {
+        "fieldName": "GRUPO",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "GRUPO"
+      },
+      {
+        "fieldName": "FECHAINI",
+        "fieldType": "DATE",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "FECHAINI"
+      },
+      {
+        "fieldName": "NUI",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "NUI"
+      },
+      {
+        "fieldName": "ESTRATO",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "ESTRATO"
+      },
+      {
+        "fieldName": "DOC",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "DOC"
+      },
+      {
+        "fieldName": "TIPODOC",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "TIPODOC"
+      },
+      {
+        "fieldName": "APELLIDO1",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "APELLIDO1"
+      },
+      {
+        "fieldName": "APELLIDO2",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "APELLIDO2"
+      },
+      {
+        "fieldName": "NOMBRE1",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "NOMBRE1"
+      },
+      {
+        "fieldName": "NOMBRE2",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "NOMBRE2"
+      },
+      {
+        "fieldName": "GENERO",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "GENERO"
+      },
+      {
+        "fieldName": "FECHA_NACIMIENTO",
+        "fieldType": "DATE",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "FECHA_NACIMIENTO"
+      },
+      {
+        "fieldName": "EPS_ESTUDIANTE",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "EPS_ESTUDIANTE"
+      },
+      {
+        "fieldName": "DISCAPACIDAD",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "DISCAPACIDAD"
+      },
+      {
+        "fieldName": "PAIS_ORIGEN",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "PAIS_ORIGEN"
+      },
+      {
+        "fieldName": "CORREO",
+        "fieldType": "STRING",
+        "readAccessType": "ADMINS_AND_SELF",
+        "multiValued": false,
+        "displayName": "CORREO"
+      }
+    ],
+    "schemaName": "SIMAT",
+    "displayName": "SIMAT"
+}

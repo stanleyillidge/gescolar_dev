@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:html';
-// import 'dart:io' as io;
+import 'dart:io' as io;
 import 'dart:typed_data';
 // import 'package:http/http.dart';
 // import 'package:file_picker_web/file_picker_web.dart';
@@ -8,12 +8,18 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:gescolar_dev/widgets/circular_progres/circular_progres.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:grizzly_io/io_loader.dart';
+import 'package:hive/hive.dart';
 
 bool darkMode = false;
 var firebaseUsers = 0;
 var gSuiteUsers = 0;
 var simatUsers = 0;
+// final storage = LocalStorage();
+var storage;
+_initStorage() async {
+  storage = await Hive.openBox('myBox');
+  print('Init storage');
+}
 
 class Sedes extends StatefulWidget {
   Sedes({Key key}) : super(key: key);
@@ -26,12 +32,13 @@ class _SedesState extends State<Sedes> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => {
-          getFirebaseUsers().then((a) => {
+          _initStorage()
+          /* getFirebaseUsers().then((a) => {
                 setState(() {
                   firebaseUsers = a;
                 })
               }),
-          /* getGsuiteUsers(null).then((b) => {
+          getGsuiteUsers(null).then((b) => {
                 setState(() {
                   gSuiteUsers = gSuiteUsers;
                 })
@@ -42,6 +49,22 @@ class _SedesState extends State<Sedes> {
   @override
   Widget build(BuildContext context) {
     // var size = MediaQuery.of(context).size;
+    // firebaseUsers = 0;
+    /*(storage.getItem('firebaseUsers') == null)
+        ? getFirebaseUsers().then((a) => {
+              setState(() {
+                firebaseUsers = a;
+              })
+            })
+        : firebaseUsers = storage.getItem('firebaseUsers'); */
+    // gSuiteUsers = 0;
+    /* (storage.getItem('gSuiteUsers') == null)
+        ? getGsuiteUsers(null).then((b) => {
+              setState(() {
+                gSuiteUsers = gSuiteUsers;
+              })
+            })
+        : gSuiteUsers = storage.getItem('gSuiteUsers'); */
     double radius = 100.0;
     return Stack(
       children: [
@@ -459,19 +482,60 @@ class _SedesState extends State<Sedes> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.only(bottom: 10.0, right: 10),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () async {
+                clearHive();
+              },
+              child: Icon(Icons.remove_circle),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 80.0, right: 10),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () async {
+                _initStorage();
+              },
+              child: Icon(Icons.star_border),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 160.0, right: 10),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () async {
+                getFirebaseUsers().then((a) => {
+                      // print(['Firebase Users', storage.get('firebaseUsers')]),
+                      setState(() {
+                        firebaseUsers = a;
+                      })
+                    });
+              },
+              child: Icon(Icons.add),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 240.0, right: 10),
           child: Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
               onPressed: () async {
                 getGsuiteUsers(null).then((b) => {
-                      print(['Resultado final', b]),
+                      readG(),
                       setState(() {
                         gSuiteUsers = gSuiteUsers;
                       })
                     });
               },
-              child: Icon(Icons.add),
+              child: Icon(Icons.wrap_text),
             ),
           ),
         ),
@@ -1464,7 +1528,12 @@ getFirebaseUsers() async {
         'data': '109775147545070328639',
       },
     );
-    // firebaseUsers = result.data['usuarios'].length;
+    firebaseUsers = result.data['usuarios'].length;
+    // print(['firebase', result.data['usuarios'].length]);
+    // var _json = json.encode(result.data['usuarios'][0].toString());
+    // print(['firebase', 0, result.data['usuarios'][0]['uid']]);
+    // print(['firebase', 1, result.data['usuarios'][1]['uid']]);
+    await storage.put('firebaseUsers', result.data['usuarios']);
     return result.data['usuarios'].length;
     // print(result.data['usuarios'].length);
     /* List<dynamic> data = [];
@@ -1495,37 +1564,24 @@ getGsuiteUsers(nextPageToken) async {
   try {
     HttpsCallableResult result;
     print(['nextPageToken', nextPageToken]);
-    if (nex == '') {
-      nex = nextPageToken;
-    }
-    if (nextPageToken != null) {
-      result = await callable.call(
-        <String, dynamic>{
-          'data': nex,
-        },
-      );
-    } else {
-      result = await callable.call(
-        <String, dynamic>{
-          'data': null,
-        },
-      );
-    }
+    result = await callable.call(
+      <String, dynamic>{
+        'data': null,
+      },
+    );
     // usuariosG.add(result.data['data']);
     print(['Resultado', result.data['data'].length]);
+    print(['Resultado', 0, result.data['data'][0]]);
     gSuiteUsers += result.data['data'].length;
     // print(['Num users', gSuiteUsers]);
     print(['Num consulta', conta]);
     // print(['UserId - ', conta, ': ', result.data['data']['users'][0].id]);
     conta += 1;
+    // print(['Guiste Users previo', result.data['data']]);
+    // var _json = json.decode(result.data['data']);
+    // print(['Guiste Users', _json]);
+    await storage.put('gSuiteUsers', result.data['data']);
     return gSuiteUsers;
-    /* if ((result.data['data']['nextPageToken'] != null) && (conta < 20)) {
-      getGsuiteUsers(result.data['data']['nextPageToken']);
-    } else {
-      print(['Termino con', gSuiteUsers]);
-      print(['Resultado', result.data]);
-      return gSuiteUsers;
-    } */
     // print(result.data['usuarios'].length);
     /* List<dynamic> data = [];
                 result.data['usuarios'].forEach((user) {
@@ -1543,6 +1599,11 @@ getGsuiteUsers(nextPageToken) async {
     print('getGsuiteUsers caught generic exception');
     print(e);
   }
+}
+
+readG() async {
+  var a = await storage.get('gSuiteUsers');
+  print(['Gsuite Users', a[0]]);
 }
 
 Uint8List uploadedImage;
@@ -1626,30 +1687,7 @@ _pickFiles() async {
   });
 }
 
-_csv(path) async {
-  try {
-    final tsv = await readCsv(path, fieldSep: '|', textSep: "'");
-    print(tsv);
-  } catch (e) {
-    print(['Error _csv', e]);
-  }
-}
-
-_startFilePicker() async {
-  InputElement uploadInput = FileUploadInputElement();
-  uploadInput.click();
-
-  uploadInput.onChange.listen((e) {
-    // read file content as dataURL
-    final files = uploadInput.files;
-    if (files.length == 1) {
-      final file = files[0];
-      final reader = new FileReader();
-
-      reader.onLoadEnd.listen((e) {
-        print(reader.result);
-      });
-      reader.readAsDataUrl(file);
-    }
-  });
+clearHive() async {
+  await storage.close();
+  print('Clear storage');
 }

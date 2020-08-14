@@ -371,8 +371,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gescolar_dev/pages/home.dart';
 import 'package:gescolar_dev/pages/login.dart';
-import 'package:gescolar_dev/services/firebase_auth_service.dart';
-import 'package:localstorage/localstorage.dart';
+// import 'package:gescolar_dev/services/firebase_auth_service.dart';
 
 void main() {
   runApp(MyApp());
@@ -384,7 +383,7 @@ Widget home = HomePage();
 // 116675950093144953544
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  final LocalStorage storage = LocalStorage('gescolar_app');
+  // final LocalStorage storage = LocalStorage('gescolar_app');
   // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   bool initialized = false;
   /* @override
