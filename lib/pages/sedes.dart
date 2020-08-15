@@ -5,10 +5,13 @@ import 'dart:typed_data';
 // import 'package:http/http.dart';
 // import 'package:file_picker_web/file_picker_web.dart';
 import 'package:flutter/material.dart';
+import 'package:gescolar_dev/pages/tabla.dart';
+import 'package:gescolar_dev/widgets/circular_chart/flutter_circular_chart.dart';
 // import 'package:flutter/services.dart';
 import 'package:gescolar_dev/widgets/circular_progres/circular_progres.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:hive/hive.dart';
+import 'package:json_table/json_table.dart';
 
 bool darkMode = false;
 var firebaseUsers = 0;
@@ -21,6 +24,31 @@ _initStorage() async {
   print('Init storage');
 }
 
+var _json;
+List<CircularStackEntry> dataC = <CircularStackEntry>[
+  CircularStackEntry(
+    <CircularSegmentEntry>[
+      CircularSegmentEntry(20.0, Colors.yellow[400], rankKey: 'FIREBASE'),
+      CircularSegmentEntry(10.0, Colors.white, rankKey: 'Q1'),
+      CircularSegmentEntry(20.0, Colors.blue[400], rankKey: 'GSUITE'),
+      CircularSegmentEntry(10.0, Colors.white, rankKey: 'Q2'),
+      CircularSegmentEntry(20.0, Colors.deepOrange[400], rankKey: 'SIMAT'),
+      CircularSegmentEntry(10.0, Colors.white, rankKey: 'Q3'),
+    ],
+    rankKey: 'Quarterly Profits',
+  ),
+];
+final String jsonSample =
+    '[{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc"},{"name":"Shyam","email":"shyam23@gmail.com",'
+    '"age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India",'
+    '"area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},'
+    '{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com",'
+    '"age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India",'
+    '"area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},'
+    '{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,'
+    '"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc",'
+    '"day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"}]';
+
 class Sedes extends StatefulWidget {
   Sedes({Key key}) : super(key: key);
 
@@ -28,9 +56,10 @@ class Sedes extends StatefulWidget {
   _SedesState createState() => _SedesState();
 }
 
-class _SedesState extends State<Sedes> {
+class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
+    _tabController = TabController(vsync: this, length: myTabs.length);
     WidgetsBinding.instance.addPostFrameCallback((_) => {
           _initStorage()
           /* getFirebaseUsers().then((a) => {
@@ -46,9 +75,18 @@ class _SedesState extends State<Sedes> {
         });
   }
 
+  final List<Tab> myTabs = <Tab>[
+    Tab(text: 'Simat'),
+    Tab(text: 'G Suite'),
+    Tab(text: 'Firebase'),
+  ];
+  static const int numItems = 6;
+  List<bool> selected = List<bool>.generate(numItems, (index) => false);
+
+  TabController _tabController;
   @override
   Widget build(BuildContext context) {
-    // var size = MediaQuery.of(context).size;
+    var size = MediaQuery.of(context).size;
     // firebaseUsers = 0;
     /*(storage.getItem('firebaseUsers') == null)
         ? getFirebaseUsers().then((a) => {
@@ -66,9 +104,12 @@ class _SedesState extends State<Sedes> {
             })
         : gSuiteUsers = storage.getItem('gSuiteUsers'); */
     double radius = 100.0;
-    return Stack(
+    _json = jsonDecode(jsonSample);
+    final GlobalKey<AnimatedCircularChartState> _chartKey =
+        GlobalKey<AnimatedCircularChartState>();
+    /* return Stack(
       children: [
-        Positioned(
+        /* Positioned(
           top: 10,
           left: 80,
           child: Container(
@@ -435,12 +476,12 @@ class _SedesState extends State<Sedes> {
               ],
             ),
           ),
-        ),
+        ), */
         Positioned(
           top: 10,
           left: 500,
           child: Card(
-            color: Colors.blueAccent,
+            color: Colors.white38,
             child: Container(
               // height: 100,
               width: 350,
@@ -456,9 +497,9 @@ class _SedesState extends State<Sedes> {
                       ),
                       Text(
                         'Day 1',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                        // style: TextStyle(
+                        //   color: Colors.white,
+                        // ),
                       ),
                       IconButton(
                         onPressed: () {},
@@ -472,13 +513,38 @@ class _SedesState extends State<Sedes> {
                       Container(
                         padding:
                             EdgeInsets.only(right: 20, left: 20, bottom: 20),
-                        child: Text('data'),
+                        child: AnimatedCircularChart(
+                          key: _chartKey,
+                          size: const Size(30.0, 30.0),
+                          initialChartData: dataC,
+                          chartType: CircularChartType.Radial,
+                          // edgeStyle: SegmentEdgeStyle.round,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 100, left: 80),
+          child: Container(
+            width: size.width * 0.85,
+            height: size.height * 0.825,
+            child: Tabla(),
+            /* child: JsonTable(
+              _json,
+              // showColumnToggle: true,
+              allowRowHighlight: true,
+              rowHighlightColor: Colors.yellow[500].withOpacity(0.7),
+              paginationRowCount: 10,
+              onRowSelect: (index, map) {
+                print(index);
+                print(map);
+              },
+            ), */
           ),
         ),
         Padding(
@@ -536,6 +602,256 @@ class _SedesState extends State<Sedes> {
                     });
               },
               child: Icon(Icons.wrap_text),
+            ),
+          ),
+        ),
+      ],
+    ); */
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 80, top: 10),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 10.0, bottom: 10, left: 15, right: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Matriculados',
+                      // textAlign: TextAlign.start,
+                      style: TextStyle(
+                        fontFamily: 'Spartan',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        color: darkMode ? Colors.white : Color(0xFF3326AE),
+                      ),
+                    ),
+                    Text(
+                      '5 ago 2020',
+                      // textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontFamily: 'Spartan',
+                        fontWeight: FontWeight.w700,
+                        color: darkMode ? Colors.white : Color(0xFF3326AE),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, top: 10.0),
+                child: Row(
+                  children: [
+                    Column(
+                      children: [
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 60.0, bottom: 8.0),
+                              child: Text(
+                                'Simat',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontFamily: 'ArmataRegular',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                  color: darkMode
+                                      ? Colors.white
+                                      : Colors.deepOrange[400], //.grey[600],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 30.0),
+                              child: Text(
+                                '4636',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontFamily: 'Spartan',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 30,
+                                  color: darkMode
+                                      ? Colors.white
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 60.0, bottom: 8.0),
+                              child: Text(
+                                'Firebase',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontFamily: 'ArmataRegular',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                  color: darkMode
+                                      ? Colors.white
+                                      : Colors.yellow[700], //.grey[600],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 30.0),
+                              child: Text(
+                                firebaseUsers.toString(),
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontFamily: 'Spartan',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 30,
+                                  color: darkMode
+                                      ? Colors.white
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 60.0, bottom: 8.0),
+                              child: Text(
+                                'G Suite',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontFamily: 'ArmataRegular',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                  color: darkMode
+                                      ? Colors.white
+                                      : Colors.blue[400], //.grey[600],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 30.0),
+                              child: Text(
+                                gSuiteUsers.toString(),
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontFamily: 'Spartan',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 30,
+                                  color: darkMode
+                                      ? Colors.white
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 80, top: 140),
+          child: Container(
+            width: 260,
+            height: 40,
+            // decoration: BoxDecoration(color: Colors.white),
+            child: TabBar(
+              labelColor: Colors.black,
+              indicatorColor: Colors.black,
+              indicatorSize: TabBarIndicatorSize.label,
+              controller: _tabController,
+              tabs: myTabs,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 80, top: 185.0, bottom: 10),
+          child: Container(
+            child: TabBarView(
+              controller: _tabController,
+              /* children: myTabs.map((Tab tab) {
+                final String label = tab.text.toLowerCase();
+                return Center(
+                  child: Text(
+                    'This is the $label tab',
+                    style: const TextStyle(fontSize: 36),
+                  ),
+                );
+              }).toList(), */
+              children: <Widget>[
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: DataTable(
+                      columns: const <DataColumn>[
+                        DataColumn(
+                          label: Text('Number'),
+                        ),
+                      ],
+                      rows: List<DataRow>.generate(
+                        numItems,
+                        (index) => DataRow(
+                          color: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                            // All rows will have the same selected color.
+                            if (states.contains(MaterialState.selected))
+                              return Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.08);
+                            // Even rows will have a grey color.
+                            if (index % 2 == 0)
+                              return Colors.grey.withOpacity(0.3);
+                            return null; // Use default value for other states and odd rows.
+                          }),
+                          cells: [DataCell(Text('Row $index'))],
+                          selected: selected[index],
+                          onSelectChanged: (bool value) {
+                            setState(() {
+                              selected[index] = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.location_on),
+                    title: Text('Latitude: 48.09342\nLongitude: 11.23403'),
+                    trailing: IconButton(
+                        icon: const Icon(Icons.my_location), onPressed: () {}),
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.location_on),
+                    title: Text('Stanley Illidge\nCoordinador de convivencia'),
+                    trailing: IconButton(
+                        icon: const Icon(Icons.my_location), onPressed: () {}),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -1517,6 +1833,11 @@ class _SedesState extends State<Sedes> {
     );
   }
 } */
+String getPrettyJSONString(jsonObject) {
+  JsonEncoder encoder = JsonEncoder.withIndent('  ');
+  String jsonString = encoder.convert(json.decode(jsonObject));
+  return jsonString;
+}
 
 getFirebaseUsers() async {
   final HttpsCallable callable = CloudFunctions.instance
@@ -1625,7 +1946,7 @@ _pickFiles() async {
             "display": "standalone",
             "background_color": "#0175C2",
             "theme_color": "#0175C2",
-            "description": "A new Flutter project.",
+            "description": "A Flutter project.",
             "orientation": "portrait-primary",
             "prefer_related_applications": false,
             "icons": [
