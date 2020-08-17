@@ -10,6 +10,7 @@ import 'package:gescolar_dev/widgets/circular_chart/flutter_circular_chart.dart'
 // import 'package:flutter/services.dart';
 import 'package:gescolar_dev/widgets/circular_progres/circular_progres.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:gescolar_dev/widgets/pagDataTable/pagDataTable.dart';
 import 'package:hive/hive.dart';
 import 'package:json_table/json_table.dart';
 
@@ -38,6 +39,7 @@ List<CircularStackEntry> dataC = <CircularStackEntry>[
     rankKey: 'Quarterly Profits',
   ),
 ];
+
 final String jsonSample =
     '[{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc"},{"name":"Shyam","email":"shyam23@gmail.com",'
     '"age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India",'
@@ -48,6 +50,44 @@ final String jsonSample =
     '{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,'
     '"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc",'
     '"day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"}]';
+
+class Filas {
+  String name;
+  String email;
+  int age;
+  String income;
+  String country;
+  String area;
+  bool selected;
+
+  Filas(
+      {this.name,
+      this.email,
+      this.age,
+      this.income,
+      this.country,
+      this.area,
+      this.selected});
+
+  factory Filas.fromJson(Map<String, dynamic> json) {
+    return new Filas(
+        name: json['name'],
+        email: json['email'],
+        age: json['age'],
+        income: json['income'],
+        country: json['country'],
+        area: json['area'],
+        selected: false);
+  }
+}
+
+List<Filas> users = (json.decode(jsonSample) as List)
+    .map((data) => Filas.fromJson(data))
+    .toList();
+
+int numItems = users.length;
+List<bool> selected = List<bool>.generate(numItems, (index) => false);
+List<bool> simatSelected = List<bool>.generate(numItems, (index) => false);
 
 class Sedes extends StatefulWidget {
   Sedes({Key key}) : super(key: key);
@@ -61,7 +101,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
     WidgetsBinding.instance.addPostFrameCallback((_) => {
-          _initStorage()
+          _initStorage(),
+          print(users)
           /* getFirebaseUsers().then((a) => {
                 setState(() {
                   firebaseUsers = a;
@@ -75,13 +116,17 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         });
   }
 
+  bool _sortNameAsc = true;
+  bool _sortAgeAsc = true;
+  bool _sortHightAsc = true;
+  bool _sortAsc = true;
+  int _sortColumnIndex;
+
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Simat'),
     Tab(text: 'G Suite'),
     Tab(text: 'Firebase'),
   ];
-  static const int numItems = 6;
-  List<bool> selected = List<bool>.generate(numItems, (index) => false);
 
   TabController _tabController;
   @override
@@ -89,24 +134,130 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     var size = MediaQuery.of(context).size;
     // firebaseUsers = 0;
     /*(storage.getItem('firebaseUsers') == null)
-        ? getFirebaseUsers().then((a) => {
-              setState(() {
-                firebaseUsers = a;
+          ? getFirebaseUsers().then((a) => {
+                setState(() {
+                  firebaseUsers = a;
+                })
               })
-            })
-        : firebaseUsers = storage.getItem('firebaseUsers'); */
+          : firebaseUsers = storage.getItem('firebaseUsers'); */
     // gSuiteUsers = 0;
     /* (storage.getItem('gSuiteUsers') == null)
-        ? getGsuiteUsers(null).then((b) => {
-              setState(() {
-                gSuiteUsers = gSuiteUsers;
+          ? getGsuiteUsers(null).then((b) => {
+                setState(() {
+                  gSuiteUsers = gSuiteUsers;
+                })
               })
-            })
-        : gSuiteUsers = storage.getItem('gSuiteUsers'); */
+          : gSuiteUsers = storage.getItem('gSuiteUsers'); */
+    // --------------------------------------
     double radius = 100.0;
     _json = jsonDecode(jsonSample);
     final GlobalKey<AnimatedCircularChartState> _chartKey =
         GlobalKey<AnimatedCircularChartState>();
+    int _rowPerPage = PagDataTable.defaultRowsPerPage;
+    List<DataColumn> columnas = [
+      DataColumn(
+        label: Text('name'),
+        onSort: (columnIndex, sortAscending) {
+          setState(() {
+            if (columnIndex == _sortColumnIndex) {
+              _sortAsc = _sortNameAsc = sortAscending;
+            } else {
+              _sortColumnIndex = columnIndex;
+              _sortAsc = _sortNameAsc;
+            }
+            users.sort((a, b) => a.name.compareTo(b.name));
+            if (!_sortAsc) {
+              users = users.reversed.toList();
+            }
+          });
+        },
+      ),
+      DataColumn(
+        label: Text('email'),
+        onSort: (columnIndex, sortAscending) {
+          setState(() {
+            if (columnIndex == _sortColumnIndex) {
+              _sortAsc = _sortNameAsc = sortAscending;
+            } else {
+              _sortColumnIndex = columnIndex;
+              _sortAsc = _sortNameAsc;
+            }
+            users.sort((a, b) => a.email.compareTo(b.email));
+            if (!_sortAsc) {
+              users = users.reversed.toList();
+            }
+          });
+        },
+      ),
+      DataColumn(
+        label: Text('age'),
+        onSort: (columnIndex, sortAscending) {
+          setState(() {
+            if (columnIndex == _sortColumnIndex) {
+              _sortAsc = _sortNameAsc = sortAscending;
+            } else {
+              _sortColumnIndex = columnIndex;
+              _sortAsc = _sortNameAsc;
+            }
+            users.sort((a, b) => a.age.compareTo(b.age));
+            if (!_sortAsc) {
+              users = users.reversed.toList();
+            }
+          });
+        },
+      ),
+      DataColumn(
+        label: Text('income'),
+        onSort: (columnIndex, sortAscending) {
+          setState(() {
+            if (columnIndex == _sortColumnIndex) {
+              _sortAsc = _sortNameAsc = sortAscending;
+            } else {
+              _sortColumnIndex = columnIndex;
+              _sortAsc = _sortNameAsc;
+            }
+            users.sort((a, b) => a.income.compareTo(b.income));
+            if (!_sortAsc) {
+              users = users.reversed.toList();
+            }
+          });
+        },
+      ),
+      DataColumn(
+        label: Text('country'),
+        onSort: (columnIndex, sortAscending) {
+          setState(() {
+            if (columnIndex == _sortColumnIndex) {
+              _sortAsc = _sortNameAsc = sortAscending;
+            } else {
+              _sortColumnIndex = columnIndex;
+              _sortAsc = _sortNameAsc;
+            }
+            users.sort((a, b) => a.country.compareTo(b.country));
+            if (!_sortAsc) {
+              users = users.reversed.toList();
+            }
+          });
+        },
+      ),
+      DataColumn(
+        label: Text('area'),
+        onSort: (columnIndex, sortAscending) {
+          setState(() {
+            if (columnIndex == _sortColumnIndex) {
+              _sortAsc = _sortNameAsc = sortAscending;
+            } else {
+              _sortColumnIndex = columnIndex;
+              _sortAsc = _sortNameAsc;
+            }
+            users.sort((a, b) => a.area.compareTo(b.area));
+            if (!_sortAsc) {
+              users = users.reversed.toList();
+            }
+          });
+        },
+      ),
+    ];
     /* return Stack(
       children: [
         /* Positioned(
@@ -642,125 +793,134 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 10, top: 10.0),
+                padding: const EdgeInsets.only(left: 15, top: 10.0),
                 child: Row(
                   children: [
-                    Column(
-                      children: [
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 60.0, bottom: 8.0),
-                              child: Text(
-                                'Simat',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontFamily: 'ArmataRegular',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                  color: darkMode
-                                      ? Colors.white
-                                      : Colors.deepOrange[400], //.grey[600],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0, right: 0.0),
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 60.0, bottom: 8.0),
+                                child: Text(
+                                  'Simat',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'ArmataRegular',
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.deepOrange[400], //.grey[600],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 30.0),
-                              child: Text(
-                                '4636',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontFamily: 'Spartan',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 30,
-                                  color: darkMode
-                                      ? Colors.white
-                                      : Colors.grey[600],
+                              Padding(
+                                padding: const EdgeInsets.only(right: 30.0),
+                                child: Text(
+                                  '4636',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'Spartan',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 30,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.grey[600],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    Column(
-                      children: [
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 60.0, bottom: 8.0),
-                              child: Text(
-                                'Firebase',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontFamily: 'ArmataRegular',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                  color: darkMode
-                                      ? Colors.white
-                                      : Colors.yellow[700], //.grey[600],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30, right: 30.0),
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 60.0, bottom: 8.0),
+                                child: Text(
+                                  'Firebase',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'ArmataRegular',
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.yellow[700], //.grey[600],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 30.0),
-                              child: Text(
-                                firebaseUsers.toString(),
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontFamily: 'Spartan',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 30,
-                                  color: darkMode
-                                      ? Colors.white
-                                      : Colors.grey[600],
+                              Padding(
+                                padding: const EdgeInsets.only(right: 30.0),
+                                child: Text(
+                                  firebaseUsers.toString(),
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'Spartan',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 30,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.grey[600],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    Column(
-                      children: [
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 60.0, bottom: 8.0),
-                              child: Text(
-                                'G Suite',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontFamily: 'ArmataRegular',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                  color: darkMode
-                                      ? Colors.white
-                                      : Colors.blue[400], //.grey[600],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0, right: 0.0),
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 60.0, bottom: 8.0),
+                                child: Text(
+                                  'G Suite',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'ArmataRegular',
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.blue[400], //.grey[600],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 30.0),
-                              child: Text(
-                                gSuiteUsers.toString(),
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontFamily: 'Spartan',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 30,
-                                  color: darkMode
-                                      ? Colors.white
-                                      : Colors.grey[600],
+                              Padding(
+                                padding: const EdgeInsets.only(right: 30.0),
+                                child: Text(
+                                  gSuiteUsers.toString(),
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: 'Spartan',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 30,
+                                    color: darkMode
+                                        ? Colors.white
+                                        : Colors.grey[600],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -788,16 +948,70 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           child: Container(
             child: TabBarView(
               controller: _tabController,
-              /* children: myTabs.map((Tab tab) {
-                final String label = tab.text.toLowerCase();
-                return Center(
-                  child: Text(
-                    'This is the $label tab',
-                    style: const TextStyle(fontSize: 36),
-                  ),
-                );
-              }).toList(), */
               children: <Widget>[
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: PagDataTable(
+                      header: Text('Mi tabla Gsuite'),
+                      columns: columnas,
+                      source: DTS(users),
+                      showCheckboxColumn: true,
+                      onRowsPerPageChanged: (r) {
+                        setState(() {
+                          _rowPerPage = r;
+                        });
+                      },
+                      rowsPerPage: _rowPerPage,
+                      sortColumnIndex: _sortColumnIndex,
+                      sortAscending: _sortAsc,
+                    ),
+                  ),
+                ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: DataTable(
+                      columnSpacing: 0.0,
+                      sortAscending: true,
+                      columns: columnas,
+                      rows: List<DataRow>.generate(
+                        users.length,
+                        (index) => DataRow(
+                          cells: [
+                            DataCell(Text(users[index].name)),
+                            DataCell(Text(users[index].email)),
+                            DataCell(Text(users[index].age.toString())),
+                            DataCell(Text(users[index].income)),
+                            DataCell(Text(users[index].country)),
+                            DataCell(Text(users[index].area)),
+                          ],
+                          selected: simatSelected[index],
+                          onSelectChanged: (bool value) {
+                            value ? print(index) : null;
+                            setState(() {
+                              simatSelected[index] = value;
+                            });
+                          },
+                        ),
+                      ),
+                      /* users
+                          .map(
+                            (data) => DataRow(
+                              cells: [
+                                DataCell(Text(data.name)),
+                                DataCell(Text(data.email)),
+                                DataCell(Text(data.age.toString())),
+                                DataCell(Text(data.income)),
+                                DataCell(Text(data.country)),
+                                DataCell(Text(data.area)),
+                              ],
+                            ),
+                          )
+                          .toList(), */
+                    ),
+                  ),
+                ),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(40.0),
@@ -810,7 +1024,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       rows: List<DataRow>.generate(
                         numItems,
                         (index) => DataRow(
-                          color: MaterialStateProperty.resolveWith<Color>(
+                          /* color: MaterialStateProperty.resolveWith<Color>(
                               (Set<MaterialState> states) {
                             // All rows will have the same selected color.
                             if (states.contains(MaterialState.selected))
@@ -822,10 +1036,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                             if (index % 2 == 0)
                               return Colors.grey.withOpacity(0.3);
                             return null; // Use default value for other states and odd rows.
-                          }),
+                          }), */
                           cells: [DataCell(Text('Row $index'))],
                           selected: selected[index],
                           onSelectChanged: (bool value) {
+                            value ? print(index) : null;
                             setState(() {
                               selected[index] = value;
                             });
@@ -835,22 +1050,6 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                     ),
                   ),
                 ),
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.location_on),
-                    title: Text('Latitude: 48.09342\nLongitude: 11.23403'),
-                    trailing: IconButton(
-                        icon: const Icon(Icons.my_location), onPressed: () {}),
-                  ),
-                ),
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.location_on),
-                    title: Text('Stanley Illidge\nCoordinador de convivencia'),
-                    trailing: IconButton(
-                        icon: const Icon(Icons.my_location), onPressed: () {}),
-                  ),
-                ),
               ],
             ),
           ),
@@ -858,6 +1057,49 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       ],
     );
   }
+}
+
+class DTS extends DataTableSource {
+  int _selectedCount = 0;
+  final List<Filas> _users;
+  // final Function onRowSelected;
+  DTS(this._users);
+
+  @override
+  DataRow getRow(int index) {
+    assert(index >= 0);
+    if (index >= _users.length) return null;
+    final Filas user = _users[index];
+    return DataRow.byIndex(
+      selected: user.selected,
+      onSelectChanged: (bool value) {
+        _selectedCount += value ? 1 : -1;
+        assert(_selectedCount >= 0);
+        user.selected = value;
+        notifyListeners();
+        print(['selectedCount', _selectedCount]);
+        value ? print(index) : null;
+      },
+      index: index,
+      cells: [
+        DataCell(Text(users[index].name)),
+        DataCell(Text(users[index].email)),
+        DataCell(Text(users[index].age.toString())),
+        DataCell(Text(users[index].income)),
+        DataCell(Text(users[index].country)),
+        DataCell(Text(users[index].area)),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => true;
+
+  @override
+  int get rowCount => users.length;
+
+  @override
+  int get selectedRowCount => 0;
 }
 
 /* class Sedes extends StatelessWidget {
