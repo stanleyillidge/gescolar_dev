@@ -1,10 +1,12 @@
 // import 'dart:js';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gescolar_dev/models/user.dart';
+import 'package:gescolar_dev/widgets/Google/secureStorage.dart';
 // import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
+  final storage = SecureStorage();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final dominio = 'lreginaldofischione.edu.co';

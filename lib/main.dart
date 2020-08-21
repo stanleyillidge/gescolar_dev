@@ -2,10 +2,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gescolar_dev/pages/home.dart';
 import 'package:gescolar_dev/pages/login.dart';
-// import 'package:gescolar_dev/services/firebase_auth_service.dart';
+import 'package:hive/hive.dart';
 
+// import 'package:gescolar_dev/services/firebase_auth_service.dart';
+var storage;
+var googleAuthStorage;
 void main() {
   runApp(MyApp());
+}
+
+_initStorage() async {
+  storage = await Hive.openBox('myBox');
+  googleAuthStorage = await Hive.openBox('googleAuthStorage');
+  print('Init storage');
 }
 
 Widget home = HomePage();
@@ -36,6 +45,7 @@ class MyApp extends StatelessWidget {
   } */
   @override
   Widget build(BuildContext context) {
+    _initStorage();
     return FutureBuilder<FirebaseUser>(
         future: FirebaseAuth.instance.currentUser(),
         builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {

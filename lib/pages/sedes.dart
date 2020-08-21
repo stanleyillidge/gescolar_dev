@@ -2,28 +2,23 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:io' as io;
 import 'dart:typed_data';
-// import 'package:http/http.dart';
-// import 'package:file_picker_web/file_picker_web.dart';
+import 'package:file_picker_web/file_picker_web.dart';
 import 'package:flutter/material.dart';
-import 'package:gescolar_dev/pages/tabla.dart';
+import 'package:gescolar_dev/widgets/Google/Drive/drive.dart';
+// import 'package:gescolar_dev/pages/tabla.dart';
 import 'package:gescolar_dev/widgets/circular_chart/flutter_circular_chart.dart';
-// import 'package:flutter/services.dart';
-import 'package:gescolar_dev/widgets/circular_progres/circular_progres.dart';
+// import 'package:gescolar_dev/widgets/circular_progres/circular_progres.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:gescolar_dev/widgets/pagDataTable/pagDataTable.dart';
 import 'package:hive/hive.dart';
-import 'package:json_table/json_table.dart';
+// import 'package:json_table/json_table.dart';
 
+final drive = GoogleDrive();
 bool darkMode = false;
 var firebaseUsers = 0;
 var gSuiteUsers = 0;
 var simatUsers = 0;
-// final storage = LocalStorage();
-var storage;
-_initStorage() async {
-  storage = await Hive.openBox('myBox');
-  print('Init storage');
-}
+var storage = Hive.box('myBox');
 
 var _json;
 List<CircularStackEntry> dataC = <CircularStackEntry>[
@@ -59,6 +54,8 @@ class Filas {
   String country;
   String area;
   bool selected;
+  Widget grafico;
+  int index;
 
   Filas(
       {this.name,
@@ -67,17 +64,21 @@ class Filas {
       this.income,
       this.country,
       this.area,
-      this.selected});
+      this.selected,
+      this.grafico,
+      this.index});
 
   factory Filas.fromJson(Map<String, dynamic> json) {
     return new Filas(
-        name: json['name'],
-        email: json['email'],
-        age: json['age'],
-        income: json['income'],
-        country: json['country'],
-        area: json['area'],
-        selected: false);
+      name: json['name'],
+      email: json['email'],
+      age: json['age'],
+      income: json['income'],
+      country: json['country'],
+      area: json['area'],
+      selected: false,
+      index: 0,
+    );
   }
 }
 
@@ -100,25 +101,10 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
-    WidgetsBinding.instance.addPostFrameCallback((_) => {
-          _initStorage(),
-          print(users)
-          /* getFirebaseUsers().then((a) => {
-                setState(() {
-                  firebaseUsers = a;
-                })
-              }),
-          getGsuiteUsers(null).then((b) => {
-                setState(() {
-                  gSuiteUsers = gSuiteUsers;
-                })
-              }) */
-        });
+    WidgetsBinding.instance.addPostFrameCallback((_) => {print(users[0])});
   }
 
   bool _sortNameAsc = true;
-  bool _sortAgeAsc = true;
-  bool _sortHightAsc = true;
   bool _sortAsc = true;
   int _sortColumnIndex;
 
@@ -131,28 +117,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   TabController _tabController;
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    // firebaseUsers = 0;
-    /*(storage.getItem('firebaseUsers') == null)
-          ? getFirebaseUsers().then((a) => {
-                setState(() {
-                  firebaseUsers = a;
-                })
-              })
-          : firebaseUsers = storage.getItem('firebaseUsers'); */
-    // gSuiteUsers = 0;
-    /* (storage.getItem('gSuiteUsers') == null)
-          ? getGsuiteUsers(null).then((b) => {
-                setState(() {
-                  gSuiteUsers = gSuiteUsers;
-                })
-              })
-          : gSuiteUsers = storage.getItem('gSuiteUsers'); */
-    // --------------------------------------
-    double radius = 100.0;
+    // var size = MediaQuery.of(context).size;
     _json = jsonDecode(jsonSample);
-    final GlobalKey<AnimatedCircularChartState> _chartKey =
-        GlobalKey<AnimatedCircularChartState>();
     int _rowPerPage = PagDataTable.defaultRowsPerPage;
     List<DataColumn> columnas = [
       DataColumn(
@@ -257,507 +223,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           });
         },
       ),
+      DataColumn(label: Text(''))
     ];
-    /* return Stack(
-      children: [
-        /* Positioned(
-          top: 10,
-          left: 80,
-          child: Container(
-            width: 380,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: darkMode ? Colors.grey[850] : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                    color: darkMode ? Colors.black54 : Colors.grey[300],
-                    offset: Offset(2.0, 2.0),
-                    blurRadius: 3.0,
-                    spreadRadius: 1.0),
-                BoxShadow(
-                    color: darkMode ? Colors.grey[800] : Colors.white,
-                    offset: Offset(-2.0, -2.0),
-                    blurRadius: 3.0,
-                    spreadRadius: 1.0),
-              ],
-            ),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      'Matriculados',
-                      // textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontFamily: 'Spartan',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 18,
-                        color: darkMode ? Colors.white : Color(0xFF3326AE),
-                      ),
-                    ),
-                    Text(
-                      '5 ago 2020',
-                      // textAlign: TextAlign.end,
-                      style: TextStyle(
-                        fontFamily: 'Spartan',
-                        fontWeight: FontWeight.w700,
-                        color: darkMode ? Colors.white : Color(0xFF3326AE),
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: Row(
-                    children: [
-                      Column(
-                        children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 27.0, bottom: 8.0),
-                                child: Text(
-                                  'Total',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'ArmataRegular',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 30.0),
-                                child: Text(
-                                  '4636',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'Spartan',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 30,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 30.0),
-                                child: Text(
-                                  'SIMAT',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    // fontFamily: 'Cheveuxdange',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 20,
-                                    color:
-                                        darkMode ? Colors.white : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 27.0, bottom: 8.0),
-                                child: Text(
-                                  gSuiteUsers.toString(),
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'Spartan',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 30.0),
-                                child: Container(
-                                  width: radius,
-                                  height: radius,
-                                  margin: EdgeInsets.all(0),
-                                  padding: EdgeInsets.all(0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(50),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.grey[200],
-                                          offset: Offset(2.0, 2.0),
-                                          blurRadius: 7.0,
-                                          spreadRadius: 1.0),
-                                      BoxShadow(
-                                          color: Colors.grey[50],
-                                          offset: Offset(-2.0, -2.0),
-                                          blurRadius: 7.0,
-                                          spreadRadius: 1.0),
-                                    ],
-                                  ),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      // _startFilePicker();
-                                      _pickFiles();
-                                    },
-                                    child: CircularPercentIndicator(
-                                      radius: radius - 10.0,
-                                      lineWidth: 10.0,
-                                      percent: 0.13,
-                                      // header: Text("Icon header"),
-                                      center: Text(
-                                        '100%',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          fontFamily: 'ArmataRegular',
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                      backgroundColor: Colors.white,
-                                      progressColor: Color(0xFF3326AE),
-                                      circularStrokeCap:
-                                          CircularStrokeCap.round,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 10, right: 5.0),
-                                child: Text(
-                                  'G',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    // fontFamily: 'Cheveuxdange',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
-                                    color:
-                                        darkMode ? Colors.white : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 10, right: 30.0),
-                                child: Text(
-                                  'Suite',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    // fontFamily: 'Cheveuxdange',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 20,
-                                    color:
-                                        darkMode ? Colors.white : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Text(
-                                  firebaseUsers.toString(),
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'Spartan',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: radius,
-                                height: radius,
-                                margin: EdgeInsets.all(0),
-                                padding: EdgeInsets.all(0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.grey[200],
-                                        offset: Offset(2.0, 2.0),
-                                        blurRadius: 7.0,
-                                        spreadRadius: 1.0),
-                                    BoxShadow(
-                                        color: Colors.grey[50],
-                                        offset: Offset(-2.0, -2.0),
-                                        blurRadius: 7.0,
-                                        spreadRadius: 1.0),
-                                  ],
-                                ),
-                                child: CircularPercentIndicator(
-                                  radius: radius - 10.0,
-                                  lineWidth: 10.0,
-                                  percent: 0.13,
-                                  // header: Text("Icon header"),
-                                  center: Text(
-                                    '100%',
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                      fontFamily: 'ArmataRegular',
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 15,
-                                      color: darkMode
-                                          ? Colors.white
-                                          : Colors.grey[600],
-                                    ),
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  progressColor: Color(0xFF3326AE),
-                                  circularStrokeCap: CircularStrokeCap.round,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Text(
-                                  'Firebase',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    // fontFamily: 'Cheveuxdange',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 20,
-                                    color:
-                                        darkMode ? Colors.white : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      /* Container(
-                        width: radius,
-                        height: radius,
-                        margin: EdgeInsets.all(0),
-                        padding: EdgeInsets.all(0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(50),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey[200],
-                                offset: Offset(2.0, 2.0),
-                                blurRadius: 7.0,
-                                spreadRadius: 1.0),
-                            BoxShadow(
-                                color: Colors.grey[50],
-                                offset: Offset(-2.0, -2.0),
-                                blurRadius: 7.0,
-                                spreadRadius: 1.0),
-                          ],
-                        ),
-                        child: CircularPercentIndicator(
-                          radius: radius - 10.0,
-                          lineWidth: 10.0,
-                          percent: 0.13,
-                          // header: Text("Icon header"),
-                          center: Container(
-                            width: radius - 28,
-                            height: radius - 28,
-                            padding: EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(50),
-                              /* boxShadow: [
-                                                      BoxShadow(
-                                                          color: Colors.grey[400],
-                                                          offset: Offset(2.0, 2.0),
-                                                          blurRadius: 7.0,
-                                                          spreadRadius: 1.0),
-                                                      BoxShadow(
-                                                          color: Colors.white,
-                                                          offset: Offset(-2.0, -2.0),
-                                                          blurRadius: 7.0,
-                                                          spreadRadius: 1.0),
-                                                    ], */
-                            ),
-                            child: Icon(
-                              Icons.group_add,
-                              size: 40.0,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          backgroundColor: Colors.white,
-                          progressColor: Color(0xFF3326AE),
-                          circularStrokeCap: CircularStrokeCap.round,
-                        ),
-                      ), */
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ), */
-        Positioned(
-          top: 10,
-          left: 500,
-          child: Card(
-            color: Colors.white38,
-            child: Container(
-              // height: 100,
-              width: 350,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      // Container(),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.more_vert),
-                      ),
-                      Text(
-                        'Day 1',
-                        // style: TextStyle(
-                        //   color: Colors.white,
-                        // ),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.more_vert),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding:
-                            EdgeInsets.only(right: 20, left: 20, bottom: 20),
-                        child: AnimatedCircularChart(
-                          key: _chartKey,
-                          size: const Size(30.0, 30.0),
-                          initialChartData: dataC,
-                          chartType: CircularChartType.Radial,
-                          // edgeStyle: SegmentEdgeStyle.round,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 100, left: 80),
-          child: Container(
-            width: size.width * 0.85,
-            height: size.height * 0.825,
-            child: Tabla(),
-            /* child: JsonTable(
-              _json,
-              // showColumnToggle: true,
-              allowRowHighlight: true,
-              rowHighlightColor: Colors.yellow[500].withOpacity(0.7),
-              paginationRowCount: 10,
-              onRowSelect: (index, map) {
-                print(index);
-                print(map);
-              },
-            ), */
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10.0, right: 10),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              onPressed: () async {
-                clearHive();
-              },
-              child: Icon(Icons.remove_circle),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 80.0, right: 10),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              onPressed: () async {
-                _initStorage();
-              },
-              child: Icon(Icons.star_border),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 160.0, right: 10),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              onPressed: () async {
-                getFirebaseUsers().then((a) => {
-                      // print(['Firebase Users', storage.get('firebaseUsers')]),
-                      setState(() {
-                        firebaseUsers = a;
-                      })
-                    });
-              },
-              child: Icon(Icons.add),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 240.0, right: 10),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              onPressed: () async {
-                getGsuiteUsers(null).then((b) => {
-                      readG(),
-                      setState(() {
-                        gSuiteUsers = gSuiteUsers;
-                      })
-                    });
-              },
-              child: Icon(Icons.wrap_text),
-            ),
-          ),
-        ),
-      ],
-    ); */
     return Stack(
       children: [
         Padding(
@@ -800,40 +267,47 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       padding: const EdgeInsets.only(left: 0, right: 0.0),
                       child: Column(
                         children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 60.0, bottom: 8.0),
-                                child: Text(
-                                  'Simat',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'ArmataRegular',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.deepOrange[400], //.grey[600],
+                          GestureDetector(
+                            onTap: () {
+                              print('onTap');
+                              _driveFiles();
+                            },
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 60.0, bottom: 8.0),
+                                  child: Text(
+                                    'Simat',
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                      fontFamily: 'ArmataRegular',
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15,
+                                      color: darkMode
+                                          ? Colors.white
+                                          : Colors
+                                              .deepOrange[400], //.grey[600],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 30.0),
-                                child: Text(
-                                  '4636',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'Spartan',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 30,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 30.0),
+                                  child: Text(
+                                    '4636',
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                      fontFamily: 'Spartan',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 30,
+                                      color: darkMode
+                                          ? Colors.white
+                                          : Colors.grey[600],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -968,7 +442,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                     ),
                   ),
                 ),
-                Card(
+                /* Card(
                   child: Padding(
                     padding: const EdgeInsets.all(40.0),
                     child: DataTable(
@@ -1011,8 +485,9 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                           .toList(), */
                     ),
                   ),
-                ),
-                Card(
+                ), */
+                Container(),
+                /* Card(
                   child: Padding(
                     padding: const EdgeInsets.all(40.0),
                     child: DataTable(
@@ -1049,7 +524,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       ),
                     ),
                   ),
-                ),
+                ), */
+                Container(),
               ],
             ),
           ),
@@ -1070,6 +546,7 @@ class DTS extends DataTableSource {
     assert(index >= 0);
     if (index >= _users.length) return null;
     final Filas user = _users[index];
+    user.index = index;
     return DataRow.byIndex(
       selected: user.selected,
       onSelectChanged: (bool value) {
@@ -1088,6 +565,32 @@ class DTS extends DataTableSource {
         DataCell(Text(users[index].income)),
         DataCell(Text(users[index].country)),
         DataCell(Text(users[index].area)),
+        DataCell(
+          AnimatedCircularChart(
+            key: GlobalKey<AnimatedCircularChartState>(),
+            size: const Size(20.0, 20.0),
+            initialChartData: <CircularStackEntry>[
+              CircularStackEntry(
+                <CircularSegmentEntry>[
+                  CircularSegmentEntry(20.0, Colors.yellow[400],
+                      rankKey: 'FIREBASE$user.index'),
+                  CircularSegmentEntry(10.0, Colors.white,
+                      rankKey: 'Q$user.index'),
+                  CircularSegmentEntry(20.0, Colors.blue[400],
+                      rankKey: 'GSUITE$user.index'),
+                  CircularSegmentEntry(10.0, Colors.white,
+                      rankKey: 'Q$user.index'),
+                  CircularSegmentEntry(20.0, Colors.deepOrange[400],
+                      rankKey: 'SIMAT$user.index'),
+                  CircularSegmentEntry(10.0, Colors.white,
+                      rankKey: 'Q$user.index'),
+                ],
+                rankKey: 'Quarterly Profits$user.index',
+              ),
+            ],
+            chartType: CircularChartType.Radial,
+          ),
+        ),
       ],
     );
   }
@@ -1102,979 +605,6 @@ class DTS extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-/* class Sedes extends StatelessWidget {
-  const Sedes({Key key}) : super(key: key);
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => {getFirebaseUsers()});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // var size = MediaQuery.of(context).size;
-    double radius = 100.0;
-    return Stack(
-      children: [
-        Positioned(
-          top: 10,
-          left: 80,
-          /* child: Card(
-            elevation: 2,
-            // margin: EdgeInsets.only(top: 30, left: 80),
-            child: Container(
-              width: 405,
-              padding: EdgeInsets.all(10),
-              /* decoration: BoxDecoration(
-                color: darkMode ? Colors.grey[850] : Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                      color: darkMode ? Colors.black54 : Colors.grey[300],
-                      offset: Offset(2.0, 2.0),
-                      blurRadius: 7.0,
-                      spreadRadius: 1.0),
-                  BoxShadow(
-                      color: darkMode ? Colors.grey[800] : Colors.white,
-                      offset: Offset(-2.0, -2.0),
-                      blurRadius: 7.0,
-                      spreadRadius: 1.0),
-                ],
-              ), */
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                // mainAxisAlignment: MainAxisAlignment.start,
-                // crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Matriculas hasta el ',
-                        // textAlign: TextAlign.start,
-                        style: TextStyle(
-                          // fontFamily: 'ArmataRegular',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18,
-                          color: darkMode ? Colors.white : Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        '5 ago 2020',
-                        // textAlign: TextAlign.end,
-                        style: TextStyle(
-                          fontFamily: 'Spartan',
-                          fontWeight: FontWeight.w600,
-                          color: darkMode ? Colors.white : Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15, left: 5, right: 5, bottom: 5),
-                        child: Row(
-                          children: [
-                            Column(
-                              children: [
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 27.0, bottom: 8.0),
-                                      child: Text(
-                                        'Total',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          fontFamily: 'ArmataRegular',
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 30.0),
-                                      child: Text(
-                                        '4636',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          fontFamily: 'Spartan',
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 30,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    /* Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(right: 5.0),
-                                                    child: Text(
-                                                      'G',
-                                                      textAlign: TextAlign.start,
-                                                      style: TextStyle(
-                                                        // fontFamily: 'Cheveuxdange',
-                                                        fontWeight: FontWeight.w700,
-                                                        fontSize: 20,
-                                                        color: darkMode
-                                                            ? Colors.white
-                                                            : Colors.grey,
-                                                      ),
-                                                    ),
-                                                  ), */
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 30.0),
-                                      child: Text(
-                                        'SIMAT',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          // fontFamily: 'Cheveuxdange',
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 20,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 27.0, bottom: 8.0),
-                                      child: Text(
-                                        '4636',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          fontFamily: 'Spartan',
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 15,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 30.0),
-                                      child: Container(
-                                        width: radius,
-                                        height: radius,
-                                        margin: EdgeInsets.all(0),
-                                        padding: EdgeInsets.all(0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.grey[200],
-                                                offset: Offset(2.0, 2.0),
-                                                blurRadius: 7.0,
-                                                spreadRadius: 1.0),
-                                            BoxShadow(
-                                                color: Colors.grey[50],
-                                                offset: Offset(-2.0, -2.0),
-                                                blurRadius: 7.0,
-                                                spreadRadius: 1.0),
-                                          ],
-                                        ),
-                                        child: CircularPercentIndicator(
-                                          radius: radius - 10.0,
-                                          lineWidth: 10.0,
-                                          percent: 0.13,
-                                          // header: Text("Icon header"),
-                                          center: Text(
-                                            '100%',
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                              fontFamily: 'ArmataRegular',
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 15,
-                                              color: darkMode
-                                                  ? Colors.white
-                                                  : Colors.grey[600],
-                                            ),
-                                          ),
-                                          /* Container(
-                                                          width: radius - 28,
-                                                          height: radius - 28,
-                                                          padding: EdgeInsets.all(7),
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.grey[50],
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                    50),
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.group_add,
-                                                            size: 40.0,
-                                                            color: Colors.grey,
-                                                          ),
-                                                        ), */
-                                          backgroundColor: Colors.white,
-                                          progressColor: Color(0xFF3326AE),
-                                          circularStrokeCap:
-                                              CircularStrokeCap.round,
-                                        ),
-                                      ),
-                                      /* Text(
-                                                      '4636',
-                                                      textAlign: TextAlign.start,
-                                                      style: TextStyle(
-                                                        fontFamily: 'Spartan',
-                                                        fontWeight: FontWeight.w500,
-                                                        fontSize: 30,
-                                                        color: darkMode
-                                                            ? Colors.white
-                                                            : Colors.grey[600],
-                                                      ),
-                                                    ), */
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 10, right: 5.0),
-                                      child: Text(
-                                        'G',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          // fontFamily: 'Cheveuxdange',
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 20,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 10, right: 30.0),
-                                      child: Text(
-                                        'Suite',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          // fontFamily: 'Cheveuxdange',
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 20,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 27.0, bottom: 8.0),
-                                      child: Text(
-                                        '4636',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          fontFamily: 'Spartan',
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 15,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 30.0),
-                                      child: Container(
-                                        width: radius,
-                                        height: radius,
-                                        margin: EdgeInsets.all(0),
-                                        padding: EdgeInsets.all(0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.grey[200],
-                                                offset: Offset(2.0, 2.0),
-                                                blurRadius: 7.0,
-                                                spreadRadius: 1.0),
-                                            BoxShadow(
-                                                color: Colors.grey[50],
-                                                offset: Offset(-2.0, -2.0),
-                                                blurRadius: 7.0,
-                                                spreadRadius: 1.0),
-                                          ],
-                                        ),
-                                        child: CircularPercentIndicator(
-                                          radius: radius - 10.0,
-                                          lineWidth: 10.0,
-                                          percent: 0.13,
-                                          // header: Text("Icon header"),
-                                          center: Text(
-                                            '100%',
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                              fontFamily: 'ArmataRegular',
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 15,
-                                              color: darkMode
-                                                  ? Colors.white
-                                                  : Colors.grey[600],
-                                            ),
-                                          ),
-                                          /* Container(
-                                                          width: radius - 28,
-                                                          height: radius - 28,
-                                                          padding: EdgeInsets.all(7),
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.grey[50],
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                    50),
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.group_add,
-                                                            size: 40.0,
-                                                            color: Colors.grey,
-                                                          ),
-                                                        ), */
-                                          backgroundColor: Colors.white,
-                                          progressColor: Color(0xFF3326AE),
-                                          circularStrokeCap:
-                                              CircularStrokeCap.round,
-                                        ),
-                                      ),
-                                      /* Text(
-                                                      '4636',
-                                                      textAlign: TextAlign.start,
-                                                      style: TextStyle(
-                                                        fontFamily: 'Spartan',
-                                                        fontWeight: FontWeight.w500,
-                                                        fontSize: 30,
-                                                        color: darkMode
-                                                            ? Colors.white
-                                                            : Colors.grey[600],
-                                                      ),
-                                                    ), */
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    /* Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(right: 5.0),
-                                                    child: Container(
-                                                      // margin: const EdgeInsets.only(
-                                                      //     top: 10.0),
-                                                      width: 35,
-                                                      height: 35,
-                                                      decoration: BoxDecoration(
-                                                          image: DecorationImage(
-                                                              image: AssetImage(
-                                                                  'images/firebase-logo.png'))),
-                                                    ),
-                                                  ), */
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 10, right: 30.0),
-                                      child: Text(
-                                        'Firebase',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          // fontFamily: 'Cheveuxdange',
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 20,
-                                          color: darkMode
-                                              ? Colors.white
-                                              : Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            /* Container(
-                                            width: radius,
-                                            height: radius,
-                                            margin: EdgeInsets.all(0),
-                                            padding: EdgeInsets.all(0),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(50),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Colors.grey[200],
-                                                    offset: Offset(2.0, 2.0),
-                                                    blurRadius: 7.0,
-                                                    spreadRadius: 1.0),
-                                                BoxShadow(
-                                                    color: Colors.grey[50],
-                                                    offset: Offset(-2.0, -2.0),
-                                                    blurRadius: 7.0,
-                                                    spreadRadius: 1.0),
-                                              ],
-                                            ),
-                                            child: CircularPercentIndicator(
-                                              radius: radius - 10.0,
-                                              lineWidth: 10.0,
-                                              percent: 0.13,
-                                              // header: Text("Icon header"),
-                                              center: Container(
-                                                width: radius - 28,
-                                                height: radius - 28,
-                                                padding: EdgeInsets.all(7),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey[50],
-                                                  borderRadius:
-                                                      BorderRadius.circular(50),
-                                                  /* boxShadow: [
-                                                    BoxShadow(
-                                                        color: Colors.grey[400],
-                                                        offset: Offset(2.0, 2.0),
-                                                        blurRadius: 7.0,
-                                                        spreadRadius: 1.0),
-                                                    BoxShadow(
-                                                        color: Colors.white,
-                                                        offset: Offset(-2.0, -2.0),
-                                                        blurRadius: 7.0,
-                                                        spreadRadius: 1.0),
-                                                  ], */
-                                                ),
-                                                child: Icon(
-                                                  Icons.group_add,
-                                                  size: 40.0,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
-                                              backgroundColor: Colors.white,
-                                              progressColor: Color(0xFF3326AE),
-                                              circularStrokeCap:
-                                                  CircularStrokeCap.round,
-                                            ),
-                                          ), */
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ), */
-          child: Container(
-            width: 380,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: darkMode ? Colors.grey[850] : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                    color: darkMode ? Colors.black54 : Colors.grey[300],
-                    offset: Offset(2.0, 2.0),
-                    blurRadius: 3.0,
-                    spreadRadius: 1.0),
-                BoxShadow(
-                    color: darkMode ? Colors.grey[800] : Colors.white,
-                    offset: Offset(-2.0, -2.0),
-                    blurRadius: 3.0,
-                    spreadRadius: 1.0),
-              ],
-            ),
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              // mainAxisAlignment: MainAxisAlignment.start,
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      'Matriculados',
-                      // textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontFamily: 'Spartan',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 18,
-                        color: darkMode ? Colors.white : Color(0xFF3326AE),
-                      ),
-                    ),
-                    Text(
-                      '5 ago 2020',
-                      // textAlign: TextAlign.end,
-                      style: TextStyle(
-                        fontFamily: 'Spartan',
-                        fontWeight: FontWeight.w700,
-                        color: darkMode ? Colors.white : Color(0xFF3326AE),
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: Row(
-                    children: [
-                      Column(
-                        children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 27.0, bottom: 8.0),
-                                child: Text(
-                                  'Total',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'ArmataRegular',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 30.0),
-                                child: Text(
-                                  '4636',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'Spartan',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 30,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              /* Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(right: 5.0),
-                                                      child: Text(
-                                                        'G',
-                                                        textAlign: TextAlign.start,
-                                                        style: TextStyle(
-                                                          // fontFamily: 'Cheveuxdange',
-                                                          fontWeight: FontWeight.w700,
-                                                          fontSize: 20,
-                                                          color: darkMode
-                                                              ? Colors.white
-                                                              : Colors.grey,
-                                                        ),
-                                                      ),
-                                                    ), */
-                              Padding(
-                                padding: const EdgeInsets.only(right: 30.0),
-                                child: Text(
-                                  'SIMAT',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    // fontFamily: 'Cheveuxdange',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 20,
-                                    color:
-                                        darkMode ? Colors.white : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 27.0, bottom: 8.0),
-                                child: Text(
-                                  '4636',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'Spartan',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 30.0),
-                                child: Container(
-                                  width: radius,
-                                  height: radius,
-                                  margin: EdgeInsets.all(0),
-                                  padding: EdgeInsets.all(0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(50),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.grey[200],
-                                          offset: Offset(2.0, 2.0),
-                                          blurRadius: 7.0,
-                                          spreadRadius: 1.0),
-                                      BoxShadow(
-                                          color: Colors.grey[50],
-                                          offset: Offset(-2.0, -2.0),
-                                          blurRadius: 7.0,
-                                          spreadRadius: 1.0),
-                                    ],
-                                  ),
-                                  child: CircularPercentIndicator(
-                                    radius: radius - 10.0,
-                                    lineWidth: 10.0,
-                                    percent: 0.13,
-                                    // header: Text("Icon header"),
-                                    center: Text(
-                                      '100%',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontFamily: 'ArmataRegular',
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                        color: darkMode
-                                            ? Colors.white
-                                            : Colors.grey[600],
-                                      ),
-                                    ),
-                                    /* Container(
-                                                            width: radius - 28,
-                                                            height: radius - 28,
-                                                            padding: EdgeInsets.all(7),
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.grey[50],
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                      50),
-                                                            ),
-                                                            child: Icon(
-                                                              Icons.group_add,
-                                                              size: 40.0,
-                                                              color: Colors.grey,
-                                                            ),
-                                                          ), */
-                                    backgroundColor: Colors.white,
-                                    progressColor: Color(0xFF3326AE),
-                                    circularStrokeCap: CircularStrokeCap.round,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 10, right: 5.0),
-                                child: Text(
-                                  'G',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    // fontFamily: 'Cheveuxdange',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
-                                    color:
-                                        darkMode ? Colors.white : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 10, right: 30.0),
-                                child: Text(
-                                  'Suite',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    // fontFamily: 'Cheveuxdange',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 20,
-                                    color:
-                                        darkMode ? Colors.white : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Text(
-                                  firebaseUsers.toString(),
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontFamily: 'Spartan',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15,
-                                    color: darkMode
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: radius,
-                                height: radius,
-                                margin: EdgeInsets.all(0),
-                                padding: EdgeInsets.all(0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.grey[200],
-                                        offset: Offset(2.0, 2.0),
-                                        blurRadius: 7.0,
-                                        spreadRadius: 1.0),
-                                    BoxShadow(
-                                        color: Colors.grey[50],
-                                        offset: Offset(-2.0, -2.0),
-                                        blurRadius: 7.0,
-                                        spreadRadius: 1.0),
-                                  ],
-                                ),
-                                child: CircularPercentIndicator(
-                                  radius: radius - 10.0,
-                                  lineWidth: 10.0,
-                                  percent: 0.13,
-                                  // header: Text("Icon header"),
-                                  center: Text(
-                                    '100%',
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                      fontFamily: 'ArmataRegular',
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 15,
-                                      color: darkMode
-                                          ? Colors.white
-                                          : Colors.grey[600],
-                                    ),
-                                  ),
-                                  /* Container(
-                                                            width: radius - 28,
-                                                            height: radius - 28,
-                                                            padding: EdgeInsets.all(7),
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.grey[50],
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                      50),
-                                                            ),
-                                                            child: Icon(
-                                                              Icons.group_add,
-                                                              size: 40.0,
-                                                              color: Colors.grey,
-                                                            ),
-                                                          ), */
-                                  backgroundColor: Colors.white,
-                                  progressColor: Color(0xFF3326AE),
-                                  circularStrokeCap: CircularStrokeCap.round,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              /* Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(right: 5.0),
-                                                      child: Container(
-                                                        // margin: const EdgeInsets.only(
-                                                        //     top: 10.0),
-                                                        width: 35,
-                                                        height: 35,
-                                                        decoration: BoxDecoration(
-                                                            image: DecorationImage(
-                                                                image: AssetImage(
-                                                                    'images/firebase-logo.png'))),
-                                                      ),
-                                                    ), */
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Text(
-                                  'Firebase',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    // fontFamily: 'Cheveuxdange',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 20,
-                                    color:
-                                        darkMode ? Colors.white : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      /* Container(
-                        width: radius,
-                        height: radius,
-                        margin: EdgeInsets.all(0),
-                        padding: EdgeInsets.all(0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(50),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey[200],
-                                offset: Offset(2.0, 2.0),
-                                blurRadius: 7.0,
-                                spreadRadius: 1.0),
-                            BoxShadow(
-                                color: Colors.grey[50],
-                                offset: Offset(-2.0, -2.0),
-                                blurRadius: 7.0,
-                                spreadRadius: 1.0),
-                          ],
-                        ),
-                        child: CircularPercentIndicator(
-                          radius: radius - 10.0,
-                          lineWidth: 10.0,
-                          percent: 0.13,
-                          // header: Text("Icon header"),
-                          center: Container(
-                            width: radius - 28,
-                            height: radius - 28,
-                            padding: EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(50),
-                              /* boxShadow: [
-                                                      BoxShadow(
-                                                          color: Colors.grey[400],
-                                                          offset: Offset(2.0, 2.0),
-                                                          blurRadius: 7.0,
-                                                          spreadRadius: 1.0),
-                                                      BoxShadow(
-                                                          color: Colors.white,
-                                                          offset: Offset(-2.0, -2.0),
-                                                          blurRadius: 7.0,
-                                                          spreadRadius: 1.0),
-                                                    ], */
-                            ),
-                            child: Icon(
-                              Icons.group_add,
-                              size: 40.0,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          backgroundColor: Colors.white,
-                          progressColor: Color(0xFF3326AE),
-                          circularStrokeCap: CircularStrokeCap.round,
-                        ),
-                      ), */
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          top: 10,
-          left: 500,
-          child: Card(
-            color: Colors.blueAccent,
-            child: Container(
-              // height: 100,
-              width: 350,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      // Container(),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.more_vert),
-                      ),
-                      Text(
-                        'Day 1',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.more_vert),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding:
-                            EdgeInsets.only(right: 20, left: 20, bottom: 20),
-                        child: Text('data'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              onPressed: () async {
-                getFirebaseUsers();
-              },
-              child: Icon(Icons.add),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-} */
 String getPrettyJSONString(jsonObject) {
   JsonEncoder encoder = JsonEncoder.withIndent('  ');
   String jsonString = encoder.convert(json.decode(jsonObject));
@@ -2170,7 +700,7 @@ readG() async {
 }
 
 Uint8List uploadedImage;
-_pickFiles() async {
+/* _pickFiles() async {
   InputElement uploadInput = FileUploadInputElement();
   uploadInput.click();
 
@@ -2242,6 +772,62 @@ _pickFiles() async {
         });
         reader.readAsText(file);
         // reader.readAsArrayBuffer(file);
+        // reader.readAsDataUrl(file);
+      }
+    } catch (e) {
+      print(['Error picker', e]);
+    }
+  });
+} */
+
+_driveFiles() async {
+  /* try {
+    io.File files = await FilePicker.getFile(); //FilePicker.getMultiFile() ?? [];
+    await drive.upload(files);
+  } catch (e) {
+    print(['Error reader', e]);
+  } */
+
+  InputElement uploadInput = FileUploadInputElement();
+  uploadInput.click();
+
+  uploadInput.onChange.listen((e) {
+    // read file content as dataURL
+    try {
+      final files = uploadInput.files;
+      if (files.length == 1) {
+        final file = files[0];
+        FileReader reader = FileReader();
+        reader.onLoadEnd.listen((e) async {
+          try {
+            // print(reader.result);
+            Uint8List data = Uint8List.fromList(reader.result);
+            File _file = File(data, 'StanleySIMAT.txt');
+            // print([_file.size, _file.relativePath, data]);
+            // io.File _file2 = io.File.fromRawPath(reader.result);
+            /* io.File('StanleySIMAT.txt')
+                .writeAsString('reader.result.toString()')
+                .then((io.File _newFile) async {
+              // Do something with the file.
+              try {
+                print(_newFile);
+                await drive.upload(_newFile);
+              } catch (e) {
+                print(['Error create Files', e]);
+              }
+            }); */
+            await drive.upload(_file.size, ' ', reader.result);
+          } catch (e) {
+            print(['Error reader', e]);
+          }
+        });
+
+        reader.onError.listen((fileEvent) {
+          const option1Text = "Some Error occured while reading the file";
+          print(option1Text);
+        });
+        // reader.readAsText(file);
+        reader.readAsArrayBuffer(file);
         // reader.readAsDataUrl(file);
       }
     } catch (e) {
