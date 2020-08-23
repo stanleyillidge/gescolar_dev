@@ -1,9 +1,12 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:html';
 import 'dart:io' as io;
 import 'dart:typed_data';
 import 'package:file_picker_web/file_picker_web.dart';
 import 'package:flutter/material.dart';
+// import 'package:gescolar_dev/models/user.dart';
 import 'package:gescolar_dev/widgets/Google/Drive/drive.dart';
 // import 'package:gescolar_dev/pages/tabla.dart';
 import 'package:gescolar_dev/widgets/circular_chart/flutter_circular_chart.dart';
@@ -34,17 +37,21 @@ List<CircularStackEntry> dataC = <CircularStackEntry>[
     rankKey: 'Quarterly Profits',
   ),
 ];
+String u0 =
+    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"09","GRUPO":"0903","fechaini":"2020-02-17 07:11:19.0","nui":"YENARI556243828","estrato":"ESTRATO 1","DOC":"1118815346","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ARIAS","apellido2":"ROSADO","NOMBRE1":"GENESYS","nombre2":"YIRETH","genero":"FEMENINO","fechaNacimiento":"02/11/2005","epsEstudiante":"CAPRECOM EPS","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":99,"nombre":"GENESYS ARIAS"}';
+String u1 =
+    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"08","GRUPO":"0801","fechaini":"2020-01-15 15:05:06.0","nui":"SULBAR1494684186","estrato":"ESTRATO 2","DOC":"1029860566","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"BARROS","apellido2":"RODRIGUEZ","NOMBRE1":"ZULAY","nombre2":"MILENA","genero":"FEMENINO","fechaNacimiento":"08/04/2006","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":204,"nombre":"ZULAY BARROS"}';
+String u2 =
+    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"07","GRUPO":"0701","fechaini":"2020-01-15 09:34:16.0","nui":"ALAAKO1991855844","estrato":"ESTRATO 1","DOC":"1119394138","tipodoc":"RC:REGISTRO CIVIL DE NACIMIENTO","APELLIDO1":"ACOSTA","apellido2":"MENDOZA","NOMBRE1":"ALAN","nombre2":"DE JESUS","genero":"MASCULINO","fechaNacimiento":"19/01/2008","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":9,"nombre":"ALAN ACOSTA"}';
+String u3 =
+    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"NOCTURNA","gradoCod":"23","GRUPO":"2301","fechaini":"2020-03-16 07:18:29.0","nui":"LUSAMA1048870154","estrato":"ESTRATO 1","DOC":"1118800267","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"AMAYA","apellido2":"POLO","NOMBRE1":"LUZ","nombre2":"BEIDIS","genero":"FEMENINO","fechaNacimiento":"18/11/2003","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":58,"nombre":"LUZ AMAYA"}';
 
+String u4 =
+    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"08","GRUPO":"0802","fechaini":"2020-02-17 14:35:38.0","nui":"KLAASE1322271237","estrato":"ESTRATO 1","DOC":"1047337183","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ACENDRA","apellido2":"PEDROZO","NOMBRE1":"CLAUDIA","nombre2":"ANDREA","genero":"FEMENINO","fechaNacimiento":"25/05/2006","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"COLOMBIA","correo":"","selected":false,"index":1,"nombre":"CLAUDIA ACENDRA"}';
+String u =
+    '[{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"08","GRUPO":"0802","fechaini":"2020-02-17 14:35:38.0","nui":"KLAASE1322271237","estrato":"ESTRATO 1","DOC":"1047337183","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ACENDRA","apellido2":"PEDROZO","NOMBRE1":"CLAUDIA","nombre2":"ANDREA","genero":"FEMENINO","fechaNacimiento":"25/05/2006","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"COLOMBIA","correo":"","selected":false,"index":1,"nombre":"CLAUDIA ACENDRA"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"10","GRUPO":"1004","fechaini":"2020-01-16 10:04:32.0","nui":"KARAKO1578261071","estrato":"ESTRATO 1","DOC":"1118807924","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ACOSTA","apellido2":"MENDOZA","NOMBRE1":"CARLOS","nombre2":"ALBERTO","genero":"MASCULINO","fechaNacimiento":"15/01/2005","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":10,"nombre":"CARLOS ACOSTA"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"11","GRUPO":"1101","fechaini":"2020-01-16 10:35:09.0","nui":"LINARI905814677","estrato":"ESTRATO 1","DOC":"1118800460","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ARIZA","apellido2":"BARROS","NOMBRE1":"LINA","nombre2":"MARCELA","genero":"FEMENINO","fechaNacimiento":"06/06/2003","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":100,"nombre":"LINA ARIZA"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"10","GRUPO":"1002","fechaini":"2020-01-15 13:20:38.0","nui":"DINBAR749331842","estrato":"ESTRATO 1","DOC":"1029860652","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"BARROS","apellido2":"MOSCOTE","NOMBRE1":"DEINNYS","nombre2":"SANDRITH","genero":"FEMENINO","fechaNacimiento":"15/06/2006","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":200,"nombre":"DEINNYS BARROS"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"11","GRUPO":"1101","fechaini":"2020-01-15 13:37:14.0","nui":"ANDBRI2035542230","estrato":"ESTRATO 2","DOC":"1118802808","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"BRITO","apellido2":"PEREZ","NOMBRE1":"ANDRES","nombre2":"JOSE","genero":"MASCULINO","fechaNacimiento":"19/07/2003","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":300,"nombre":"ANDRES BRITO"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"09","GRUPO":"0903","fechaini":"2020-01-16 09:07:08.0","nui":"LERKAS1263687305","estrato":"ESTRATO 1","DOC":"1118812779","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"CASTAÑEDA","apellido2":"VELASQUEZ","NOMBRE1":"LEREIDYS","nombre2":"LERIETH","genero":"FEMENINO","fechaNacimiento":"03/09/2005","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":400,"nombre":"LEREIDYS CASTAÑEDA"}]';
 final String jsonSample =
-    '[{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc"},{"name":"Shyam","email":"shyam23@gmail.com",'
-    '"age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India",'
-    '"area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},'
-    '{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com",'
-    '"age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,"income":"10Rs","country":"India",'
-    '"area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc","day":"Monday","month":"april"},'
-    '{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Ram","email":"ram@gmail.com","age":23,'
-    '"income":"10Rs","country":"India","area":"abc","day":"Monday","month":"april"},{"name":"Shyam","email":"shyam23@gmail.com","age":28,"income":"30Rs","country":"India","area":"abc",'
-    '"day":"Monday","month":"april"},{"name":"John","email":"john@gmail.com","age":33,"income":"15Rs","country":"India","area":"abc","day":"Monday","month":"april"}]';
+    '[' + u4 + ',' + u0 + ',' + u1 + ',' + u2 + ',' + u3 + ']';
 
 class Filas {
   String name;
@@ -64,8 +71,8 @@ class Filas {
       this.income,
       this.country,
       this.area,
-      this.selected,
       this.grafico,
+      this.selected,
       this.index});
 
   factory Filas.fromJson(Map<String, dynamic> json) {
@@ -82,13 +89,205 @@ class Filas {
   }
 }
 
-List<Filas> users = (json.decode(jsonSample) as List)
-    .map((data) => Filas.fromJson(data))
-    .toList();
+class Simat {
+  String ano;
+  String estado;
+  String sede;
+  String codigoDaneSede;
+  String zonaSede;
+  String jornada;
+  String gradoCod;
+  String grupo;
+  String fechaini;
+  String nui;
+  String estrato;
+  String doc;
+  String tipodoc;
+  String apellido1;
+  String apellido2;
+  String nombre1;
+  String nombre2;
+  String genero;
+  String fechaNacimiento;
+  String epsEstudiante;
+  String discapacidad;
+  String paisOrigen;
+  String correo;
+  // -----------
+  bool selected;
+  int index;
+  String nombre;
 
-int numItems = users.length;
-List<bool> selected = List<bool>.generate(numItems, (index) => false);
-List<bool> simatSelected = List<bool>.generate(numItems, (index) => false);
+  Simat(
+      {this.ano,
+      this.estado,
+      this.sede,
+      this.codigoDaneSede,
+      this.zonaSede,
+      this.jornada,
+      this.gradoCod,
+      this.grupo,
+      this.fechaini,
+      this.nui,
+      this.estrato,
+      this.doc,
+      this.tipodoc,
+      this.apellido1,
+      this.apellido2,
+      this.nombre1,
+      this.nombre2,
+      this.genero,
+      this.fechaNacimiento,
+      this.epsEstudiante,
+      this.discapacidad,
+      this.paisOrigen,
+      this.correo,
+      this.selected,
+      this.index,
+      this.nombre});
+
+  factory Simat.fromJson(Map<String, dynamic> json) {
+    var nombre = ((json['NOMBRE1'] != null) && (json['APELLIDO1'] != null))
+        ? json['NOMBRE1'] + ' ' + json['APELLIDO1']
+        : '';
+    return Simat(
+      ano: json['ANO'],
+      estado: json['ESTADO'],
+      sede: json['SEDE'],
+      codigoDaneSede: json['CODIGO_DANE_SEDE'],
+      zonaSede: json['ZONA_SEDE'],
+      jornada: json['JORNADA'],
+      gradoCod: json['GRADO_COD'],
+      grupo: json['GRUPO'],
+      fechaini: json['FECHAINI'],
+      nui: json['NUI'],
+      estrato: json['ESTRATO'],
+      doc: json['DOC'],
+      tipodoc: json['TIPODOC'],
+      apellido1: json['APELLIDO1'],
+      apellido2: json['APELLIDO2'],
+      nombre1: json['NOMBRE1'],
+      nombre2: json['NOMBRE2'],
+      genero: json['GENERO'],
+      fechaNacimiento: json['FECHA_NACIMIENTO'],
+      epsEstudiante: json['EPS_ESTUDIANTE'],
+      discapacidad: json['DISCAPACIDAD'],
+      paisOrigen: json['PAIS_ORIGEN'],
+      correo: json['CORREO'],
+      selected: false,
+      index: 0,
+      nombre: nombre,
+    );
+  }
+  factory Simat.fromList(List<String> list) {
+    var nombre = ((list[27] != null) && (list[25] != null))
+        ? list[27] + ' ' + list[25]
+        : '';
+    return Simat(
+        ano: list[0].substring(1),
+        estado: list[2],
+        sede: list[8],
+        codigoDaneSede: list[9],
+        zonaSede: list[11],
+        jornada: list[12],
+        gradoCod: list[13],
+        grupo: list[14],
+        fechaini: list[17],
+        nui: list[19],
+        estrato: list[20],
+        doc: list[23],
+        tipodoc: list[24],
+        apellido1: list[25],
+        apellido2: list[26],
+        nombre1: list[27],
+        nombre2: list[28],
+        genero: list[29],
+        fechaNacimiento: list[30],
+        epsEstudiante: list[32],
+        discapacidad: list[40],
+        paisOrigen: list[41],
+        correo: list[42].substring(list[42].length),
+        selected: false,
+        index: 0,
+        nombre: nombre);
+  }
+  Map toJson() => {
+        'ano': ano,
+        'estado': estado,
+        'sede': sede,
+        'codigoDaneSede': codigoDaneSede,
+        'zonaSede': zonaSede,
+        'jornada': jornada,
+        'gradoCod': gradoCod,
+        'grupo': grupo,
+        'fechaini': fechaini,
+        'nui': nui,
+        'estrato': estrato,
+        'doc': doc,
+        'tipodoc': tipodoc,
+        'apellido1': apellido1,
+        'apellido2': apellido2,
+        'nombre1': nombre1,
+        'nombre2': nombre2,
+        'genero': genero,
+        'fechaNacimiento': fechaNacimiento,
+        'epsEstudiante': epsEstudiante,
+        'discapacidad': discapacidad,
+        'paisOrigen': paisOrigen,
+        'correo': correo,
+        'selected': false,
+        'index': index,
+        'nombre': nombre
+      };
+}
+
+class EstadoF {
+  bool existe;
+  bool actualizado;
+  bool primerUso;
+  int index;
+  EstadoF(
+    this.existe,
+    this.actualizado,
+    this.primerUso,
+    this.index,
+  );
+}
+
+class Filtro {
+  String campo;
+  String valor;
+  List datos;
+  EstadoF estados;
+  Filtro(
+    this.campo,
+    this.valor,
+    this.datos,
+    this.estados,
+  );
+}
+
+Map<String, dynamic> ftemp = {
+  'valor': 'jornada',
+  'datos': List<Simat>(),
+  'exist': false
+};
+List<Filtro> filtros = [
+  Filtro('jornada', 'jornada', List<Simat>(), EstadoF(false, false, true, 0)),
+  Filtro('grupo', 'grupo', List<Simat>(), EstadoF(false, false, true, 0))
+];
+
+List<Simat> users;
+List<Simat> usersTemp;
+// List<Simat> users = (json.decode(jsonSample) as List)
+//     .map((data) => Simat.fromJson(data))
+//     .toList();
+
+var jornadas = ['jornada'];
+var grupos = ['grupo'];
+int numItems;
+List<bool> selected;
+List<bool> simatSelected;
 
 class Sedes extends StatefulWidget {
   Sedes({Key key}) : super(key: key);
@@ -101,7 +300,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
-    WidgetsBinding.instance.addPostFrameCallback((_) => {print(users[0])});
+    // WidgetsBinding.instance
+    //     .addPostFrameCallback((_) => {print(jsonEncode(users[0]))});
+    setState(() {
+      users = users;
+    });
   }
 
   bool _sortNameAsc = true;
@@ -113,7 +316,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     Tab(text: 'G Suite'),
     Tab(text: 'Firebase'),
   ];
-
+  var _jornada = 'jornada';
+  var _grupo = 'grupo';
   TabController _tabController;
   @override
   Widget build(BuildContext context) {
@@ -122,7 +326,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     int _rowPerPage = PagDataTable.defaultRowsPerPage;
     List<DataColumn> columnas = [
       DataColumn(
-        label: Text('name'),
+        label: Text('nombre'),
         onSort: (columnIndex, sortAscending) {
           setState(() {
             if (columnIndex == _sortColumnIndex) {
@@ -131,7 +335,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
               _sortColumnIndex = columnIndex;
               _sortAsc = _sortNameAsc;
             }
-            users.sort((a, b) => a.name.compareTo(b.name));
+            users.sort((a, b) => a.nombre.compareTo(b.nombre));
             if (!_sortAsc) {
               users = users.reversed.toList();
             }
@@ -139,7 +343,85 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         },
       ),
       DataColumn(
-        label: Text('email'),
+        // label: Text('jornada'),
+        label: DropdownButton(
+          hint: Text('Selecciona una jornada'), // Not necessary for Option 1
+          value: _jornada,
+          onChanged: (newValue) {
+            print(['newValue', newValue]);
+            var newUsers = usersTemp;
+            if (filtros[0].estados.existe) {
+              if (newValue == 'jornada') {
+                filtros[0].valor = newValue;
+                filtros[0].datos = usersTemp;
+                filtros[0].estados.existe = false;
+                filtros[0].estados.actualizado = false;
+                print('Se borro el filtro jornada');
+              } else {
+                filtros[0].valor = newValue;
+                filtros[0].estados.actualizado = true;
+                print([
+                  'Fue actualizado el filtro jornada',
+                  filtros[0].valor,
+                  filtros[0].datos.length
+                ]);
+              }
+            } else {
+              filtros[0].valor = newValue;
+              filtros[0].datos = users;
+              filtros[0].estados.existe = true;
+              filtros[0].estados.primerUso = (filtros[1].estados.primerUso ||
+                  filtros[0].estados.primerUso);
+              print([
+                'Se creo el filtro jornada',
+                filtros[0].valor,
+                filtros[0].datos.length
+              ]);
+            }
+            if (filtros.length > 0) {
+              print([
+                'Filtro iterado',
+                filtros[0].campo,
+                filtros[0].valor,
+                filtros[0].datos.length
+              ]);
+              newUsers = filtros[0].datos;
+              // case 'jornada':
+              var uniques = {};
+              grupos = [];
+              newUsers = newUsers
+                  .where((user) => (user.jornada == filtros[0].valor))
+                  .toList();
+              newUsers.forEach((user) {
+                if (uniques[user.grupo] == null) {
+                  uniques[user.grupo] = true;
+                  grupos.add(user.grupo);
+                }
+              });
+              grupos.add('grupo');
+              if (filtros[0].estados.primerUso) {
+                filtros[0].datos = newUsers;
+                filtros[0].estados.primerUso = false;
+                filtros[1].estados.primerUso = false;
+                print([
+                  'Datos del filtro jornada actualizados',
+                  filtros[0].datos.length
+                ]);
+              }
+            }
+            print([newValue, newUsers.length]);
+            setState(() {
+              users = newUsers;
+              _jornada = newValue;
+            });
+          },
+          items: jornadas.map((location) {
+            return DropdownMenuItem(
+              child: Text(location),
+              value: location,
+            );
+          }).toList(),
+        ),
         onSort: (columnIndex, sortAscending) {
           setState(() {
             if (columnIndex == _sortColumnIndex) {
@@ -148,7 +430,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
               _sortColumnIndex = columnIndex;
               _sortAsc = _sortNameAsc;
             }
-            users.sort((a, b) => a.email.compareTo(b.email));
+            users.sort((a, b) => a.jornada.compareTo(b.jornada));
             if (!_sortAsc) {
               users = users.reversed.toList();
             }
@@ -156,7 +438,87 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         },
       ),
       DataColumn(
-        label: Text('age'),
+        // label: Text('grupo'),
+        label: DropdownButton(
+          hint: Text('Selecciona un grupo'), // Not necessary for Option 1
+          value: _grupo,
+          onChanged: (newValue) {
+            var newUsers = usersTemp;
+            // configuración del filtro
+            if (filtros[1].estados.existe) {
+              if (newValue == 'grupo') {
+                filtros[1].valor = newValue;
+                filtros[1].datos = usersTemp;
+                filtros[1].estados.existe = false;
+                filtros[1].estados.actualizado = false;
+                print('Se borro el filtro grupo');
+              } else {
+                filtros[1].valor = newValue;
+                filtros[1].estados.actualizado = true;
+                print([
+                  'Fue actualizado el filtro grupo',
+                  filtros[1].valor,
+                  filtros[1].datos.length
+                ]);
+              }
+            } else {
+              filtros[1].valor = newValue;
+              filtros[1].datos = users;
+              filtros[1].estados.existe = true;
+              filtros[1].estados.primerUso = (filtros[1].estados.primerUso ||
+                  filtros[0].estados.primerUso);
+              print([
+                'Se creo el filtro grupo',
+                filtros[1].valor,
+                filtros[1].datos.length
+              ]);
+            }
+            // --- Filtrar lod datos y ajustar los demas filtros ----
+            if (filtros.length > 0) {
+              print([
+                'Filtro iterado',
+                filtros[1].campo,
+                filtros[1].valor,
+                filtros[1].datos.length
+              ]);
+              newUsers = filtros[1].datos;
+              var uniques = {};
+              // case 'grupo':
+              uniques = {};
+              jornadas = [];
+              newUsers = newUsers
+                  .where((user) => (user.grupo == filtros[1].valor))
+                  .toList();
+              newUsers.forEach((user) {
+                if (uniques[user.jornada] == null) {
+                  uniques[user.jornada] = true;
+                  jornadas.add(user.jornada);
+                }
+              });
+              jornadas.add('jornada');
+              if (filtros[1].estados.primerUso) {
+                filtros[1].datos = newUsers;
+                filtros[0].estados.primerUso = false;
+                filtros[1].estados.primerUso = false;
+                print([
+                  'Datos del filtro grupo actualizados',
+                  filtros[1].datos.length
+                ]);
+              }
+            }
+            print([newValue, newUsers.length]);
+            setState(() {
+              users = newUsers;
+              _grupo = newValue;
+            });
+          },
+          items: grupos.map((location) {
+            return DropdownMenuItem(
+              child: Text(location),
+              value: location,
+            );
+          }).toList(),
+        ),
         onSort: (columnIndex, sortAscending) {
           setState(() {
             if (columnIndex == _sortColumnIndex) {
@@ -165,7 +527,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
               _sortColumnIndex = columnIndex;
               _sortAsc = _sortNameAsc;
             }
-            users.sort((a, b) => a.age.compareTo(b.age));
+            users.sort((a, b) => a.grupo.compareTo(b.grupo));
             if (!_sortAsc) {
               users = users.reversed.toList();
             }
@@ -173,7 +535,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         },
       ),
       DataColumn(
-        label: Text('income'),
+        label: Text('doc'),
         onSort: (columnIndex, sortAscending) {
           setState(() {
             if (columnIndex == _sortColumnIndex) {
@@ -182,41 +544,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
               _sortColumnIndex = columnIndex;
               _sortAsc = _sortNameAsc;
             }
-            users.sort((a, b) => a.income.compareTo(b.income));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
-      DataColumn(
-        label: Text('country'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort((a, b) => a.country.compareTo(b.country));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
-      DataColumn(
-        label: Text('area'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort((a, b) => a.area.compareTo(b.area));
+            users.sort((a, b) => a.doc.compareTo(b.doc));
             if (!_sortAsc) {
               users = users.reversed.toList();
             }
@@ -268,9 +596,9 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               print('onTap');
-                              _driveFiles();
+                              _pickFiles();
                             },
                             child: Column(
                               children: [
@@ -423,7 +751,28 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             child: TabBarView(
               controller: _tabController,
               children: <Widget>[
-                Card(
+                (users != null)
+                    ? Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40.0),
+                          child: PagDataTable(
+                            header: Text('Mi tabla Gsuite'),
+                            columns: columnas,
+                            source: DTS(users),
+                            showCheckboxColumn: true,
+                            onRowsPerPageChanged: (r) {
+                              setState(() {
+                                _rowPerPage = r;
+                              });
+                            },
+                            rowsPerPage: _rowPerPage,
+                            sortColumnIndex: _sortColumnIndex,
+                            sortAscending: _sortAsc,
+                          ),
+                        ),
+                      )
+                    : Container(),
+                /* Card(
                   child: Padding(
                     padding: const EdgeInsets.all(40.0),
                     child: PagDataTable(
@@ -441,51 +790,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       sortAscending: _sortAsc,
                     ),
                   ),
-                ),
-                /* Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(40.0),
-                    child: DataTable(
-                      columnSpacing: 0.0,
-                      sortAscending: true,
-                      columns: columnas,
-                      rows: List<DataRow>.generate(
-                        users.length,
-                        (index) => DataRow(
-                          cells: [
-                            DataCell(Text(users[index].name)),
-                            DataCell(Text(users[index].email)),
-                            DataCell(Text(users[index].age.toString())),
-                            DataCell(Text(users[index].income)),
-                            DataCell(Text(users[index].country)),
-                            DataCell(Text(users[index].area)),
-                          ],
-                          selected: simatSelected[index],
-                          onSelectChanged: (bool value) {
-                            value ? print(index) : null;
-                            setState(() {
-                              simatSelected[index] = value;
-                            });
-                          },
-                        ),
-                      ),
-                      /* users
-                          .map(
-                            (data) => DataRow(
-                              cells: [
-                                DataCell(Text(data.name)),
-                                DataCell(Text(data.email)),
-                                DataCell(Text(data.age.toString())),
-                                DataCell(Text(data.income)),
-                                DataCell(Text(data.country)),
-                                DataCell(Text(data.area)),
-                              ],
-                            ),
-                          )
-                          .toList(), */
-                    ),
-                  ),
                 ), */
+                // Container(),
                 Container(),
                 /* Card(
                   child: Padding(
@@ -533,11 +839,82 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       ],
     );
   }
+
+  Future<void> _pickFiles() async {
+    final completer = Completer<List<String>>();
+    final InputElement input = FileUploadInputElement();
+    input.click();
+    // onChange doesn't work on mobile safari
+    input.addEventListener('change', (e) async {
+      final List<File> files = input.files;
+      Iterable<Future<String>> resultsFutures = files.map((file) {
+        final reader = FileReader();
+        reader.readAsText(file);
+        reader.onError.listen((error) => completer.completeError(error));
+        return reader.onLoad.first.then((_) => reader.result as String);
+      });
+      final results = await Future.wait(resultsFutures);
+      completer.complete(results);
+    });
+    // input.click(); can be here
+    final List<String> r = await completer.future;
+    var a = r.toString().split("\n");
+    users = [];
+    // var encabezados;
+    var conta = 0;
+    a.forEach((element) {
+      var uno = element.toString().split(";");
+      var uno1 = uno.toString().replaceAll(RegExp(', '), ',');
+      var dos = Simat.fromList(uno1.toString().split(","));
+      dos.index = conta;
+      if (conta != 0) {
+        users.add(dos);
+      }
+      // else{encabezados = uno1.toString().split(",");}
+      conta += 1; // Simat.fromList(dos)
+    });
+    a.clear();
+    setState(() {
+      print('set estate');
+      users = users;
+      usersTemp = users;
+      numItems = users.length;
+      selected = List<bool>.generate(numItems, (index) => false);
+      simatSelected = List<bool>.generate(numItems, (index) => false);
+    });
+    var uniques = {};
+    jornadas = [];
+    grupos = [];
+    users.forEach((user) {
+      if (uniques[user.jornada] == null) {
+        uniques[user.jornada] = true;
+        jornadas.add(user.jornada);
+      } else if (uniques[user.grupo] == null) {
+        uniques[user.grupo] = true;
+        grupos.add(user.grupo);
+      }
+    });
+    grupos.add('grupo');
+    jornadas.add('jornada');
+    // print(['uniques', jornadas]);
+    print(['Cantidad de usuarios en', users.length]);
+    // print(['Encabezados', encabezados]); //, jsonEncode(b[1])
+    /* print([
+      jsonEncode(users[1]),
+      jsonEncode(users[10]),
+      jsonEncode(users[100]),
+      jsonEncode(users[200]),
+      jsonEncode(users[300]),
+      jsonEncode(users[400])
+    ]); */
+    // setState(() {});
+    input.remove();
+  }
 }
 
 class DTS extends DataTableSource {
   int _selectedCount = 0;
-  final List<Filas> _users;
+  final List<Simat> _users;
   // final Function onRowSelected;
   DTS(this._users);
 
@@ -545,7 +922,7 @@ class DTS extends DataTableSource {
   DataRow getRow(int index) {
     assert(index >= 0);
     if (index >= _users.length) return null;
-    final Filas user = _users[index];
+    final Simat user = _users[index];
     user.index = index;
     return DataRow.byIndex(
       selected: user.selected,
@@ -559,12 +936,10 @@ class DTS extends DataTableSource {
       },
       index: index,
       cells: [
-        DataCell(Text(users[index].name)),
-        DataCell(Text(users[index].email)),
-        DataCell(Text(users[index].age.toString())),
-        DataCell(Text(users[index].income)),
-        DataCell(Text(users[index].country)),
-        DataCell(Text(users[index].area)),
+        DataCell(Text(users[index].nombre)),
+        DataCell(Text(users[index].jornada.toString())),
+        DataCell(Text(users[index].grupo.toString())),
+        DataCell(Text(users[index].doc.toString())),
         DataCell(
           AnimatedCircularChart(
             key: GlobalKey<AnimatedCircularChartState>(),
@@ -700,7 +1075,8 @@ readG() async {
 }
 
 Uint8List uploadedImage;
-/* _pickFiles() async {
+
+_pickFiles2() async {
   InputElement uploadInput = FileUploadInputElement();
   uploadInput.click();
 
@@ -711,28 +1087,6 @@ Uint8List uploadedImage;
       if (files.length == 1) {
         final file = files[0];
         FileReader reader = FileReader();
-        /* {
-            "name": "gescolar_dev",
-            "short_name": "gescolar_dev",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#0175C2",
-            "theme_color": "#0175C2",
-            "description": "A Flutter project.",
-            "orientation": "portrait-primary",
-            "prefer_related_applications": false,
-            "icons": [
-                {
-                    "src": "icons/Icon-192.png",
-                    "sizes": "192x192",
-                    "type": "image/png"
-                },
-                {
-                    "src": "icons/Icon-512.png",
-                    "sizes": "512x512",
-                    "type": "image/png"
-                }
-        }*/
         reader.onLoadEnd.listen((e) {
           try {
             // var _json = json.decode(reader.result);
@@ -741,19 +1095,26 @@ Uint8List uploadedImage;
             // _csv(file.relativePath);
             // io.File _file = io.File.fromRawPath(rawPath);
             // String parte = getApplicationDocumentsDirectory()
-            print([file.relativePath, file.name]);
             // print(reader.result);
             var a = reader.result.toString().split("\n");
+            // print(['Cantidad de usuarios', a.length]);
             var b = [];
             a.forEach((element) {
-              b.add(element.toString().split(";"));
+              // var _json = json.decode(element.toString().split(";"));
+              var uno = element.toString().split(";");
+              var dos = uno.toString().split(",");
+              b.add(dos); // Simat.fromList(dos)
             });
             var encabezados = b[0];
-            var usuarios = {};
-            /*for (var i = 1; i < b.length; i++) {
+            a = [];
+            print(['Cantidad de usuarios en', file.name, b.length]);
+            print(['Encabezados', encabezados]); //, jsonEncode(b[1])
+            // print(['Año', b[1][0]]);
+            /* var usuarios = {};
+            for (var i = 1; i < b.length; i++) {
               b[i]
             } */
-            print(b);
+            // print(b);
             // print(new_data);
             /* setState(() {
               uploadedImage = reader.result;
@@ -778,9 +1139,9 @@ Uint8List uploadedImage;
       print(['Error picker', e]);
     }
   });
-} */
+}
 
-_driveFiles() async {
+/* _driveFiles() async {
   /* try {
     io.File files = await FilePicker.getFile(); //FilePicker.getMultiFile() ?? [];
     await drive.upload(files);
@@ -834,7 +1195,7 @@ _driveFiles() async {
       print(['Error picker', e]);
     }
   });
-}
+} */
 
 clearHive() async {
   await storage.close();
