@@ -21,7 +21,7 @@ bool darkMode = false;
 var firebaseUsers = 0;
 var gSuiteUsers = 0;
 var simatUsers = 0;
-var storage = Hive.box('myBox');
+var storage; // = Hive.box('myBox');
 
 var _json;
 List<CircularStackEntry> dataC = <CircularStackEntry>[
@@ -113,7 +113,6 @@ class Simat {
   String discapacidad;
   String paisOrigen;
   String correo;
-  // -----------
   bool selected;
   int index;
   String nombre;
@@ -147,6 +146,39 @@ class Simat {
       this.nombre});
 
   factory Simat.fromJson(Map<String, dynamic> json) {
+    var nombre = ((json['nombre1'] != null) && (json['apellido1'] != null))
+        ? json['nombre1'] + ' ' + json['apellido1']
+        : '';
+    return Simat(
+      ano: json['ano'],
+      estado: json['estado'],
+      sede: json['sede'],
+      codigoDaneSede: json['codigoDaneSede'],
+      zonaSede: json['zonaSede'],
+      jornada: json['jornada'],
+      gradoCod: json['gradoCod'],
+      grupo: json['grupo'],
+      fechaini: json['fechaini'],
+      nui: json['nui'],
+      estrato: json['estrato'],
+      doc: json['doc'],
+      tipodoc: json['tipodoc'],
+      apellido1: json['apellido1'],
+      apellido2: json['apellido2'],
+      nombre1: json['nombre1'],
+      nombre2: json['nombre2'],
+      genero: json['genero'],
+      fechaNacimiento: json['fechaNacimiento'],
+      epsEstudiante: json['epsEstudiante'],
+      discapacidad: json['discapacidad'],
+      paisOrigen: json['paisOrigen'],
+      correo: json['correo'],
+      selected: false,
+      index: 0,
+      nombre: nombre,
+    );
+  }
+  factory Simat.fromLocal(Map<String, dynamic> json) {
     var nombre = ((json['NOMBRE1'] != null) && (json['APELLIDO1'] != null))
         ? json['NOMBRE1'] + ' ' + json['APELLIDO1']
         : '';
@@ -279,6 +311,11 @@ List<Filtro> filtros = [
 
 List<Simat> users;
 List<Simat> usersTemp;
+// List<dynamic> users2 = (json.decode(jsonSample) as List)
+//     .map((data) => Simat.fromJson(data))
+//     .toList();
+// String users3 = json.encode(users2);
+
 // List<Simat> users = (json.decode(jsonSample) as List)
 //     .map((data) => Simat.fromJson(data))
 //     .toList();
@@ -302,9 +339,15 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     _tabController = TabController(vsync: this, length: myTabs.length);
     // WidgetsBinding.instance
     //     .addPostFrameCallback((_) => {print(jsonEncode(users[0]))});
-    setState(() {
-      users = users;
-    });
+    _getLoacalUsers();
+    if (users != null) {
+      setState(() {
+        users = users;
+        numItems = users.length;
+        selected = List<bool>.generate(numItems, (index) => false);
+        simatSelected = List<bool>.generate(numItems, (index) => false);
+      });
+    }
   }
 
   bool _sortNameAsc = true;
@@ -878,6 +921,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       print('set estate');
       users = users;
       usersTemp = users;
+      storage.put('simat', json.encode(users));
       numItems = users.length;
       selected = List<bool>.generate(numItems, (index) => false);
       simatSelected = List<bool>.generate(numItems, (index) => false);
@@ -984,6 +1028,29 @@ String getPrettyJSONString(jsonObject) {
   JsonEncoder encoder = JsonEncoder.withIndent('  ');
   String jsonString = encoder.convert(json.decode(jsonObject));
   return jsonString;
+}
+
+List<Simat> users2;
+_getLoacalUsers() async {
+  try {
+    storage = await Hive.openBox('myBox');
+    var userst = await storage.get('simat');
+    if (userst != null) {
+      users2 = (json.decode(userst) as List)
+          .map((data) => Simat.fromJson(data))
+          .toList();
+      print([
+        'Carga de users2 localStorage',
+        users2.length,
+        jsonEncode(users2[1])
+      ]);
+    } else {
+      print(['Carga de userst localStorage', userst]);
+    }
+    return userst;
+  } catch (e) {
+    print(['Error get local', e]);
+  }
 }
 
 getFirebaseUsers() async {
