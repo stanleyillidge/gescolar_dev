@@ -22,7 +22,8 @@ var firebaseUsers = 0;
 var gSuiteUsers = 0;
 var simatUsers = 0;
 var storage; // = Hive.box('myBox');
-
+int _simatLength = 0;
+var simatData;
 var _json;
 List<CircularStackEntry> dataC = <CircularStackEntry>[
   CircularStackEntry(
@@ -336,17 +337,59 @@ class Sedes extends StatefulWidget {
 class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
+    _getLoacalUsers();
     _tabController = TabController(vsync: this, length: myTabs.length);
     // WidgetsBinding.instance
     //     .addPostFrameCallback((_) => {print(jsonEncode(users[0]))});
-    _getLoacalUsers();
-    if (users != null) {
-      setState(() {
-        users = users;
-        numItems = users.length;
-        selected = List<bool>.generate(numItems, (index) => false);
-        simatSelected = List<bool>.generate(numItems, (index) => false);
-      });
+  }
+
+  _getLoacalUsers() async {
+    try {
+      storage = await Hive.openBox('myBox');
+      var userst = await storage.get('simat');
+      if (userst != null) {
+        userst = userst.replaceAll('MA�ANA', 'MAÑANA');
+        userst = userst.toString().replaceAll('Á', 'A');
+        userst = userst.toString().replaceAll('É', 'E');
+        userst = userst.toString().replaceAll('Í', 'I');
+        userst = userst.toString().replaceAll('Ó', 'O');
+        userst = userst.toString().replaceAll('Ú', 'U');
+        users = (json.decode(userst) as List)
+            .map((data) => Simat.fromJson(data))
+            .toList();
+        print([
+          'Carga de users2 localStorage',
+          users.length,
+          jsonEncode(users[0])
+        ]);
+        var uniques = {};
+        jornadas = [];
+        grupos = [];
+        users.forEach((user) {
+          if (uniques[user.jornada] == null) {
+            uniques[user.jornada] = true;
+            jornadas.add(user.jornada);
+          } else if (uniques[user.grupo] == null) {
+            uniques[user.grupo] = true;
+            grupos.add(user.grupo);
+          }
+        });
+        grupos.add('grupo');
+        jornadas.add('jornada');
+        setState(() {
+          users = users;
+          numItems = users.length;
+          _simatLength = numItems;
+          selected = List<bool>.generate(numItems, (index) => false);
+          simatSelected = List<bool>.generate(numItems, (index) => false);
+        });
+        // print('MA�ANA');
+      } else {
+        print(['Carga de userst localStorage', userst]);
+      }
+      return users;
+    } catch (e) {
+      print(['Error get local', e]);
     }
   }
 
@@ -665,7 +708,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                 Padding(
                                   padding: const EdgeInsets.only(right: 30.0),
                                   child: Text(
-                                    '4636',
+                                    _simatLength.toString(),
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
                                       fontFamily: 'Spartan',
@@ -796,44 +839,42 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
               children: <Widget>[
                 (users != null)
                     ? Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(40.0),
-                          child: PagDataTable(
-                            header: Text('Mi tabla Gsuite'),
-                            columns: columnas,
-                            source: DTS(users),
-                            showCheckboxColumn: true,
-                            onRowsPerPageChanged: (r) {
-                              setState(() {
-                                _rowPerPage = r;
-                              });
-                            },
-                            rowsPerPage: _rowPerPage,
-                            sortColumnIndex: _sortColumnIndex,
-                            sortAscending: _sortAsc,
-                          ),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Positioned(
+                              top: 0,
+                              child: IconButton(
+                                icon: Icon(Icons.insert_drive_file),
+                                tooltip: 'Guardar datos en Google Drive',
+                                onPressed: () {
+                                  setState(() {
+                                    saveSimatToDrive('simat');
+                                  });
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(40.0),
+                              child: PagDataTable(
+                                header: Text('Mi tabla Gsuite'),
+                                columns: columnas,
+                                source: DTS(users),
+                                showCheckboxColumn: true,
+                                onRowsPerPageChanged: (r) {
+                                  setState(() {
+                                    _rowPerPage = r;
+                                  });
+                                },
+                                rowsPerPage: _rowPerPage,
+                                sortColumnIndex: _sortColumnIndex,
+                                sortAscending: _sortAsc,
+                              ),
+                            ),
+                          ],
                         ),
                       )
                     : Container(),
-                /* Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(40.0),
-                    child: PagDataTable(
-                      header: Text('Mi tabla Gsuite'),
-                      columns: columnas,
-                      source: DTS(users),
-                      showCheckboxColumn: true,
-                      onRowsPerPageChanged: (r) {
-                        setState(() {
-                          _rowPerPage = r;
-                        });
-                      },
-                      rowsPerPage: _rowPerPage,
-                      sortColumnIndex: _sortColumnIndex,
-                      sortAscending: _sortAsc,
-                    ),
-                  ),
-                ), */
                 // Container(),
                 Container(),
                 /* Card(
@@ -905,9 +946,17 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     users = [];
     // var encabezados;
     var conta = 0;
+    simatData = [];
     a.forEach((element) {
-      var uno = element.toString().split(";");
+      var cero = element.toString().replaceAll('MA�ANA', 'MAÑANA');
+      cero = cero.toString().replaceAll('Á', 'A');
+      cero = cero.toString().replaceAll('É', 'E');
+      cero = cero.toString().replaceAll('Í', 'I');
+      cero = cero.toString().replaceAll('Ó', 'O');
+      cero = cero.toString().replaceAll('Ú', 'U');
+      var uno = cero.toString().split(";");
       var uno1 = uno.toString().replaceAll(RegExp(', '), ',');
+      simatData.add(uno1.toString().split(","));
       var dos = Simat.fromList(uno1.toString().split(","));
       dos.index = conta;
       if (conta != 0) {
@@ -917,12 +966,14 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       conta += 1; // Simat.fromList(dos)
     });
     a.clear();
+    await storage.put('simat', json.encode(users));
+    await storage.put('simatData', simatData);
     setState(() {
       print('set estate');
       users = users;
       usersTemp = users;
-      storage.put('simat', json.encode(users));
       numItems = users.length;
+      _simatLength = numItems;
       selected = List<bool>.generate(numItems, (index) => false);
       simatSelected = List<bool>.generate(numItems, (index) => false);
     });
@@ -941,17 +992,13 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     grupos.add('grupo');
     jornadas.add('jornada');
     // print(['uniques', jornadas]);
-    print(['Cantidad de usuarios en', users.length]);
-    // print(['Encabezados', encabezados]); //, jsonEncode(b[1])
-    /* print([
-      jsonEncode(users[1]),
-      jsonEncode(users[10]),
-      jsonEncode(users[100]),
-      jsonEncode(users[200]),
-      jsonEncode(users[300]),
-      jsonEncode(users[400])
-    ]); */
-    // setState(() {});
+    print([
+      'Cantidad en simat',
+      simatData.length,
+      simatData[0].length,
+      jsonEncode(simatData[0])
+    ]);
+    // print(['Cantidad de usuarios en', users.length, jsonEncode(users[0])]);
     input.remove();
   }
 }
@@ -1030,26 +1077,41 @@ String getPrettyJSONString(jsonObject) {
   return jsonString;
 }
 
-List<Simat> users2;
-_getLoacalUsers() async {
+saveSimatToDrive(simat) async {
+  simatData = await storage.get('simatData');
+  // simatData = jsonEncode(simatData);
+  final HttpsCallable callable = CloudFunctions.instance
+      .getHttpsCallable(functionName: 'simatToSheet')
+        ..timeout = const Duration(seconds: 30);
   try {
-    storage = await Hive.openBox('myBox');
-    var userst = await storage.get('simat');
-    if (userst != null) {
-      users2 = (json.decode(userst) as List)
-          .map((data) => Simat.fromJson(data))
-          .toList();
-      print([
-        'Carga de users2 localStorage',
-        users2.length,
-        jsonEncode(users2[1])
-      ]);
-    } else {
-      print(['Carga de userst localStorage', userst]);
-    }
-    return userst;
+    HttpsCallableResult result;
+    print(['nextPageToken', simat]);
+    result = await callable.call(
+      <String, dynamic>{
+        'data': simatData,
+      },
+    );
+    // usuariosG.add(result.data['data']);
+    print(['Resultado', result.data]);
+    var simatSheetId = result.data;
+    await storage.put('simatSheetId', result.data['data']);
+    return simatSheetId;
+    // print(result.data['usuarios'].length);
+    /* List<dynamic> data = [];
+                result.data['usuarios'].forEach((user) {
+                  print(user);
+                  data.add(user);
+                });
+                print(result.data['usuarios']);
+                print(data.length); */
+  } on CloudFunctionsException catch (e) {
+    print('saveSimatToDrive functions exception');
+    print(e.code);
+    print(e.message);
+    print(e.details);
   } catch (e) {
-    print(['Error get local', e]);
+    print('saveSimatToDrive generic exception');
+    print(e);
   }
 }
 
