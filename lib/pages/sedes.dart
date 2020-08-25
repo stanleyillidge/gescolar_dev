@@ -349,6 +349,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       var userst = await storage.get('simat');
       if (userst != null) {
         userst = userst.replaceAll('MA�ANA', 'MAÑANA');
+        userst = userst.replaceAll('EDUCACI�N', 'EDUCACION');
         userst = userst.toString().replaceAll('Á', 'A');
         userst = userst.toString().replaceAll('É', 'E');
         userst = userst.toString().replaceAll('Í', 'I');
@@ -949,6 +950,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     simatData = [];
     a.forEach((element) {
       var cero = element.toString().replaceAll('MA�ANA', 'MAÑANA');
+      cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
       cero = cero.toString().replaceAll('Á', 'A');
       cero = cero.toString().replaceAll('É', 'E');
       cero = cero.toString().replaceAll('Í', 'I');
@@ -956,10 +958,12 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       cero = cero.toString().replaceAll('Ú', 'U');
       var uno = cero.toString().split(";");
       var uno1 = uno.toString().replaceAll(RegExp(', '), ',');
-      simatData.add(uno1.toString().split(","));
-      var dos = Simat.fromList(uno1.toString().split(","));
+      var uno2 = uno1.toString().split(",");
+      var lista = toSheet(uno2);
+      var dos = Simat.fromList(uno2);
       dos.index = conta;
       if (conta != 0) {
+        simatData.add(lista);
         users.add(dos);
       }
       // else{encabezados = uno1.toString().split(",");}
@@ -996,9 +1000,9 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       'Cantidad en simat',
       simatData.length,
       simatData[0].length,
-      jsonEncode(simatData[0])
+      // jsonEncode(simatData)
     ]);
-    // print(['Cantidad de usuarios en', users.length, jsonEncode(users[0])]);
+    print(['Cantidad de usuarios en', users.length, jsonEncode(users[0])]);
     input.remove();
   }
 }
@@ -1075,6 +1079,12 @@ String getPrettyJSONString(jsonObject) {
   JsonEncoder encoder = JsonEncoder.withIndent('  ');
   String jsonString = encoder.convert(json.decode(jsonObject));
   return jsonString;
+}
+
+toSheet(List<String> list) {
+  list[0] = list[0].substring(1);
+  list[42] = list[42].substring(list[42].length);
+  return list;
 }
 
 saveSimatToDrive(simat) async {
