@@ -13,7 +13,19 @@ class FirebaseAuthService {
 
   FirebaseAuthService({FirebaseAuth firebaseAuth, GoogleSignIn googleSignin})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignin ?? GoogleSignIn();
+        _googleSignIn = googleSignin ??
+            GoogleSignIn(
+              scopes: <String>[
+                'email',
+                'https://www.googleapis.com/auth/contacts.readonly',
+                'https://www.googleapis.com/auth/admin.directory.user',
+                'https://www.googleapis.com/auth/admin.directory.group',
+                'https://www.googleapis.com/auth/classroom.coursework.students',
+                'https://www.googleapis.com/auth/classroom.courses',
+                'https://www.googleapis.com/auth/classroom.announcements',
+                'https://www.googleapis.com/auth/classroom.rosters',
+              ],
+            );
 
   User _userFromFirebase(FirebaseUser user) {
     if (user == null) {
@@ -44,15 +56,22 @@ class FirebaseAuthService {
 
   Future<User> signInWithGoogle() async {
     final googleUser = await _googleSignIn.signIn();
-    final googleAuth = await googleUser.authentication;
+    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.getCredential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
     // var client = http.Client();
     // print(['cliente', client]);
-    // await storage.put('cliente', client);
     final authResult = await _firebaseAuth.signInWithCredential(credential);
+    await storage.put('accessToken', googleAuth.accessToken);
+    await storage.put('idToken', googleAuth.idToken);
+    var accessToken = await storage.get('accessToken');
+    var idToken = await storage.get('accessToken');
+    print(['googleAuth.accessToken', googleAuth.accessToken]);
+    print(['googleAuth.idToken', googleAuth.idToken]);
+    print(['googleAuth.accessTokenS', accessToken]);
+    print(['googleAuth.idTokenS', idToken]);
     return _userFromFirebase(authResult.user);
   }
 

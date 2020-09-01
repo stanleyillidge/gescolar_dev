@@ -14,6 +14,7 @@ import 'package:gescolar_dev/widgets/circular_chart/flutter_circular_chart.dart'
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:gescolar_dev/widgets/pagDataTable/pagDataTable.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
 // import 'package:json_table/json_table.dart';
 
 final drive = GoogleDrive();
@@ -22,6 +23,7 @@ var firebaseUsers = 0;
 var gSuiteUsers = 0;
 var simatUsers = 0;
 var storage; // = Hive.box('myBox');
+var googleAuthStorage;
 int _simatLength = 0;
 var simatData;
 var _json;
@@ -274,6 +276,83 @@ class Simat {
       };
 }
 
+class GsuiteUser {
+  // adaptador para crear usuarios con directory api de g-suite
+  String id;
+  Map<String, dynamic> name;
+  String password;
+  String primaryEmail;
+  String organizations;
+  String orgUnitPath;
+  // includeInGlobalAddressList
+  // relations
+  // addresses
+  // phones
+  // gender
+  // customSchemas
+  GsuiteUser({
+    this.id,
+    this.name,
+    this.password,
+    this.primaryEmail,
+    this.organizations,
+    this.orgUnitPath,
+  });
+  factory GsuiteUser.fromJson(Map<String, dynamic> json) {
+    var familyName = (json['apellido2'] != null)
+        ? json['apellido1'] + ' ' + json['apellido2']
+        : json['apellido1'];
+    var givenName = (json['nombre2'] != null)
+        ? json['nombre1'] + ' ' + json['nombre2']
+        : json['nombre1'];
+    var fullName = givenName + ' ' + familyName;
+    var primaryEmail = json['nombre1'] +
+        '.' +
+        json['apellido1'] +
+        '.' +
+        json['apellido2'] +
+        '@estudiantes.lreginaldofischione.edu.co'; // .toString().toLowerCase()
+    var sede = '';
+    switch (json['sede']) {
+      case 'LIVIO REGINALDO FISCHIONE':
+        sede = 'Principal';
+        break;
+      case 'EL PARAISO':
+        sede = 'Paraiso';
+        break;
+      case 'CELIA CATALINA DE L¢PEZ':
+        sede = 'Celia Catalina';
+        break;
+      default:
+    }
+    var orgUnitPath = '/Ensayo/' +
+        sede +
+        '/' +
+        capitalize(json['jornada']) +
+        '/Estudiantes/2020';
+    return GsuiteUser(
+      id: '',
+      name: {
+        'familyName': capitalize(familyName),
+        'givenName': capitalize(givenName),
+        'fullName': capitalize(fullName)
+      },
+      password: '123456789',
+      primaryEmail: primaryEmail.toString().toLowerCase(),
+      orgUnitPath: '/Ensayo', //orgUnitPath,
+      organizations: '',
+    );
+  }
+  Map toJson() => {
+        'id': id,
+        'name': name,
+        'password': password,
+        'primaryEmail': primaryEmail,
+        'organizations': organizations,
+        'orgUnitPath': orgUnitPath,
+      };
+}
+
 class EstadoF {
   bool existe;
   bool actualizado;
@@ -300,6 +379,18 @@ class Filtro {
   );
 }
 
+String capitalize(String string) {
+  if (string == null) {
+    throw ArgumentError("string: $string");
+  }
+
+  if (string.isEmpty) {
+    return string;
+  }
+
+  return string[0].toUpperCase() + string.substring(1);
+}
+
 Map<String, dynamic> ftemp = {
   'valor': 'jornada',
   'datos': List<Simat>(),
@@ -311,6 +402,7 @@ List<Filtro> filtros = [
 ];
 
 List<Simat> users;
+List<GsuiteUser> usersGsuite;
 List<Simat> usersTemp;
 // List<dynamic> users2 = (json.decode(jsonSample) as List)
 //     .map((data) => Simat.fromJson(data))
@@ -345,6 +437,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
 
   _getLoacalUsers() async {
     try {
+      googleAuthStorage = await Hive.openBox('googleAuthStorage');
       storage = await Hive.openBox('myBox');
       var userst = await storage.get('simat');
       if (userst != null) {
@@ -811,6 +904,18 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                         ],
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0, right: 0.0),
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          // Add your onPressed code here!
+                          // createGsuiteUser('ensayo');
+                          addGsuiteUsers();
+                        },
+                        child: Icon(Icons.navigation),
+                        backgroundColor: Colors.green,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1000,9 +1105,10 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       'Cantidad en simat',
       simatData.length,
       simatData[0].length,
-      // jsonEncode(simatData)
+      jsonEncode(simatData[0]),
+      jsonEncode(simatData[1])
     ]);
-    print(['Cantidad de usuarios en', users.length, jsonEncode(users[0])]);
+    // print(['Cantidad de usuarios en', users.length, jsonEncode(users[0])]);
     input.remove();
   }
 }
@@ -1081,6 +1187,42 @@ String getPrettyJSONString(jsonObject) {
   return jsonString;
 }
 
+Future<dynamic> createGsuiteUser(String title) async {
+  try {
+    var accessToken = await googleAuthStorage.get('accessToken');
+    print(['accessToken', accessToken]);
+    var autorization = 'Bearer ' + accessToken;
+    final http.Response response = await http.post(
+      'https://www.googleapis.com/admin/directory/v1/users?key=AIzaSyCdCTYPL1-PPQb3rpOi5Ls_oGoMfPjvXG8',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+        'Authorization': autorization,
+      },
+      body: jsonEncode(<String, dynamic>{
+        "name": {"familyName": "Nicolas", "givenName": "Illidge"},
+        "password": "123456789",
+        "primaryEmail": "nicolas.illidge@lreginaldofischione.edu.co"
+      }),
+    );
+    if (response.statusCode == 200) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      print(['Response Ok', response.body]);
+      // print(['Response Ok', json.decode(response.body)]);
+      return json
+          .decode(response.body); //Album.fromJson(json.decode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      // throw Exception('Failed to load album');
+      print(['Response error', response.body]);
+    }
+  } catch (e) {
+    print(['Error user', e]);
+  }
+}
+
 toSheet(List<String> list) {
   list[0] = list[0].substring(1);
   list[42] = list[42].substring(list[42].length);
@@ -1104,7 +1246,7 @@ saveSimatToDrive(simat) async {
     // usuariosG.add(result.data['data']);
     print(['Resultado', result.data]);
     var simatSheetId = result.data;
-    await storage.put('simatSheetId', result.data['data']);
+    await storage.put('simatSheetId', result.data);
     return simatSheetId;
     // print(result.data['usuarios'].length);
     /* List<dynamic> data = [];
@@ -1122,6 +1264,172 @@ saveSimatToDrive(simat) async {
   } catch (e) {
     print('saveSimatToDrive generic exception');
     print(e);
+  }
+}
+
+addGsuiteUsers() async {
+  try {
+    var userst = await storage.get('simat');
+    var usersg = [];
+    // var usersg2 = [];
+    /* usersg2 = [
+      {
+        "name": {"familyName": "Nicolas1", "givenName": "Illidge"},
+        "password": "123456789",
+        "primaryEmail": "nicolas1.illidge@lreginaldofischione.edu.co"
+      },
+      {
+        "name": {"familyName": "Nicolas2", "givenName": "Illidge"},
+        "password": "123456789",
+        "primaryEmail": "nicolas2.illidge@lreginaldofischione.edu.co"
+      },
+      {
+        "name": {"familyName": "Nicolas3", "givenName": "Illidge"},
+        "password": "123456789",
+        "primaryEmail": "nicolas3.illidge@lreginaldofischione.edu.co"
+      },
+      {
+        "name": {"familyName": "Nicolas4", "givenName": "Illidge"},
+        "password": "123456789",
+        "primaryEmail": "nicolas4.illidge@lreginaldofischione.edu.co"
+      },
+      {
+        "name": {"familyName": "Nicolas5", "givenName": "Illidge"},
+        "password": "123456789",
+        "primaryEmail": "nicolas5.illidge@lreginaldofischione.edu.co"
+      }
+    ]; */
+    if (userst != null) {
+      // userst = userst.replaceAll('MA�ANA', 'MAÑANA');
+      // userst = userst.replaceAll('EDUCACI�N', 'EDUCACION');
+      // userst = userst.toString().replaceAll('Á', 'A');
+      // userst = userst.toString().replaceAll('É', 'E');
+      // userst = userst.toString().replaceAll('Í', 'I');
+      // userst = userst.toString().replaceAll('Ó', 'O');
+      // userst = userst.toString().replaceAll('Ú', 'U');
+      // print((json.decode(userst) as List));
+      /* factory GsuiteUser.fromJson(Map<String, dynamic> json) {
+        var familyName = (json['apellido2'] != null)
+            ? json['apellido1'] + ' ' + json['apellido2']
+            : json['apellido1'];
+        var givenName = (json['nombre2'] != null)
+            ? json['nombre1'] + ' ' + json['nombre2']
+            : json['nombre1'];
+        var fullName = givenName + ' ' + familyName;
+        var primaryEmail = json['nombre1'] +
+            '.' +
+            json['apellido1'] +
+            '.' +
+            json['apellido2'] +
+            '@estudiantes.lreginaldofischione.edu.co'; // .toString().toLowerCase()
+        var sede = '';
+        switch (json['sede']) {
+          case 'LIVIO REGINALDO FISCHIONE':
+            sede = 'Principal';
+            break;
+          case 'EL PARAISO':
+            sede = 'Paraiso';
+            break;
+          case 'CELIA CATALINA DE L¢PEZ':
+            sede = 'Celia Catalina';
+            break;
+          default:
+        }
+        var orgUnitPath = '/Ensayo/' +
+            sede +
+            '/' +
+            capitalize(json['jornada']) +
+            '/Estudiantes/2020';
+        return GsuiteUser(
+          id: '',
+          name: {
+            'familyName': capitalize(familyName),
+            'givenName': capitalize(givenName),
+            'fullName': capitalize(fullName)
+          },
+          password: '123456789',
+          primaryEmail: primaryEmail.toString().toLowerCase(),
+          orgUnitPath: '/Ensayo', //orgUnitPath,
+          organizations: '',
+        );
+      } */
+      /* {
+            'id': '',
+            'name': {
+              'familyName': capitalize((data['apellido2'] != null)
+                  ? data['apellido1'] + ' ' + data['apellido2']
+                  : data['apellido1']),
+              'givenName': capitalize((data['nombre2'] != null)
+                  ? data['nombre1'] + ' ' + data['nombre2']
+                  : data['nombre1']),
+            },
+            'password': '123456789',
+            'primaryEmail': (data['nombre1'] +
+                    '.' +
+                    data['apellido1'] +
+                    '.' +
+                    data['apellido2'] +
+                    '@estudiantes.lreginaldofischione.edu.co')
+                .toString()
+                .toLowerCase(),
+            'orgUnitPath': '/Ensayo', //orgUnitPath,
+            'organizations': '',
+      } */
+      // usersg = (json.decode(userst) as List).map((data) => );
+      userst = (json.decode(userst) as List);
+      userst.forEach((data) {
+        usersg.add({
+          'id': '',
+          'name': {
+            'familyName': capitalize((data['apellido2'] != null)
+                ? data['apellido1'] + ' ' + data['apellido2']
+                : data['apellido1']),
+            'givenName': capitalize((data['nombre2'] != null)
+                ? data['nombre1'] + ' ' + data['nombre2']
+                : data['nombre1']),
+          },
+          'password': '123456789',
+          'primaryEmail': (data['nombre1'] +
+                  '.' +
+                  data['apellido1'] +
+                  '.' +
+                  data['apellido2'] +
+                  '@estudiantes.lreginaldofischione.edu.co')
+              .toString()
+              .toLowerCase(),
+          'orgUnitPath': '/Ensayo', //orgUnitPath,
+          'organizations': '',
+        });
+      });
+      print(
+          ['Carga de users2 localStorage', usersg.length, jsonEncode(usersg)]);
+    }
+    final HttpsCallable callable = CloudFunctions.instance
+        .getHttpsCallable(functionName: 'addGsuiteUsers2')
+          ..timeout = const Duration(seconds: 60);
+    try {
+      HttpsCallableResult result;
+      print(['usuarios', usersg.length]);
+      result = await callable.call(
+        <String, dynamic>{
+          'data': usersg,
+        },
+      );
+      print(['Resultado', result.data]);
+      var simatSheetId = result.data;
+      await storage.put('simatSheetId', result.data);
+      return simatSheetId;
+    } on CloudFunctionsException catch (e) {
+      print('addGsuiteUsers2 functions exception');
+      print(e.code);
+      print(e.message);
+      print(e.details);
+    } catch (e) {
+      print('addGsuiteUsers2 generic exception');
+      print(e);
+    }
+  } catch (e) {
+    print(['Error addGsuiteUsers2', e]);
   }
 }
 

@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: GestureDetector(
                     onTap: () {
                       FirebaseAuthService().signInWithGoogle().then((value) => {
-                            print(['Login Ok:', value]),
+                            print(['Login Ok :', value]),
                             Navigator.push(
                               context,
                               MaterialPageRoute(

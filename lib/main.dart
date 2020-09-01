@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
             /// is because there is user already logged
             return MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: 'Flutter Demo',
+              title: 'Flutter Demo 1',
               home: HomePage(),
             );
           }
