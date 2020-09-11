@@ -50,7 +50,7 @@ const RESOURCES = {
 "assets/fonts/Marvel-Italic.ttf": "48e5e57afda1e95b67d6c704b5c1154e",
 "assets/fonts/LoveYaLikeASister.ttf": "a24504df0b3fb457c4ac46ceffe395a6",
 "assets/database/database.txt": "d41d8cd98f00b204e9800998ecf8427e",
-"main.dart.js": "73bfb028b153fa36c32bff7736e81aac",
+"main.dart.js": "a74ac5e52e4e97175ea0a32f7b85f68c",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "index.html": "e6337217a53c8073692ceb40d96dbf9e",
