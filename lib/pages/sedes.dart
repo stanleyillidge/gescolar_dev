@@ -379,7 +379,7 @@ class Filtro {
   );
 }
 
-String capitalize(String string) {
+capitalize(String string) {
   // if (string == null) {
   //   throw ArgumentError("string: $string");
   // }
@@ -1065,6 +1065,83 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     a.forEach((element) {
       var cero = element.toString().replaceAll('MA�ANA', 'MAÑANA');
       cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
+      cero = cero.toString().replaceAll('J�VENES', 'JOVENES');
+      cero = cero.toString().replaceAll('MART�NEZ', 'MARTINEZ');
+      cero = cero.toString().replaceAll('NU�EZ', 'NUÑEZ');
+      cero = cero.toString().replaceAll('SE�ORA', 'SEÑORA');
+      cero = cero.toString().replaceAll('MU�OZ', 'MUÑOZ');
+      cero = cero.toString().replaceAll('IDENTIFICACI�N', 'IDENTIFICACION');
+      cero = cero.toString().replaceAll('N�MERO', 'NUMERO');
+      cero = cero.toString().replaceAll('ARI�O', 'ARÑIO');
+      cero = cero.toString().replaceAll('BELE�O', 'BELEÑO');
+      cero = cero.toString().replaceAll('ANDR�S', 'ANDRES');
+      cero = cero.toString().replaceAll('A�EZ', 'AÑEZ');
+      cero = cero.toString().replaceAll('PE�ARANDA', 'PEÑARANDA');
+      cero = cero.toString().replaceAll('PE�ATE', 'PEÑATE');
+      cero = cero.toString().replaceAll('BOLA�O', 'BOLAÑO');
+      cero = cero.toString().replaceAll('AVENDA�O', 'AVENDAÑO');
+      cero = cero.toString().replaceAll('ORDO�EZ', 'ORDOÑEZ');
+      cero = cero.toString().replaceAll('C�DULA', 'CEDULA');
+      cero = cero.toString().replaceAll('ZU�IGA', 'ZUÑIGA');
+      cero = cero.toString().replaceAll('CIUDADAN�A', 'CIUDADANIA');
+      cero = cero.toString().replaceAll('SECRETAR�A', 'SECRETARIA');
+      cero = cero.toString().replaceAll('BRICE�O', 'BRICEÑO');
+      cero = cero.toString().replaceAll('EXTRANJER�A', 'EXTRANJERIA');
+      cero = cero.toString().replaceAll('CARRE�O', 'CARREÑO');
+      cero = cero.toString().replaceAll('CASTA�EDA', 'CASTAÑEDA');
+      cero = cero.toString().replaceAll('CATA�O', 'CATAÑO');
+      cero = cero.toString().replaceAll('NI�O', 'NIÑO');
+      cero = cero.toString().replaceAll('ACU�A', 'ACUÑA');
+      cero = cero.toString().replaceAll('RIO�ACHA', 'RIOHACHA');
+      cero = cero.toString().replaceAll('CA�O', 'CAÑO');
+      cero = cero.toString().replaceAll('PE�A', 'PEÑA');
+      cero = cero.toString().replaceAll('MART�N', 'MARTIN');
+      cero = cero.toString().replaceAll('ESTUPI�AN', 'ESTUPIÑAN');
+      cero = cero.toString().replaceAll('PE�ALOZA', 'PEÑALOZA');
+      cero = cero.toString().replaceAll('JOS�', 'JOSE');
+      cero = cero.toString().replaceAll('GAL�N', 'GALAN');
+      cero = cero.toString().replaceAll('CAMA�O', 'CAMAÑO');
+      cero = cero.toString().replaceAll('MERI�O', 'MERIÑO');
+      cero = cero.toString().replaceAll('G�NESIS', 'GENESIS');
+      cero = cero.toString().replaceAll('GUDI�O', 'GUDIÑO');
+      cero = cero.toString().replaceAll('VICU�A', 'VICUÑA');
+      cero = cero.toString().replaceAll(' �A', ' A');
+      cero = cero.toString().replaceAll(' �E', ' E');
+      cero = cero.toString().replaceAll(' �I', ' I');
+      cero = cero.toString().replaceAll(' �O', ' O');
+      cero = cero.toString().replaceAll(' �U', ' U');
+      cero = cero.toString().replaceAll('.�', '.');
+      cero = cero.toString().replaceAll('AIC�', 'AIC');
+      cero = cero.toString().replaceAll(' �C', ' C');
+      cero = cero.toString().replaceAll('LTDA�', 'LTDA');
+      cero = cero.toString().replaceAll('SAR�', 'SARA');
+      cero = cero.toString().replaceAll('LAMBRA�O', 'LAMBRAÑO');
+      cero = cero.toString().replaceAll('LIDUE�A', 'LIDUEÑA');
+      cero = cero.toString().replaceAll('O�ATE', 'OÑATE');
+      cero = cero.toString().replaceAll('VISI�N', 'VISION');
+      cero = cero.toString().replaceAll('CALDER�N', 'CALDERON');
+      cero = cero.toString().replaceAll('SOF�A', 'SOFIA');
+      cero = cero.toString().replaceAll('MOIS�S', 'MOISES');
+      cero = cero.toString().replaceAll('ANG�LICA', 'ANGELICA');
+      cero = cero.toString().replaceAll('MONTA�O', 'MONTAÑO');
+      cero = cero.toString().replaceAll('PATI�O', 'PATIÑO');
+      cero = cero.toString().replaceAll('MU�IZ', 'MUÑIZ');
+      cero = cero.toString().replaceAll('G�MEZ', 'GÓMEZ');
+      cero = cero.toString().replaceAll('CASTA�O', 'CASTAÑO');
+      cero = cero.toString().replaceAll('MARI�A', 'MARIÑA');
+      cero = cero.toString().replaceAll('F�SICA', 'FISICA');
+      cero = cero.toString().replaceAll('MAR�A', 'MARIA');
+      cero = cero.toString().replaceAll('BA�OS', 'BAÑOS');
+      cero = cero.toString().replaceAll('KA�AKAT', 'KAÑAKAT');
+      cero = cero.toString().replaceAll('LONDO�O', 'LONDOÑO');
+      cero = cero.toString().replaceAll('SE�A', 'SEÑA');
+      cero = cero.toString().replaceAll('QUI�ONES', 'QUIÑONES');
+      cero = cero.toString().replaceAll('SE�AS', 'SEÑAS');
+      cero = cero.toString().replaceAll('T�MARA', 'TAMARA');
+      cero = cero.toString().replaceAll('CERME�O', 'CERMEÑO');
+      cero = cero.toString().replaceAll('JES�S', 'JESÚS');
+      cero = cero.toString().replaceAll('URBANIZACI�N', 'URBANIZACION');
+      // cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
       cero = cero.toString().replaceAll('Á', 'A');
       cero = cero.toString().replaceAll('É', 'E');
       cero = cero.toString().replaceAll('Í', 'I');
@@ -1073,6 +1150,17 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       var uno = cero.toString().split(";");
       var uno1 = uno.toString().replaceAll(RegExp(', '), ',');
       var uno2 = uno1.toString().split(",");
+      var esp = cero.toString().indexOf('�');
+      if (esp > -1) {
+        uno.forEach((palabra) {
+          var esp2 = palabra.toString().indexOf('�');
+          if (esp2 > -1) {
+            var uno4 = cero.toString().replaceAll('�', '');
+            var uno3 = palabra.toString().replaceAll('�', '');
+            print(['String-Error', esp2, uno3, uno4]);
+          }
+        });
+      }
       var lista = toSheet(uno2);
       var dos = Simat.fromList(uno2);
       dos.index = conta;
@@ -1313,23 +1401,50 @@ addGsuiteUsers() async {
     if (userst != null) {
       userst = (json.decode(userst) as List);
       userst.forEach((data) {
-        var familyName = (data['apellido2'] != null)
-            ? data['apellido1'] + ' ' + data['apellido2']
-            : data['apellido1'];
-        familyName = capitalize(familyName);
-        var givenName = (data['nombre2'] != null)
-            ? data['nombre1'] + ' ' + data['nombre2']
-            : data['nombre1'];
-        givenName = capitalize(givenName);
+        var apellido1 = data['apellido1'].toString().toLowerCase();
+        apellido1 = apellido1[0].toString().toUpperCase() +
+            apellido1.substring(1).toString();
+        var apellido2 = (data['apellido2'] != '')
+            ? data['apellido2'].toString().toLowerCase()
+            : null;
+        apellido2 = (apellido2 != null)
+            ? apellido2[0].toString().toUpperCase() +
+                apellido2.substring(1).toString()
+            : null;
+        var nombre1 = data['nombre1'].toString().toLowerCase();
+        nombre1 = nombre1[0].toString().toUpperCase() +
+            nombre1.substring(1).toString();
+        var nombre2 = (data['nombre2'] != '')
+            ? data['nombre2'].toString().toLowerCase()
+            : null;
+        nombre2 = (nombre2 != null)
+            ? nombre2[0].toString().toUpperCase() +
+                nombre2.substring(1).toString()
+            : null;
+        var familyName =
+            (apellido2 != null) ? apellido1 + ' ' + apellido2 : apellido1;
+        // familyName = familyName.toString().toLowerCase();
+        // familyName = familyName[0].toString().toUpperCase() +
+        //     familyName.substring(1).toString();
+        var givenName = (nombre2 != null) ? nombre1 + ' ' + nombre2 : nombre1;
+        // givenName = givenName.toString().toLowerCase();
+        // givenName = givenName[0].toString().toUpperCase() +
+        //     givenName.substring(1).toString();
         var fullName = givenName + ' ' + familyName;
-        fullName = capitalize(fullName);
-        var primaryEmail = data['nombre1'] +
-            '.' +
-            data['apellido1'] +
-            '.' +
-            data['apellido2'] +
-            '@estudiantes.lreginaldofischione.edu.co'; // .toString().toLowerCase()
-        primaryEmail = primaryEmail.toString().toLowerCase();
+        var primaryEmail; // .toString().toLowerCase()
+        if (apellido2 != null) {
+          primaryEmail = nombre1 + '.' + apellido1 + '.' + apellido2;
+        } else if (nombre2 != null) {
+          primaryEmail = nombre1 + '.' + nombre2 + '.' + apellido1;
+        } else {
+          primaryEmail = nombre1 +
+              '.' +
+              apellido1 +
+              '.' +
+              new DateTime.now().year.toString();
+        }
+        primaryEmail = primaryEmail + '@estudiantes.lreginaldofischione.edu.co';
+        primaryEmail = primaryEmail.toString().toLowerCase(); // �
         primaryEmail = primaryEmail.toString().replaceAll('ñ', 'n');
         primaryEmail = primaryEmail.toString().replaceAll(' ', '');
         primaryEmail = primaryEmail.toString().replaceAll('á', 'a');
@@ -1337,8 +1452,12 @@ addGsuiteUsers() async {
         primaryEmail = primaryEmail.toString().replaceAll('í', 'i');
         primaryEmail = primaryEmail.toString().replaceAll('ó', 'o');
         primaryEmail = primaryEmail.toString().replaceAll('ú', 'u');
+        primaryEmail = primaryEmail.toString().replaceAll('�', '');
         primaryEmail = primaryEmail.toString().trim();
-        // print(['primaryEmail', primaryEmail]);
+        // print(['PrimaryEmail', primaryEmail]);
+        // print(['FamilyName', familyName]);
+        // print(['GivenName', givenName]);
+        // print(['FullName', fullName]);
         var sede = '';
         switch (data['sede']) {
           case 'LIVIO REGINALDO FISCHIONE':
@@ -1376,7 +1495,7 @@ addGsuiteUsers() async {
     final HttpsCallable callable = CloudFunctions.instance
         .getHttpsCallable(functionName: 'addGsuiteUsers2')
           ..timeout = const Duration(seconds: 60);
-    var step = 50;
+    var step = 75;
     var limit = (usersg.length / step).truncate();
     print(['limit', limit]);
     var start;
@@ -1385,7 +1504,7 @@ addGsuiteUsers() async {
       start = (i * step);
       end = ((i + 1) * step);
       var usersg2 = usersg.sublist(start, end);
-      print(['start, end', start, end]);
+      // print(['Loop start, end', i, start, end]);
       await iterableCloudFunction(callable, usersg2);
     }
     var residuo = (usersg.length % (step));
@@ -1394,7 +1513,7 @@ addGsuiteUsers() async {
       start = usersg.length - residuo;
       end = usersg.length;
       var usersg2 = usersg.sublist(start, end);
-      print(['Residuo - start, end', residuo, start, end]);
+      print(['Ultimo - start, end', residuo, start, end]);
       await iterableCloudFunction(callable, usersg2);
     }
   } catch (e) {

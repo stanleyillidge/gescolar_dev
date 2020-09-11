@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis_auth/auth_browser.dart';
@@ -66,6 +67,7 @@ class FirebaseAuthService {
     var nombres = googleUser.displayName.toString().split(" ");
     var familyName;
     var givenName;
+    var email = googleUser.email;
     switch (nombres.length) {
       case 2:
         familyName = nombres[1];
@@ -89,44 +91,60 @@ class FirebaseAuthService {
         'fullName': googleUser.displayName,
       },
       'password': '123456789',
-      'primaryEmail': googleUser.email,
+      'primaryEmail': email,
       'orgUnitPath': '/Ensayo'
     };
-    final HttpsCallable callable = CloudFunctions.instance
-        .getHttpsCallable(functionName: 'addGsuiteUser')
-          ..timeout = const Duration(seconds: 60);
-    try {
-      HttpsCallableResult result;
-      print(['usuarios', user]);
-      result = await callable.call(
-        <String, dynamic>{
-          'data': user,
-        },
+    var indexD = email.toString().indexOf('lreginaldofischione.edu.co');
+    if (indexD > -1) {
+      final HttpsCallable callable = CloudFunctions.instance
+          .getHttpsCallable(functionName: 'addGsuiteUser')
+            ..timeout = const Duration(seconds: 60);
+      try {
+        HttpsCallableResult result;
+        print(['usuarios', user]);
+        result = await callable.call(
+          <String, dynamic>{
+            'data': user,
+          },
+        );
+        final authResult = await _firebaseAuth.signInWithCredential(credential);
+        await storage.put('accessToken', googleAuth.accessToken);
+        await storage.put('idToken', googleAuth.idToken);
+        // var accessToken = await storage.get('accessToken');
+        // var idToken = await storage.get('accessToken');
+        // print(['googleAuth.accessToken', googleAuth.accessToken]);
+        // print(['googleAuth.idToken', googleAuth.idToken]);
+        // print(['googleAuth.accessTokenS', accessToken]);
+        // print(['googleAuth.idTokenS', idToken]);
+        print(['Resultado', result.data]);
+        var simatSheetId = result.data;
+        await storage.put('simatSheetId', result.data);
+        return _userFromFirebase(authResult.user);
+      } on CloudFunctionsException catch (e) {
+        print('addGsuiteUser functions exception');
+        print(e.code);
+        print(e.message);
+        print(e.details);
+      } catch (e) {
+        print('addGsuiteUser generic exception');
+        print(e);
+      }
+    } else {
+      AlertDialog(
+        title: Text('Error de acceso'),
+        content: Text('Debes usar una cuenta del Livio Reginaldo Fischione'),
+        actions: [FlatButton(onPressed: null, child: Text('Ok'))],
+        elevation: 24,
+        backgroundColor: Colors.blue,
       );
-
-      final authResult = await _firebaseAuth.signInWithCredential(credential);
-
-      await storage.put('accessToken', googleAuth.accessToken);
-      await storage.put('idToken', googleAuth.idToken);
-      // var accessToken = await storage.get('accessToken');
-      // var idToken = await storage.get('accessToken');
-      // print(['googleAuth.accessToken', googleAuth.accessToken]);
-      // print(['googleAuth.idToken', googleAuth.idToken]);
-      // print(['googleAuth.accessTokenS', accessToken]);
-      // print(['googleAuth.idTokenS', idToken]);
-      print(['Resultado', result.data]);
-      var simatSheetId = result.data;
-      await storage.put('simatSheetId', result.data);
-      return _userFromFirebase(authResult.user);
-    } on CloudFunctionsException catch (e) {
-      print('addGsuiteUsers2 functions exception');
-      print(e.code);
-      print(e.message);
-      print(e.details);
-    } catch (e) {
-      print('addGsuiteUsers2 generic exception');
-      print(e);
+      return null;
     }
+    // var accessToken = await storage.get('accessToken');
+    // var idToken = await storage.get('accessToken');
+    // print(['googleAuth.accessToken', googleAuth.accessToken]);
+    // print(['googleAuth.idToken', googleAuth.idToken]);
+    // print(['googleAuth.accessTokenS', accessToken]);
+    // print(['googleAuth.idTokenS', idToken]);
   }
 
   Future<void> signOut() async {
