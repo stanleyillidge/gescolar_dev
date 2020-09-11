@@ -1,4 +1,6 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis_auth/auth_browser.dart';
 import 'package:googleapis_auth/auth_io.dart';
@@ -61,18 +63,70 @@ class FirebaseAuthService {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    // var client = http.Client();
-    // print(['cliente', client]);
-    final authResult = await _firebaseAuth.signInWithCredential(credential);
-    await storage.put('accessToken', googleAuth.accessToken);
-    await storage.put('idToken', googleAuth.idToken);
-    var accessToken = await storage.get('accessToken');
-    var idToken = await storage.get('accessToken');
-    print(['googleAuth.accessToken', googleAuth.accessToken]);
-    print(['googleAuth.idToken', googleAuth.idToken]);
-    print(['googleAuth.accessTokenS', accessToken]);
-    print(['googleAuth.idTokenS', idToken]);
-    return _userFromFirebase(authResult.user);
+    var nombres = googleUser.displayName.toString().split(" ");
+    var familyName;
+    var givenName;
+    switch (nombres.length) {
+      case 2:
+        familyName = nombres[1];
+        givenName = nombres[0];
+        break;
+      case 3:
+        familyName = nombres[1] + ' ' + nombres[2];
+        givenName = nombres[0];
+        break;
+      case 4:
+        familyName = nombres[2] + ' ' + nombres[3];
+        givenName = nombres[0] + ' ' + nombres[2];
+        break;
+      default:
+    }
+    var user = {
+      'id': googleUser.id,
+      'name': {
+        'familyName': familyName,
+        'givenName': givenName,
+        'fullName': googleUser.displayName,
+      },
+      'password': '123456789',
+      'primaryEmail': googleUser.email,
+      'orgUnitPath': '/Ensayo'
+    };
+    final HttpsCallable callable = CloudFunctions.instance
+        .getHttpsCallable(functionName: 'addGsuiteUser')
+          ..timeout = const Duration(seconds: 60);
+    try {
+      HttpsCallableResult result;
+      print(['usuarios', user]);
+      result = await callable.call(
+        <String, dynamic>{
+          'data': user,
+        },
+      );
+
+      final authResult = await _firebaseAuth.signInWithCredential(credential);
+
+      await storage.put('accessToken', googleAuth.accessToken);
+      await storage.put('idToken', googleAuth.idToken);
+      // var accessToken = await storage.get('accessToken');
+      // var idToken = await storage.get('accessToken');
+      // print(['googleAuth.accessToken', googleAuth.accessToken]);
+      // print(['googleAuth.idToken', googleAuth.idToken]);
+      // print(['googleAuth.accessTokenS', accessToken]);
+      // print(['googleAuth.idTokenS', idToken]);
+      print(['Resultado', result.data]);
+      var simatSheetId = result.data;
+      await storage.put('simatSheetId', result.data);
+      return _userFromFirebase(authResult.user);
+    } on CloudFunctionsException catch (e) {
+      print('addGsuiteUsers2 functions exception');
+      print(e.code);
+      print(e.message);
+      print(e.details);
+    } catch (e) {
+      print('addGsuiteUsers2 generic exception');
+      print(e);
+    }
   }
 
   Future<void> signOut() async {
