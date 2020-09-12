@@ -1,0 +1,37 @@
+{
+    "name": {
+      "familyName": "Acendra1 Pedroño1",
+      "givenName": "Claudia1 Andrea1",
+      "fullName": "Claudia1 Andrea1 Acendra1 Pedroño1"
+    },
+    "password": "123456789",
+    "primaryEmail": "claudia1.acendra1.pedrono1@estudiantes.lreginaldofischione.edu.co",
+    "orgUnitPath": "/Ensayo",
+    "customSchemas":{
+        "SIMAT":{
+            "ano": "020",
+            "estado": "MATRICULADO",
+            "sede": "LIVIO REGINALDO FISCHIONE",
+            "codigoDaneSede": "244001002356",
+            "zonaSede": "URBANA",
+            "jornada": "MAÑANA",
+            "gradoCod": "08",
+            "grupo": "0802",
+            "fechaini": "2020-02-17",
+            "nui": "KLAASE1322271237",
+            "estrato": "ESTRATO 1",
+            "doc": "1047337183",
+            "tipodoc": "TI:TARJETA DE IDENTIDAD",
+            "apellido1": "ACENDRA1",
+            "apellido2": "PEDROÑO1",
+            "nombre1": "CLAUDIA1",
+            "nombre2": "ANDREA1",
+            "genero": "FEMENINO",
+            "fechaNacimiento": "2006-05-25",
+            "epsEstudiante": " ",
+            "discapacidad": "NO APLICA",
+            "paisOrigen": "COLOMBIA",
+            "correo": "claudia1.acendra1.pedrono1@estudiantes.lreginaldofischione.edu.co"
+        }
+    }
+}

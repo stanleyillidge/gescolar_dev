@@ -15,10 +15,12 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:gescolar_dev/widgets/pagDataTable/pagDataTable.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 // import 'package:json_table/json_table.dart';
 
 final drive = GoogleDrive();
 bool darkMode = false;
+bool isLoading = false;
 var firebaseUsers = 0;
 var gSuiteUsers = 0;
 var simatUsers = 0;
@@ -952,44 +954,48 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             child: TabBarView(
               controller: _tabController,
               children: <Widget>[
-                (users != null)
-                    ? Card(
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Positioned(
-                              top: 0,
-                              child: IconButton(
-                                icon: Icon(Icons.insert_drive_file),
-                                tooltip: 'Guardar datos en Google Drive',
-                                onPressed: () {
-                                  setState(() {
-                                    saveSimatToDrive('simat');
-                                  });
-                                },
-                              ),
+                (!isLoading)
+                    ? (users != null)
+                        ? Card(
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Positioned(
+                                  top: 0,
+                                  child: IconButton(
+                                    icon: Icon(Icons.insert_drive_file),
+                                    tooltip: 'Guardar datos en Google Drive',
+                                    onPressed: () {
+                                      setState(() {
+                                        saveSimatToDrive('simat');
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(40.0),
+                                  child: PagDataTable(
+                                    header: Text('Mi tabla Gsuite'),
+                                    columns: columnas,
+                                    source: DTS(users),
+                                    showCheckboxColumn: true,
+                                    onRowsPerPageChanged: (r) {
+                                      setState(() {
+                                        _rowPerPage = r;
+                                      });
+                                    },
+                                    rowsPerPage: _rowPerPage,
+                                    sortColumnIndex: _sortColumnIndex,
+                                    sortAscending: _sortAsc,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(40.0),
-                              child: PagDataTable(
-                                header: Text('Mi tabla Gsuite'),
-                                columns: columnas,
-                                source: DTS(users),
-                                showCheckboxColumn: true,
-                                onRowsPerPageChanged: (r) {
-                                  setState(() {
-                                    _rowPerPage = r;
-                                  });
-                                },
-                                rowsPerPage: _rowPerPage,
-                                sortColumnIndex: _sortColumnIndex,
-                                sortAscending: _sortAsc,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(),
+                          )
+                        : Container()
+                    : Center(
+                        child: CircularProgressIndicator(),
+                      ),
                 // Container(),
                 Container(),
                 /* Card(
@@ -1208,6 +1214,254 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     // print(['Cantidad de usuarios en', users.length, jsonEncode(users[0])]);
     input.remove();
   }
+
+  _isLoading(bool state) {
+    setState(() {
+      isLoading = state;
+    });
+  }
+
+  addGsuiteUsers() async {
+    try {
+      _isLoading(true);
+      var userst = await storage.get('simat');
+      var usersg = [];
+      // var usersg2 = [];
+      /* usersg2 = [
+        {
+          "name": {"familyName": "Nicolas1", "givenName": "Illidge"},
+          "password": "123456789",
+          "primaryEmail": "nicolas1.illidge@lreginaldofischione.edu.co"
+        },
+        {
+          "name": {"familyName": "Nicolas2", "givenName": "Illidge"},
+          "password": "123456789",
+          "primaryEmail": "nicolas2.illidge@lreginaldofischione.edu.co"
+        },
+        {
+          "name": {"familyName": "Nicolas3", "givenName": "Illidge"},
+          "password": "123456789",
+          "primaryEmail": "nicolas3.illidge@lreginaldofischione.edu.co"
+        },
+        {
+          "name": {"familyName": "Nicolas4", "givenName": "Illidge"},
+          "password": "123456789",
+          "primaryEmail": "nicolas4.illidge@lreginaldofischione.edu.co"
+        },
+        {
+          "name": {"familyName": "Nicolas5", "givenName": "Illidge"},
+          "password": "123456789",
+          "primaryEmail": "nicolas5.illidge@lreginaldofischione.edu.co"
+        }
+      ]; */
+      if (userst != null) {
+        userst = (json.decode(userst) as List);
+        userst.forEach((data) {
+          var apellido1 = data['apellido1'].toString().toLowerCase();
+          apellido1 = apellido1[0].toString().toUpperCase() +
+              apellido1.substring(1).toString();
+          var apellido2 = (data['apellido2'] != '')
+              ? data['apellido2'].toString().toLowerCase()
+              : null;
+          apellido2 = (apellido2 != null)
+              ? apellido2[0].toString().toUpperCase() +
+                  apellido2.substring(1).toString()
+              : null;
+          var nombre1 = data['nombre1'].toString().toLowerCase();
+          nombre1 = nombre1[0].toString().toUpperCase() +
+              nombre1.substring(1).toString();
+          var nombre2 = (data['nombre2'] != '')
+              ? data['nombre2'].toString().toLowerCase()
+              : null;
+          nombre2 = (nombre2 != null)
+              ? nombre2[0].toString().toUpperCase() +
+                  nombre2.substring(1).toString()
+              : null;
+          var familyName =
+              (apellido2 != null) ? apellido1 + ' ' + apellido2 : apellido1;
+          // familyName = familyName.toString().toLowerCase();
+          // familyName = familyName[0].toString().toUpperCase() +
+          //     familyName.substring(1).toString();
+          var givenName = (nombre2 != null) ? nombre1 + ' ' + nombre2 : nombre1;
+          // givenName = givenName.toString().toLowerCase();
+          // givenName = givenName[0].toString().toUpperCase() +
+          //     givenName.substring(1).toString();
+          var fullName = givenName + ' ' + familyName;
+          var primaryEmail; // .toString().toLowerCase()
+          if (apellido2 != null) {
+            primaryEmail = nombre1 + '.' + apellido1 + '.' + apellido2;
+          } else if (nombre2 != null) {
+            primaryEmail = nombre1 + '.' + nombre2 + '.' + apellido1;
+          } else {
+            primaryEmail = nombre1 +
+                '.' +
+                apellido1 +
+                '.' +
+                new DateTime.now().year.toString();
+          }
+          primaryEmail =
+              primaryEmail + '@estudiantes.lreginaldofischione.edu.co';
+          primaryEmail = primaryEmail.toString().toLowerCase(); // �
+          primaryEmail = primaryEmail.toString().replaceAll('ñ', 'n');
+          primaryEmail = primaryEmail.toString().replaceAll(' ', '');
+          primaryEmail = primaryEmail.toString().replaceAll('á', 'a');
+          primaryEmail = primaryEmail.toString().replaceAll('é', 'e');
+          primaryEmail = primaryEmail.toString().replaceAll('í', 'i');
+          primaryEmail = primaryEmail.toString().replaceAll('ó', 'o');
+          primaryEmail = primaryEmail.toString().replaceAll('ú', 'u');
+          primaryEmail = primaryEmail.toString().replaceAll('�', '');
+          primaryEmail = primaryEmail.toString().trim();
+          // print(['PrimaryEmail', primaryEmail]);
+          // print(['FamilyName', familyName]);
+          // print(['GivenName', givenName]);
+          // print(['FullName', fullName]);
+          var sede = '';
+          switch (data['sede']) {
+            case 'LIVIO REGINALDO FISCHIONE':
+              sede = 'Principal';
+              break;
+            case 'EL PARAISO':
+              sede = 'Paraiso';
+              break;
+            case 'CELIA CATALINA DE L¢PEZ':
+              sede = 'Celia Catalina';
+              break;
+            default:
+          }
+          data['correo'] = primaryEmail;
+          var orgUnitPath = '/Ensayo/' +
+              sede +
+              '/' +
+              capitalize(data['jornada']) +
+              '/Estudiantes/2020';
+          usersg.add({
+            'id': '',
+            'name': {
+              'familyName': familyName,
+              'givenName': givenName,
+              'fullName': fullName,
+            },
+            'password': '123456789',
+            'primaryEmail': primaryEmail,
+            'orgUnitPath': '/Ensayo', //orgUnitPath,
+            'organizations': '',
+            "customSchemas": {
+              "SIMAT": {
+                "ano": data["ano"],
+                "estado": data["estado"],
+                "sede": data["sede"],
+                "codigoDaneSede": data["codigoDaneSede"],
+                "zonaSede": data["zonaSede"],
+                "jornada": data["jornada"],
+                "gradoCod": data["gradoCod"],
+                "grupo": data["grupo"],
+                "fechaini": (DateFormat('yyyy-MM-d')
+                        .parse(data["fechaini"])
+                        .year
+                        .toString() +
+                    "-" +
+                    DateFormat('yyyy-MM-d')
+                        .parse(data["fechaini"])
+                        .month
+                        .toString() +
+                    "-" +
+                    DateFormat('yyyy-MM-d')
+                        .parse(data["fechaini"])
+                        .day
+                        .toString()),
+                "nui": data["nui"],
+                "estrato": data["estrato"],
+                "doc": data["doc"],
+                "tipodoc": data["tipodoc"],
+                "apellido1": data["apellido1"],
+                "apellido2": data["apellido2"],
+                "nombre1": data["nombre1"],
+                "nombre2": data["nombre2"],
+                "genero": data["genero"],
+                "fechaNacimiento": (DateFormat('d/MM/yyyy')
+                        .parse(data["fechaNacimiento"])
+                        .year
+                        .toString() +
+                    "-" +
+                    DateFormat('d/MM/yyyy')
+                        .parse(data["fechaNacimiento"])
+                        .month
+                        .toString() +
+                    "-" +
+                    DateFormat('d/MM/yyyy')
+                        .parse(data["fechaNacimiento"])
+                        .day
+                        .toString()),
+                "epsEstudiante": data["epsEstudiante"],
+                "discapacidad": data["discapacidad"],
+                "paisOrigen": data["paisOrigen"],
+                "correo": data["correo"],
+              }
+            }
+          });
+        });
+        print(usersg);
+        // print(
+        //     ['Carga de users2 localStorage', usersg.length, jsonEncode(usersg)]);
+      }
+      final HttpsCallable callable = CloudFunctions.instance
+          .getHttpsCallable(functionName: 'addGsuiteUsers2')
+            ..timeout = const Duration(seconds: 60);
+      var step = 75;
+      var limit = (usersg.length / step).truncate();
+      print(['limit', limit]);
+      var start;
+      var end;
+      for (var i = 0; i < limit; i++) {
+        start = (i * step);
+        end = ((i + 1) * step);
+        var usersg2 = usersg.sublist(start, end);
+        // print(['Loop start, end', i, start, end]);
+        await iterableCloudFunction(callable, usersg2);
+      }
+      var residuo = (usersg.length % (step));
+      if (residuo > 0) {
+        // print(['Residuo', residuo]);
+        start = usersg.length - residuo;
+        end = usersg.length;
+        var usersg2 = usersg.sublist(start, end);
+        print(['Ultimo - start, end', residuo, start, end]);
+        await iterableCloudFunction(callable, usersg2);
+      }
+      _isLoading(false);
+    } catch (e) {
+      print(['Error addGsuiteUsers2', e]);
+      _isLoading(false);
+    }
+  }
+
+  iterableCloudFunction(HttpsCallable callable, users) async {
+    try {
+      HttpsCallableResult result;
+      print(['usuarios', users.length]);
+      result = await callable.call(
+        <String, dynamic>{
+          'data': users,
+        },
+      );
+      // var usuarios = jsonDecode(result.data['usuarios']);
+      // var errores = jsonDecode(result.data['errores']);
+      // print(['Resultados ok', result.data]);
+      print(['Resultados ok', result.data['usuarios']]);
+      print(['Resultados errores', result.data['errores']]);
+      var simatSheetId = result.data;
+      await storage.put('simatSheetId', result.data);
+      return simatSheetId;
+    } on CloudFunctionsException catch (e) {
+      print('addGsuiteUsers2 functions exception');
+      print(e.code);
+      print(e.message);
+      print(e.details);
+    } catch (e) {
+      print('addGsuiteUsers2 generic exception');
+      print(e);
+    }
+  }
 }
 
 class DTS extends DataTableSource {
@@ -1362,185 +1616,6 @@ saveSimatToDrive(simat) async {
     print(e.details);
   } catch (e) {
     print('saveSimatToDrive generic exception');
-    print(e);
-  }
-}
-
-addGsuiteUsers() async {
-  try {
-    var userst = await storage.get('simat');
-    var usersg = [];
-    // var usersg2 = [];
-    /* usersg2 = [
-      {
-        "name": {"familyName": "Nicolas1", "givenName": "Illidge"},
-        "password": "123456789",
-        "primaryEmail": "nicolas1.illidge@lreginaldofischione.edu.co"
-      },
-      {
-        "name": {"familyName": "Nicolas2", "givenName": "Illidge"},
-        "password": "123456789",
-        "primaryEmail": "nicolas2.illidge@lreginaldofischione.edu.co"
-      },
-      {
-        "name": {"familyName": "Nicolas3", "givenName": "Illidge"},
-        "password": "123456789",
-        "primaryEmail": "nicolas3.illidge@lreginaldofischione.edu.co"
-      },
-      {
-        "name": {"familyName": "Nicolas4", "givenName": "Illidge"},
-        "password": "123456789",
-        "primaryEmail": "nicolas4.illidge@lreginaldofischione.edu.co"
-      },
-      {
-        "name": {"familyName": "Nicolas5", "givenName": "Illidge"},
-        "password": "123456789",
-        "primaryEmail": "nicolas5.illidge@lreginaldofischione.edu.co"
-      }
-    ]; */
-    if (userst != null) {
-      userst = (json.decode(userst) as List);
-      userst.forEach((data) {
-        var apellido1 = data['apellido1'].toString().toLowerCase();
-        apellido1 = apellido1[0].toString().toUpperCase() +
-            apellido1.substring(1).toString();
-        var apellido2 = (data['apellido2'] != '')
-            ? data['apellido2'].toString().toLowerCase()
-            : null;
-        apellido2 = (apellido2 != null)
-            ? apellido2[0].toString().toUpperCase() +
-                apellido2.substring(1).toString()
-            : null;
-        var nombre1 = data['nombre1'].toString().toLowerCase();
-        nombre1 = nombre1[0].toString().toUpperCase() +
-            nombre1.substring(1).toString();
-        var nombre2 = (data['nombre2'] != '')
-            ? data['nombre2'].toString().toLowerCase()
-            : null;
-        nombre2 = (nombre2 != null)
-            ? nombre2[0].toString().toUpperCase() +
-                nombre2.substring(1).toString()
-            : null;
-        var familyName =
-            (apellido2 != null) ? apellido1 + ' ' + apellido2 : apellido1;
-        // familyName = familyName.toString().toLowerCase();
-        // familyName = familyName[0].toString().toUpperCase() +
-        //     familyName.substring(1).toString();
-        var givenName = (nombre2 != null) ? nombre1 + ' ' + nombre2 : nombre1;
-        // givenName = givenName.toString().toLowerCase();
-        // givenName = givenName[0].toString().toUpperCase() +
-        //     givenName.substring(1).toString();
-        var fullName = givenName + ' ' + familyName;
-        var primaryEmail; // .toString().toLowerCase()
-        if (apellido2 != null) {
-          primaryEmail = nombre1 + '.' + apellido1 + '.' + apellido2;
-        } else if (nombre2 != null) {
-          primaryEmail = nombre1 + '.' + nombre2 + '.' + apellido1;
-        } else {
-          primaryEmail = nombre1 +
-              '.' +
-              apellido1 +
-              '.' +
-              new DateTime.now().year.toString();
-        }
-        primaryEmail = primaryEmail + '@estudiantes.lreginaldofischione.edu.co';
-        primaryEmail = primaryEmail.toString().toLowerCase(); // �
-        primaryEmail = primaryEmail.toString().replaceAll('ñ', 'n');
-        primaryEmail = primaryEmail.toString().replaceAll(' ', '');
-        primaryEmail = primaryEmail.toString().replaceAll('á', 'a');
-        primaryEmail = primaryEmail.toString().replaceAll('é', 'e');
-        primaryEmail = primaryEmail.toString().replaceAll('í', 'i');
-        primaryEmail = primaryEmail.toString().replaceAll('ó', 'o');
-        primaryEmail = primaryEmail.toString().replaceAll('ú', 'u');
-        primaryEmail = primaryEmail.toString().replaceAll('�', '');
-        primaryEmail = primaryEmail.toString().trim();
-        // print(['PrimaryEmail', primaryEmail]);
-        // print(['FamilyName', familyName]);
-        // print(['GivenName', givenName]);
-        // print(['FullName', fullName]);
-        var sede = '';
-        switch (data['sede']) {
-          case 'LIVIO REGINALDO FISCHIONE':
-            sede = 'Principal';
-            break;
-          case 'EL PARAISO':
-            sede = 'Paraiso';
-            break;
-          case 'CELIA CATALINA DE L¢PEZ':
-            sede = 'Celia Catalina';
-            break;
-          default:
-        }
-        var orgUnitPath = '/Ensayo/' +
-            sede +
-            '/' +
-            capitalize(data['jornada']) +
-            '/Estudiantes/2020';
-        usersg.add({
-          'id': '',
-          'name': {
-            'familyName': familyName,
-            'givenName': givenName,
-            'fullName': fullName,
-          },
-          'password': '123456789',
-          'primaryEmail': primaryEmail,
-          'orgUnitPath': '/Ensayo', //orgUnitPath,
-          'organizations': '',
-        });
-      });
-      // print(
-      //     ['Carga de users2 localStorage', usersg.length, jsonEncode(usersg)]);
-    }
-    final HttpsCallable callable = CloudFunctions.instance
-        .getHttpsCallable(functionName: 'addGsuiteUsers2')
-          ..timeout = const Duration(seconds: 60);
-    var step = 75;
-    var limit = (usersg.length / step).truncate();
-    print(['limit', limit]);
-    var start;
-    var end;
-    for (var i = 0; i < limit; i++) {
-      start = (i * step);
-      end = ((i + 1) * step);
-      var usersg2 = usersg.sublist(start, end);
-      // print(['Loop start, end', i, start, end]);
-      await iterableCloudFunction(callable, usersg2);
-    }
-    var residuo = (usersg.length % (step));
-    if (residuo > 0) {
-      // print(['Residuo', residuo]);
-      start = usersg.length - residuo;
-      end = usersg.length;
-      var usersg2 = usersg.sublist(start, end);
-      print(['Ultimo - start, end', residuo, start, end]);
-      await iterableCloudFunction(callable, usersg2);
-    }
-  } catch (e) {
-    print(['Error addGsuiteUsers2', e]);
-  }
-}
-
-iterableCloudFunction(HttpsCallable callable, users) async {
-  try {
-    HttpsCallableResult result;
-    print(['usuarios', users.length]);
-    result = await callable.call(
-      <String, dynamic>{
-        'data': users,
-      },
-    );
-    print(['Resultado', result.data]);
-    var simatSheetId = result.data;
-    await storage.put('simatSheetId', result.data);
-    return simatSheetId;
-  } on CloudFunctionsException catch (e) {
-    print('addGsuiteUsers2 functions exception');
-    print(e.code);
-    print(e.message);
-    print(e.details);
-  } catch (e) {
-    print('addGsuiteUsers2 generic exception');
     print(e);
   }
 }
