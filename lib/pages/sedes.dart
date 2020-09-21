@@ -16,11 +16,14 @@ import 'package:gescolar_dev/widgets/pagDataTable/pagDataTable.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:json_table/json_table.dart';
 
 final drive = GoogleDrive();
 bool darkMode = false;
 bool isLoading = false;
+bool isLoading2 = false;
 var firebaseUsers = 0;
 var gSuiteUsers = 0;
 var simatUsers = 0;
@@ -42,23 +45,8 @@ List<CircularStackEntry> dataC = <CircularStackEntry>[
     rankKey: 'Quarterly Profits',
   ),
 ];
-String u0 =
-    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"09","GRUPO":"0903","fechaini":"2020-02-17 07:11:19.0","nui":"YENARI556243828","estrato":"ESTRATO 1","DOC":"1118815346","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ARIAS","apellido2":"ROSADO","NOMBRE1":"GENESYS","nombre2":"YIRETH","genero":"FEMENINO","fechaNacimiento":"02/11/2005","epsEstudiante":"CAPRECOM EPS","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":99,"nombre":"GENESYS ARIAS"}';
-String u1 =
-    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"08","GRUPO":"0801","fechaini":"2020-01-15 15:05:06.0","nui":"SULBAR1494684186","estrato":"ESTRATO 2","DOC":"1029860566","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"BARROS","apellido2":"RODRIGUEZ","NOMBRE1":"ZULAY","nombre2":"MILENA","genero":"FEMENINO","fechaNacimiento":"08/04/2006","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":204,"nombre":"ZULAY BARROS"}';
-String u2 =
-    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"07","GRUPO":"0701","fechaini":"2020-01-15 09:34:16.0","nui":"ALAAKO1991855844","estrato":"ESTRATO 1","DOC":"1119394138","tipodoc":"RC:REGISTRO CIVIL DE NACIMIENTO","APELLIDO1":"ACOSTA","apellido2":"MENDOZA","NOMBRE1":"ALAN","nombre2":"DE JESUS","genero":"MASCULINO","fechaNacimiento":"19/01/2008","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":9,"nombre":"ALAN ACOSTA"}';
-String u3 =
-    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"NOCTURNA","gradoCod":"23","GRUPO":"2301","fechaini":"2020-03-16 07:18:29.0","nui":"LUSAMA1048870154","estrato":"ESTRATO 1","DOC":"1118800267","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"AMAYA","apellido2":"POLO","NOMBRE1":"LUZ","nombre2":"BEIDIS","genero":"FEMENINO","fechaNacimiento":"18/11/2003","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":58,"nombre":"LUZ AMAYA"}';
 
-String u4 =
-    '{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"08","GRUPO":"0802","fechaini":"2020-02-17 14:35:38.0","nui":"KLAASE1322271237","estrato":"ESTRATO 1","DOC":"1047337183","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ACENDRA","apellido2":"PEDROZO","NOMBRE1":"CLAUDIA","nombre2":"ANDREA","genero":"FEMENINO","fechaNacimiento":"25/05/2006","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"COLOMBIA","correo":"","selected":false,"index":1,"nombre":"CLAUDIA ACENDRA"}';
-String u =
-    '[{"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"08","GRUPO":"0802","fechaini":"2020-02-17 14:35:38.0","nui":"KLAASE1322271237","estrato":"ESTRATO 1","DOC":"1047337183","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ACENDRA","apellido2":"PEDROZO","NOMBRE1":"CLAUDIA","nombre2":"ANDREA","genero":"FEMENINO","fechaNacimiento":"25/05/2006","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"COLOMBIA","correo":"","selected":false,"index":1,"nombre":"CLAUDIA ACENDRA"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"10","GRUPO":"1004","fechaini":"2020-01-16 10:04:32.0","nui":"KARAKO1578261071","estrato":"ESTRATO 1","DOC":"1118807924","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ACOSTA","apellido2":"MENDOZA","NOMBRE1":"CARLOS","nombre2":"ALBERTO","genero":"MASCULINO","fechaNacimiento":"15/01/2005","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":10,"nombre":"CARLOS ACOSTA"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"11","GRUPO":"1101","fechaini":"2020-01-16 10:35:09.0","nui":"LINARI905814677","estrato":"ESTRATO 1","DOC":"1118800460","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"ARIZA","apellido2":"BARROS","NOMBRE1":"LINA","nombre2":"MARCELA","genero":"FEMENINO","fechaNacimiento":"06/06/2003","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":100,"nombre":"LINA ARIZA"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"10","GRUPO":"1002","fechaini":"2020-01-15 13:20:38.0","nui":"DINBAR749331842","estrato":"ESTRATO 1","DOC":"1029860652","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"BARROS","apellido2":"MOSCOTE","NOMBRE1":"DEINNYS","nombre2":"SANDRITH","genero":"FEMENINO","fechaNacimiento":"15/06/2006","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":200,"nombre":"DEINNYS BARROS"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"MAÑANA","gradoCod":"11","GRUPO":"1101","fechaini":"2020-01-15 13:37:14.0","nui":"ANDBRI2035542230","estrato":"ESTRATO 2","DOC":"1118802808","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"BRITO","apellido2":"PEREZ","NOMBRE1":"ANDRES","nombre2":"JOSE","genero":"MASCULINO","fechaNacimiento":"19/07/2003","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":300,"nombre":"ANDRES BRITO"}, {"ano":"2020","estado":"MATRICULADO","SEDE":"LIVIO REGINALDO FISCHIONE","codigoDaneSede":"244001002356","zonaSede":"URBANA","JORNADA":"TARDE","gradoCod":"09","GRUPO":"0903","fechaini":"2020-01-16 09:07:08.0","nui":"LERKAS1263687305","estrato":"ESTRATO 1","DOC":"1118812779","tipodoc":"TI:TARJETA DE IDENTIDAD","APELLIDO1":"CASTAÑEDA","apellido2":"VELASQUEZ","NOMBRE1":"LEREIDYS","nombre2":"LERIETH","genero":"FEMENINO","fechaNacimiento":"03/09/2005","epsEstudiante":"","discapacidad":"NO APLICA","paisOrigen":"","correo":"","selected":false,"index":400,"nombre":"LEREIDYS CASTAÑEDA"}]';
-final String jsonSample =
-    '[' + u4 + ',' + u0 + ',' + u1 + ',' + u2 + ',' + u3 + ']';
-
-class Filas {
+/* class Filas {
   String name;
   String email;
   int age;
@@ -92,7 +80,7 @@ class Filas {
       index: 0,
     );
   }
-}
+} */
 
 class Simat {
   String ano;
@@ -118,9 +106,11 @@ class Simat {
   String discapacidad;
   String paisOrigen;
   String correo;
+  //------------
   bool selected;
   int index;
   String nombre;
+  String plataformaState;
 
   Simat(
       {this.ano,
@@ -148,73 +138,74 @@ class Simat {
       this.correo,
       this.selected,
       this.index,
-      this.nombre});
+      this.nombre,
+      this.plataformaState});
 
   factory Simat.fromJson(Map<String, dynamic> json) {
     var nombre = ((json['nombre1'] != null) && (json['apellido1'] != null))
         ? json['nombre1'] + ' ' + json['apellido1']
         : '';
     return Simat(
-      ano: json['ano'],
-      estado: json['estado'],
-      sede: json['sede'],
-      codigoDaneSede: json['codigoDaneSede'],
-      zonaSede: json['zonaSede'],
-      jornada: json['jornada'],
-      gradoCod: json['gradoCod'],
-      grupo: json['grupo'],
-      fechaini: json['fechaini'],
-      nui: json['nui'],
-      estrato: json['estrato'],
-      doc: json['doc'],
-      tipodoc: json['tipodoc'],
-      apellido1: json['apellido1'],
-      apellido2: json['apellido2'],
-      nombre1: json['nombre1'],
-      nombre2: json['nombre2'],
-      genero: json['genero'],
-      fechaNacimiento: json['fechaNacimiento'],
-      epsEstudiante: json['epsEstudiante'],
-      discapacidad: json['discapacidad'],
-      paisOrigen: json['paisOrigen'],
-      correo: json['correo'],
-      selected: false,
-      index: 0,
-      nombre: nombre,
-    );
+        ano: json['ano'],
+        estado: json['estado'],
+        sede: json['sede'],
+        codigoDaneSede: json['codigoDaneSede'],
+        zonaSede: json['zonaSede'],
+        jornada: json['jornada'],
+        gradoCod: json['gradoCod'],
+        grupo: json['grupo'],
+        fechaini: json['fechaini'],
+        nui: json['nui'],
+        estrato: json['estrato'],
+        doc: json['doc'],
+        tipodoc: json['tipodoc'],
+        apellido1: json['apellido1'],
+        apellido2: json['apellido2'],
+        nombre1: json['nombre1'],
+        nombre2: json['nombre2'],
+        genero: json['genero'],
+        fechaNacimiento: json['fechaNacimiento'],
+        epsEstudiante: json['epsEstudiante'],
+        discapacidad: json['discapacidad'],
+        paisOrigen: json['paisOrigen'],
+        correo: json['correo'],
+        selected: false,
+        index: 0,
+        nombre: nombre,
+        plataformaState: 'pendiente');
   }
   factory Simat.fromLocal(Map<String, dynamic> json) {
     var nombre = ((json['NOMBRE1'] != null) && (json['APELLIDO1'] != null))
         ? json['NOMBRE1'] + ' ' + json['APELLIDO1']
         : '';
     return Simat(
-      ano: json['ANO'],
-      estado: json['ESTADO'],
-      sede: json['SEDE'],
-      codigoDaneSede: json['CODIGO_DANE_SEDE'],
-      zonaSede: json['ZONA_SEDE'],
-      jornada: json['JORNADA'],
-      gradoCod: json['GRADO_COD'],
-      grupo: json['GRUPO'],
-      fechaini: json['FECHAINI'],
-      nui: json['NUI'],
-      estrato: json['ESTRATO'],
-      doc: json['DOC'],
-      tipodoc: json['TIPODOC'],
-      apellido1: json['APELLIDO1'],
-      apellido2: json['APELLIDO2'],
-      nombre1: json['NOMBRE1'],
-      nombre2: json['NOMBRE2'],
-      genero: json['GENERO'],
-      fechaNacimiento: json['FECHA_NACIMIENTO'],
-      epsEstudiante: json['EPS_ESTUDIANTE'],
-      discapacidad: json['DISCAPACIDAD'],
-      paisOrigen: json['PAIS_ORIGEN'],
-      correo: json['CORREO'],
-      selected: false,
-      index: 0,
-      nombre: nombre,
-    );
+        ano: json['ANO'],
+        estado: json['ESTADO'],
+        sede: json['SEDE'],
+        codigoDaneSede: json['CODIGO_DANE_SEDE'],
+        zonaSede: json['ZONA_SEDE'],
+        jornada: json['JORNADA'],
+        gradoCod: json['GRADO_COD'],
+        grupo: json['GRUPO'],
+        fechaini: json['FECHAINI'],
+        nui: json['NUI'],
+        estrato: json['ESTRATO'],
+        doc: json['DOC'],
+        tipodoc: json['TIPODOC'],
+        apellido1: json['APELLIDO1'],
+        apellido2: json['APELLIDO2'],
+        nombre1: json['NOMBRE1'],
+        nombre2: json['NOMBRE2'],
+        genero: json['GENERO'],
+        fechaNacimiento: json['FECHA_NACIMIENTO'],
+        epsEstudiante: json['EPS_ESTUDIANTE'],
+        discapacidad: json['DISCAPACIDAD'],
+        paisOrigen: json['PAIS_ORIGEN'],
+        correo: json['CORREO'],
+        selected: false,
+        index: 0,
+        nombre: nombre,
+        plataformaState: 'pendiente');
   }
   factory Simat.fromList(List<String> list) {
     var nombre = ((list[27] != null) && (list[25] != null))
@@ -246,7 +237,8 @@ class Simat {
         correo: list[42].substring(list[42].length),
         selected: false,
         index: 0,
-        nombre: nombre);
+        nombre: nombre,
+        plataformaState: 'pendiente');
   }
   Map toJson() => {
         'ano': ano,
@@ -274,7 +266,8 @@ class Simat {
         'correo': correo,
         'selected': false,
         'index': index,
-        'nombre': nombre
+        'nombre': nombre,
+        'plataformaState': plataformaState
       };
 }
 
@@ -418,6 +411,7 @@ List<Simat> usersTemp;
 var jornadas = ['jornada'];
 var grupos = ['grupo'];
 int numItems;
+String simatF = 'Fecha de actualización';
 List<bool> selected;
 List<bool> simatSelected;
 
@@ -431,10 +425,220 @@ class Sedes extends StatefulWidget {
 class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
-    _getLoacalUsers();
+    // initializeDateFormatting('es'); //very important
+    getFirebaseSimat();
+    // _getLoacalUsers();
     _tabController = TabController(vsync: this, length: myTabs.length);
     // WidgetsBinding.instance
     //     .addPostFrameCallback((_) => {print(jsonEncode(users[0]))});
+  }
+
+  getFirebaseSimat() async {
+    _isLoading2(true);
+    googleAuthStorage = await Hive.openBox('googleAuthStorage');
+    storage = await Hive.openBox('myBox');
+    Firestore.instance
+        .collection('estudiantes')
+        .document('simat')
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        setState(() {
+          simatFecha = documentSnapshot.data['lastSimatFecha'].toDate();
+          simatF = 'Ultima actualización el dia ' +
+              capitalize(format.format(simatFecha).toString());
+        });
+        getSheetData(documentSnapshot.data['lastSimatSheetId']);
+        print([documentSnapshot.data, simatFecha]);
+      }
+    });
+  }
+
+  Future<dynamic> getSheetData(dynamic id) async {
+    try {
+      var accessToken = await googleAuthStorage.get('accessToken');
+      var autorization = 'Bearer ' + accessToken;
+      var url = 'https://sheets.googleapis.com/v4/spreadsheets/' +
+          id +
+          '/values:batchGet?majorDimension=ROWS&ranges=A%3AAQ&key=AIzaSyCdCTYPL1-PPQb3rpOi5Ls_oGoMfPjvXG8';
+      final http.Response response =
+          await http.get(url, headers: <String, String>{
+        'Authorization': autorization,
+        'Accept': 'application/json',
+      });
+      if (response.statusCode == 200) {
+        var userst2 = json.decode(response.body);
+        userst2 = userst2['valueRanges'][0]['values'];
+        userst2.remove(userst2[0]);
+        dynamic userst = [];
+        var indext = -1;
+        userst2.forEach((user) {
+          var nombre =
+              ((user.asMap().containsKey(27)) && (user.asMap().containsKey(25)))
+                  ? user[27] + ' ' + user[25]
+                  : 'no esta';
+          var simatUser = {
+            'ano': (user.asMap().containsKey(0)) ? user[0] : '',
+            'estado': (user.asMap().containsKey(2)) ? user[2] : '',
+            'sede': (user.asMap().containsKey(8)) ? user[8] : '',
+            'codigoDaneSede': (user.asMap().containsKey(9)) ? user[9] : '',
+            'zonaSede': (user.asMap().containsKey(11)) ? user[11] : '',
+            'jornada': (user.asMap().containsKey(12)) ? user[12] : '',
+            'gradoCod': (user.asMap().containsKey(13)) ? user[13] : '',
+            'grupo': (user.asMap().containsKey(14)) ? user[14] : '',
+            'fechaini': (user.asMap().containsKey(17)) ? user[17] : '',
+            'nui': (user.asMap().containsKey(19)) ? user[19] : '',
+            'estrato': (user.asMap().containsKey(20)) ? user[20] : '',
+            'doc': (user.asMap().containsKey(23)) ? user[23] : '',
+            'tipodoc': (user.asMap().containsKey(24)) ? user[24] : '',
+            'apellido1': (user.asMap().containsKey(25)) ? user[25] : '',
+            'apellido2': (user.asMap().containsKey(26)) ? user[26] : '',
+            'nombre1': (user.asMap().containsKey(27)) ? user[27] : '',
+            'nombre2': (user.asMap().containsKey(28)) ? user[28] : '',
+            'genero': (user.asMap().containsKey(29)) ? user[29] : '',
+            'fechaNacimiento': (user.asMap().containsKey(30)) ? user[30] : '',
+            'epsEstudiante': (user.asMap().containsKey(32)) ? user[32] : '',
+            'discapacidad': (user.asMap().containsKey(40)) ? user[40] : '',
+            'paisOrigen': (user.asMap().containsKey(41)) ? user[41] : '',
+            'correo': (user.asMap().containsKey(42)) ? user[42] : '',
+            'selected': false,
+            'index': indext++,
+            'nombre': nombre,
+            'plataformaState': 'pendiente'
+          };
+          userst.add(simatUser);
+        });
+        userst = json.encode(userst);
+        // print(userst2);
+        if (userst != null) {
+          userst = userst.toString().replaceAll('MA�ANA', 'MAÑANA');
+          userst = userst.toString().replaceAll('EDUCACI�N', 'EDUCACION');
+          userst = userst.toString().replaceAll('J�VENES', 'JOVENES');
+          userst = userst.toString().replaceAll('MART�NEZ', 'MARTINEZ');
+          userst = userst.toString().replaceAll('NU�EZ', 'NUÑEZ');
+          userst = userst.toString().replaceAll('SE�ORA', 'SEÑORA');
+          userst = userst.toString().replaceAll('MU�OZ', 'MUÑOZ');
+          userst =
+              userst.toString().replaceAll('IDENTIFICACI�N', 'IDENTIFICACION');
+          userst = userst.toString().replaceAll('N�MERO', 'NUMERO');
+          userst = userst.toString().replaceAll('ARI�O', 'ARÑIO');
+          userst = userst.toString().replaceAll('BELE�O', 'BELEÑO');
+          userst = userst.toString().replaceAll('ANDR�S', 'ANDRES');
+          userst = userst.toString().replaceAll('A�EZ', 'AÑEZ');
+          userst = userst.toString().replaceAll('PE�ARANDA', 'PEÑARANDA');
+          userst = userst.toString().replaceAll('PE�ATE', 'PEÑATE');
+          userst = userst.toString().replaceAll('BOLA�O', 'BOLAÑO');
+          userst = userst.toString().replaceAll('AVENDA�O', 'AVENDAÑO');
+          userst = userst.toString().replaceAll('ORDO�EZ', 'ORDOÑEZ');
+          userst = userst.toString().replaceAll('C�DULA', 'CEDULA');
+          userst = userst.toString().replaceAll('ZU�IGA', 'ZUÑIGA');
+          userst = userst.toString().replaceAll('CIUDADAN�A', 'CIUDADANIA');
+          userst = userst.toString().replaceAll('SECRETAR�A', 'SECRETARIA');
+          userst = userst.toString().replaceAll('BRICE�O', 'BRICEÑO');
+          userst = userst.toString().replaceAll('EXTRANJER�A', 'EXTRANJERIA');
+          userst = userst.toString().replaceAll('CARRE�O', 'CARREÑO');
+          userst = userst.toString().replaceAll('CASTA�EDA', 'CASTAÑEDA');
+          userst = userst.toString().replaceAll('CATA�O', 'CATAÑO');
+          userst = userst.toString().replaceAll('NI�O', 'NIÑO');
+          userst = userst.toString().replaceAll('ACU�A', 'ACUÑA');
+          userst = userst.toString().replaceAll('RIO�ACHA', 'RIOHACHA');
+          userst = userst.toString().replaceAll('CA�O', 'CAÑO');
+          userst = userst.toString().replaceAll('PE�A', 'PEÑA');
+          userst = userst.toString().replaceAll('MART�N', 'MARTIN');
+          userst = userst.toString().replaceAll('ESTUPI�AN', 'ESTUPIÑAN');
+          userst = userst.toString().replaceAll('PE�ALOZA', 'PEÑALOZA');
+          userst = userst.toString().replaceAll('JOS�', 'JOSE');
+          userst = userst.toString().replaceAll('GAL�N', 'GALAN');
+          userst = userst.toString().replaceAll('CAMA�O', 'CAMAÑO');
+          userst = userst.toString().replaceAll('MERI�O', 'MERIÑO');
+          userst = userst.toString().replaceAll('G�NESIS', 'GENESIS');
+          userst = userst.toString().replaceAll('GUDI�O', 'GUDIÑO');
+          userst = userst.toString().replaceAll('VICU�A', 'VICUÑA');
+          userst = userst.toString().replaceAll(' �A', ' A');
+          userst = userst.toString().replaceAll(' �E', ' E');
+          userst = userst.toString().replaceAll(' �I', ' I');
+          userst = userst.toString().replaceAll(' �O', ' O');
+          userst = userst.toString().replaceAll(' �U', ' U');
+          userst = userst.toString().replaceAll('.�', '.');
+          userst = userst.toString().replaceAll('AIC�', 'AIC');
+          userst = userst.toString().replaceAll(' �C', ' C');
+          userst = userst.toString().replaceAll('LTDA�', 'LTDA');
+          userst = userst.toString().replaceAll('SAR�', 'SARA');
+          userst = userst.toString().replaceAll('LAMBRA�O', 'LAMBRAÑO');
+          userst = userst.toString().replaceAll('LIDUE�A', 'LIDUEÑA');
+          userst = userst.toString().replaceAll('O�ATE', 'OÑATE');
+          userst = userst.toString().replaceAll('VISI�N', 'VISION');
+          userst = userst.toString().replaceAll('CALDER�N', 'CALDERON');
+          userst = userst.toString().replaceAll('SOF�A', 'SOFIA');
+          userst = userst.toString().replaceAll('MOIS�S', 'MOISES');
+          userst = userst.toString().replaceAll('ANG�LICA', 'ANGELICA');
+          userst = userst.toString().replaceAll('MONTA�O', 'MONTAÑO');
+          userst = userst.toString().replaceAll('PATI�O', 'PATIÑO');
+          userst = userst.toString().replaceAll('MU�IZ', 'MUÑIZ');
+          userst = userst.toString().replaceAll('G�MEZ', 'GÓMEZ');
+          userst = userst.toString().replaceAll('CASTA�O', 'CASTAÑO');
+          userst = userst.toString().replaceAll('MARI�A', 'MARIÑA');
+          userst = userst.toString().replaceAll('F�SICA', 'FISICA');
+          userst = userst.toString().replaceAll('MAR�A', 'MARIA');
+          userst = userst.toString().replaceAll('BA�OS', 'BAÑOS');
+          userst = userst.toString().replaceAll('KA�AKAT', 'KAÑAKAT');
+          userst = userst.toString().replaceAll('LONDO�O', 'LONDOÑO');
+          userst = userst.toString().replaceAll('SE�A', 'SEÑA');
+          userst = userst.toString().replaceAll('QUI�ONES', 'QUIÑONES');
+          userst = userst.toString().replaceAll('SE�AS', 'SEÑAS');
+          userst = userst.toString().replaceAll('T�MARA', 'TAMARA');
+          userst = userst.toString().replaceAll('CERME�O', 'CERMEÑO');
+          userst = userst.toString().replaceAll('JES�S', 'JESÚS');
+          userst = userst.toString().replaceAll('URBANIZACI�N', 'URBANIZACION');
+          // userst = userst.toString().replaceAll('EDUCACI�N', 'EDUCACION');
+          userst = userst.toString().replaceAll('Á', 'A');
+          userst = userst.toString().replaceAll('É', 'E');
+          userst = userst.toString().replaceAll('Í', 'I');
+          userst = userst.toString().replaceAll('Ó', 'O');
+          userst = userst.toString().replaceAll('Ú', 'U');
+          // print(userst);
+          users = (json.decode(userst) as List)
+              .map((data) => Simat.fromJson(data))
+              .toList();
+          print([
+            'Carga de users2 localStorage',
+            users.length // ,jsonEncode(users[0])
+          ]);
+          var uniques = {};
+          jornadas = [];
+          grupos = [];
+          users.forEach((user) {
+            if (uniques[user.jornada] == null) {
+              uniques[user.jornada] = true;
+              jornadas.add(user.jornada);
+            } else if (uniques[user.grupo] == null) {
+              uniques[user.grupo] = true;
+              grupos.add(user.grupo);
+            }
+          });
+          grupos.add('grupo');
+          jornadas.add('jornada');
+          setState(() {
+            users = users;
+            numItems = users.length;
+            _simatLength = numItems;
+            selected = List<bool>.generate(numItems, (index) => false);
+            simatSelected = List<bool>.generate(numItems, (index) => false);
+          });
+          // print('MA�ANA');
+        } else {
+          print(['Carga de userst localStorage', userst]);
+        }
+        _isLoading2(false);
+        return userst;
+      } else {
+        _isLoading2(false);
+        print(['Response error', response.body]);
+      }
+    } catch (e) {
+      _isLoading2(false);
+      print(['Error getSheetData', e]);
+    }
   }
 
   _getLoacalUsers() async {
@@ -442,21 +646,103 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       googleAuthStorage = await Hive.openBox('googleAuthStorage');
       storage = await Hive.openBox('myBox');
       var userst = await storage.get('simat');
+      // simatFecha = await storage.get('simatFecha');
+      // simatF = 'Ultima actualización el dia ' +
+      //     capitalize(format.format(simatFecha).toString());
+      // print(['userst-', userst]);
       if (userst != null) {
-        userst = userst.replaceAll('MA�ANA', 'MAÑANA');
-        userst = userst.replaceAll('EDUCACI�N', 'EDUCACION');
+        userst = userst.toString().replaceAll('MA�ANA', 'MAÑANA');
+        userst = userst.toString().replaceAll('EDUCACI�N', 'EDUCACION');
+        userst = userst.toString().replaceAll('J�VENES', 'JOVENES');
+        userst = userst.toString().replaceAll('MART�NEZ', 'MARTINEZ');
+        userst = userst.toString().replaceAll('NU�EZ', 'NUÑEZ');
+        userst = userst.toString().replaceAll('SE�ORA', 'SEÑORA');
+        userst = userst.toString().replaceAll('MU�OZ', 'MUÑOZ');
+        userst =
+            userst.toString().replaceAll('IDENTIFICACI�N', 'IDENTIFICACION');
+        userst = userst.toString().replaceAll('N�MERO', 'NUMERO');
+        userst = userst.toString().replaceAll('ARI�O', 'ARÑIO');
+        userst = userst.toString().replaceAll('BELE�O', 'BELEÑO');
+        userst = userst.toString().replaceAll('ANDR�S', 'ANDRES');
+        userst = userst.toString().replaceAll('A�EZ', 'AÑEZ');
+        userst = userst.toString().replaceAll('PE�ARANDA', 'PEÑARANDA');
+        userst = userst.toString().replaceAll('PE�ATE', 'PEÑATE');
+        userst = userst.toString().replaceAll('BOLA�O', 'BOLAÑO');
+        userst = userst.toString().replaceAll('AVENDA�O', 'AVENDAÑO');
+        userst = userst.toString().replaceAll('ORDO�EZ', 'ORDOÑEZ');
+        userst = userst.toString().replaceAll('C�DULA', 'CEDULA');
+        userst = userst.toString().replaceAll('ZU�IGA', 'ZUÑIGA');
+        userst = userst.toString().replaceAll('CIUDADAN�A', 'CIUDADANIA');
+        userst = userst.toString().replaceAll('SECRETAR�A', 'SECRETARIA');
+        userst = userst.toString().replaceAll('BRICE�O', 'BRICEÑO');
+        userst = userst.toString().replaceAll('EXTRANJER�A', 'EXTRANJERIA');
+        userst = userst.toString().replaceAll('CARRE�O', 'CARREÑO');
+        userst = userst.toString().replaceAll('CASTA�EDA', 'CASTAÑEDA');
+        userst = userst.toString().replaceAll('CATA�O', 'CATAÑO');
+        userst = userst.toString().replaceAll('NI�O', 'NIÑO');
+        userst = userst.toString().replaceAll('ACU�A', 'ACUÑA');
+        userst = userst.toString().replaceAll('RIO�ACHA', 'RIOHACHA');
+        userst = userst.toString().replaceAll('CA�O', 'CAÑO');
+        userst = userst.toString().replaceAll('PE�A', 'PEÑA');
+        userst = userst.toString().replaceAll('MART�N', 'MARTIN');
+        userst = userst.toString().replaceAll('ESTUPI�AN', 'ESTUPIÑAN');
+        userst = userst.toString().replaceAll('PE�ALOZA', 'PEÑALOZA');
+        userst = userst.toString().replaceAll('JOS�', 'JOSE');
+        userst = userst.toString().replaceAll('GAL�N', 'GALAN');
+        userst = userst.toString().replaceAll('CAMA�O', 'CAMAÑO');
+        userst = userst.toString().replaceAll('MERI�O', 'MERIÑO');
+        userst = userst.toString().replaceAll('G�NESIS', 'GENESIS');
+        userst = userst.toString().replaceAll('GUDI�O', 'GUDIÑO');
+        userst = userst.toString().replaceAll('VICU�A', 'VICUÑA');
+        userst = userst.toString().replaceAll(' �A', ' A');
+        userst = userst.toString().replaceAll(' �E', ' E');
+        userst = userst.toString().replaceAll(' �I', ' I');
+        userst = userst.toString().replaceAll(' �O', ' O');
+        userst = userst.toString().replaceAll(' �U', ' U');
+        userst = userst.toString().replaceAll('.�', '.');
+        userst = userst.toString().replaceAll('AIC�', 'AIC');
+        userst = userst.toString().replaceAll(' �C', ' C');
+        userst = userst.toString().replaceAll('LTDA�', 'LTDA');
+        userst = userst.toString().replaceAll('SAR�', 'SARA');
+        userst = userst.toString().replaceAll('LAMBRA�O', 'LAMBRAÑO');
+        userst = userst.toString().replaceAll('LIDUE�A', 'LIDUEÑA');
+        userst = userst.toString().replaceAll('O�ATE', 'OÑATE');
+        userst = userst.toString().replaceAll('VISI�N', 'VISION');
+        userst = userst.toString().replaceAll('CALDER�N', 'CALDERON');
+        userst = userst.toString().replaceAll('SOF�A', 'SOFIA');
+        userst = userst.toString().replaceAll('MOIS�S', 'MOISES');
+        userst = userst.toString().replaceAll('ANG�LICA', 'ANGELICA');
+        userst = userst.toString().replaceAll('MONTA�O', 'MONTAÑO');
+        userst = userst.toString().replaceAll('PATI�O', 'PATIÑO');
+        userst = userst.toString().replaceAll('MU�IZ', 'MUÑIZ');
+        userst = userst.toString().replaceAll('G�MEZ', 'GÓMEZ');
+        userst = userst.toString().replaceAll('CASTA�O', 'CASTAÑO');
+        userst = userst.toString().replaceAll('MARI�A', 'MARIÑA');
+        userst = userst.toString().replaceAll('F�SICA', 'FISICA');
+        userst = userst.toString().replaceAll('MAR�A', 'MARIA');
+        userst = userst.toString().replaceAll('BA�OS', 'BAÑOS');
+        userst = userst.toString().replaceAll('KA�AKAT', 'KAÑAKAT');
+        userst = userst.toString().replaceAll('LONDO�O', 'LONDOÑO');
+        userst = userst.toString().replaceAll('SE�A', 'SEÑA');
+        userst = userst.toString().replaceAll('QUI�ONES', 'QUIÑONES');
+        userst = userst.toString().replaceAll('SE�AS', 'SEÑAS');
+        userst = userst.toString().replaceAll('T�MARA', 'TAMARA');
+        userst = userst.toString().replaceAll('CERME�O', 'CERMEÑO');
+        userst = userst.toString().replaceAll('JES�S', 'JESÚS');
+        userst = userst.toString().replaceAll('URBANIZACI�N', 'URBANIZACION');
+        // userst = userst.toString().replaceAll('EDUCACI�N', 'EDUCACION');
         userst = userst.toString().replaceAll('Á', 'A');
         userst = userst.toString().replaceAll('É', 'E');
         userst = userst.toString().replaceAll('Í', 'I');
         userst = userst.toString().replaceAll('Ó', 'O');
         userst = userst.toString().replaceAll('Ú', 'U');
+        print(['userst-', userst]);
         users = (json.decode(userst) as List)
             .map((data) => Simat.fromJson(data))
             .toList();
         print([
           'Carga de users2 localStorage',
-          users.length,
-          jsonEncode(users[0])
+          users.length // ,jsonEncode(users[0])
         ]);
         var uniques = {};
         jornadas = [];
@@ -489,9 +775,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     }
   }
 
+  var format = DateFormat.yMMMMEEEEd('es');
   bool _sortNameAsc = true;
   bool _sortAsc = true;
   int _sortColumnIndex;
+  // DataTableRows _rowsController;
 
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Simat'),
@@ -504,7 +792,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // var size = MediaQuery.of(context).size;
-    _json = jsonDecode(jsonSample);
+    // _json = jsonDecode(jsonSample);
     int _rowPerPage = PagDataTable.defaultRowsPerPage;
     List<DataColumn> columnas = [
       DataColumn(
@@ -733,7 +1021,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           });
         },
       ),
-      DataColumn(label: Text(''))
+      DataColumn(label: Text('')),
+      DataColumn(label: Text('Estado'))
     ];
     return Stack(
       children: [
@@ -758,7 +1047,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     Text(
-                      '5 ago 2020',
+                      format.format(DateTime.now()).toString(),
                       // textAlign: TextAlign.end,
                       style: TextStyle(
                         fontFamily: 'Spartan',
@@ -778,10 +1067,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: () async {
-                              print('onTap');
-                              _pickFiles();
-                            },
+                            onTap: null,
                             child: Column(
                               children: [
                                 Padding(
@@ -906,7 +1192,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                         ],
                       ),
                     ),
-                    Padding(
+                    /* Padding(
                       padding: const EdgeInsets.only(left: 0, right: 0.0),
                       child: FloatingActionButton(
                         onPressed: () {
@@ -921,12 +1207,12 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                             "primaryEmail":
                                 "nicolas.illidge@estudiantes.lreginaldofischione.edu.co"
                           }); */
-                          addGsuiteUsers();
+                          // getFirebaseSimat();
                         },
                         child: Icon(Icons.navigation),
                         backgroundColor: Colors.green,
                       ),
-                    ),
+                    ), */
                   ],
                 ),
               ),
@@ -949,93 +1235,178 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 80, top: 185.0, bottom: 10),
+          padding: const EdgeInsets.only(
+              left: 80, top: 185.0, bottom: 10, right: 20),
           child: Container(
             child: TabBarView(
               controller: _tabController,
               children: <Widget>[
-                (!isLoading)
-                    ? (users != null)
-                        ? Card(
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                Positioned(
-                                  top: 0,
-                                  child: IconButton(
-                                    icon: Icon(Icons.insert_drive_file),
-                                    tooltip: 'Guardar datos en Google Drive',
-                                    onPressed: () {
-                                      setState(() {
-                                        saveSimatToDrive('simat');
-                                      });
-                                    },
-                                  ),
+                (users != null)
+                    ? Card(
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Positioned(
+                              top: 15,
+                              left: 30,
+                              child: Text(
+                                simatF,
+                                style: TextStyle(
+                                  fontFamily: 'Spartan',
+                                  fontWeight: FontWeight.w700,
+                                  color: darkMode
+                                      ? Colors.white
+                                      : Colors.blueGrey[700],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(40.0),
-                                  child: PagDataTable(
-                                    header: Text('Mi tabla Gsuite'),
-                                    columns: columnas,
-                                    source: DTS(users),
-                                    showCheckboxColumn: true,
-                                    onRowsPerPageChanged: (r) {
-                                      setState(() {
-                                        _rowPerPage = r;
-                                      });
-                                    },
-                                    rowsPerPage: _rowPerPage,
-                                    sortColumnIndex: _sortColumnIndex,
-                                    sortAscending: _sortAsc,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          )
-                        : Container()
-                    : Center(
-                        child: CircularProgressIndicator(),
+                            Positioned(
+                              top: 0,
+                              right: 10,
+                              child: IconButton(
+                                icon: Icon(Icons.folder_open),
+                                tooltip: 'Cargar SIMAT TXT',
+                                onPressed: () async {
+                                  print('onTap');
+                                  _pickFiles();
+                                },
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 50,
+                              child: IconButton(
+                                icon: Icon(Icons.add_to_drive),
+                                color: Colors.green[700],
+                                tooltip: 'Guardar SIMAT en Google Drive',
+                                onPressed: () {
+                                  setState(() {
+                                    saveSimatToDrive('simat');
+                                  });
+                                },
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 90,
+                              child: IconButton(
+                                icon: Icon(Icons.supervised_user_circle),
+                                color: Colors.orange[700],
+                                tooltip: 'Crear usuarios en Gsuite - Firebase',
+                                onPressed: () {
+                                  addGsuiteUsers();
+                                },
+                              ),
+                            ),
+                            (!isLoading2)
+                                ? Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20,
+                                        top: 40,
+                                        bottom: 10,
+                                        right: 20),
+                                    child: PagDataTable(
+                                      header: Text('Estudiantes'),
+                                      columns: columnas,
+                                      source: DataTableRows(users),
+                                      showCheckboxColumn: true,
+                                      onRowsPerPageChanged: (r) {
+                                        setState(() {
+                                          _rowPerPage = r;
+                                        });
+                                      },
+                                      rowsPerPage: _rowPerPage,
+                                      sortColumnIndex: _sortColumnIndex,
+                                      sortAscending: _sortAsc,
+                                      onSelectAll: (isAllChecked) {
+                                        users.forEach((user) {
+                                          setState(() {
+                                            user.selected = isAllChecked;
+                                          });
+                                        });
+                                        DataTableRows(users)
+                                            .selectAll(isAllChecked);
+                                        /* actions: <Widget>[
+                                    IconButton(
+                                      icon: Icon(Icons.add),
+                                      tooltip: "Add vaccination center",
+                                      onPressed: () {},
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete_forever),
+                                      tooltip: "Delete vaccination center(s).",
+                                      onPressed: () {},
+                                    )
+                                  ], */
+                                      },
+                                    ),
+                                  )
+                                : Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                          ],
+                        ),
+                      )
+                    : Card(
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Positioned(
+                              top: 15,
+                              left: 30,
+                              child: Text(
+                                simatF,
+                                style: TextStyle(
+                                  fontFamily: 'Spartan',
+                                  fontWeight: FontWeight.w700,
+                                  color: darkMode
+                                      ? Colors.white
+                                      : Colors.blueGrey[700],
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 10,
+                              child: IconButton(
+                                icon: Icon(Icons.folder_open),
+                                tooltip: 'Cargar SIMAT TXT',
+                                onPressed: () async {
+                                  print('onTap');
+                                  _pickFiles();
+                                },
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 50,
+                              child: IconButton(
+                                icon: Icon(Icons.add_to_drive),
+                                color: Colors.grey,
+                                tooltip: 'Guardar SIMAT en Google Drive',
+                                onPressed: () {
+                                  setState(() {
+                                    saveSimatToDrive('simat');
+                                  });
+                                },
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 90,
+                              child: IconButton(
+                                icon: Icon(Icons.supervised_user_circle),
+                                color: Colors.grey,
+                                tooltip: 'Crear usuarios en Gsuite - Firebase',
+                                onPressed: () {
+                                  addGsuiteUsers();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                // Container(),
                 Container(),
-                /* Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(40.0),
-                    child: DataTable(
-                      columns: const <DataColumn>[
-                        DataColumn(
-                          label: Text('Number'),
-                        ),
-                      ],
-                      rows: List<DataRow>.generate(
-                        numItems,
-                        (index) => DataRow(
-                          /* color: MaterialStateProperty.resolveWith<Color>(
-                              (Set<MaterialState> states) {
-                            // All rows will have the same selected color.
-                            if (states.contains(MaterialState.selected))
-                              return Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.08);
-                            // Even rows will have a grey color.
-                            if (index % 2 == 0)
-                              return Colors.grey.withOpacity(0.3);
-                            return null; // Use default value for other states and odd rows.
-                          }), */
-                          cells: [DataCell(Text('Row $index'))],
-                          selected: selected[index],
-                          onSelectChanged: (bool value) {
-                            value ? print(index) : null;
-                            setState(() {
-                              selected[index] = value;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ), */
                 Container(),
               ],
             ),
@@ -1070,89 +1441,89 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     simatData = [];
     a.forEach((element) {
       var cero = element.toString().replaceAll('MA�ANA', 'MAÑANA');
-      cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
-      cero = cero.toString().replaceAll('J�VENES', 'JOVENES');
-      cero = cero.toString().replaceAll('MART�NEZ', 'MARTINEZ');
-      cero = cero.toString().replaceAll('NU�EZ', 'NUÑEZ');
-      cero = cero.toString().replaceAll('SE�ORA', 'SEÑORA');
-      cero = cero.toString().replaceAll('MU�OZ', 'MUÑOZ');
-      cero = cero.toString().replaceAll('IDENTIFICACI�N', 'IDENTIFICACION');
-      cero = cero.toString().replaceAll('N�MERO', 'NUMERO');
-      cero = cero.toString().replaceAll('ARI�O', 'ARÑIO');
-      cero = cero.toString().replaceAll('BELE�O', 'BELEÑO');
-      cero = cero.toString().replaceAll('ANDR�S', 'ANDRES');
-      cero = cero.toString().replaceAll('A�EZ', 'AÑEZ');
-      cero = cero.toString().replaceAll('PE�ARANDA', 'PEÑARANDA');
-      cero = cero.toString().replaceAll('PE�ATE', 'PEÑATE');
-      cero = cero.toString().replaceAll('BOLA�O', 'BOLAÑO');
-      cero = cero.toString().replaceAll('AVENDA�O', 'AVENDAÑO');
-      cero = cero.toString().replaceAll('ORDO�EZ', 'ORDOÑEZ');
-      cero = cero.toString().replaceAll('C�DULA', 'CEDULA');
-      cero = cero.toString().replaceAll('ZU�IGA', 'ZUÑIGA');
-      cero = cero.toString().replaceAll('CIUDADAN�A', 'CIUDADANIA');
-      cero = cero.toString().replaceAll('SECRETAR�A', 'SECRETARIA');
-      cero = cero.toString().replaceAll('BRICE�O', 'BRICEÑO');
-      cero = cero.toString().replaceAll('EXTRANJER�A', 'EXTRANJERIA');
-      cero = cero.toString().replaceAll('CARRE�O', 'CARREÑO');
-      cero = cero.toString().replaceAll('CASTA�EDA', 'CASTAÑEDA');
-      cero = cero.toString().replaceAll('CATA�O', 'CATAÑO');
-      cero = cero.toString().replaceAll('NI�O', 'NIÑO');
-      cero = cero.toString().replaceAll('ACU�A', 'ACUÑA');
-      cero = cero.toString().replaceAll('RIO�ACHA', 'RIOHACHA');
-      cero = cero.toString().replaceAll('CA�O', 'CAÑO');
-      cero = cero.toString().replaceAll('PE�A', 'PEÑA');
-      cero = cero.toString().replaceAll('MART�N', 'MARTIN');
-      cero = cero.toString().replaceAll('ESTUPI�AN', 'ESTUPIÑAN');
-      cero = cero.toString().replaceAll('PE�ALOZA', 'PEÑALOZA');
-      cero = cero.toString().replaceAll('JOS�', 'JOSE');
-      cero = cero.toString().replaceAll('GAL�N', 'GALAN');
-      cero = cero.toString().replaceAll('CAMA�O', 'CAMAÑO');
-      cero = cero.toString().replaceAll('MERI�O', 'MERIÑO');
-      cero = cero.toString().replaceAll('G�NESIS', 'GENESIS');
-      cero = cero.toString().replaceAll('GUDI�O', 'GUDIÑO');
-      cero = cero.toString().replaceAll('VICU�A', 'VICUÑA');
-      cero = cero.toString().replaceAll(' �A', ' A');
-      cero = cero.toString().replaceAll(' �E', ' E');
-      cero = cero.toString().replaceAll(' �I', ' I');
-      cero = cero.toString().replaceAll(' �O', ' O');
-      cero = cero.toString().replaceAll(' �U', ' U');
-      cero = cero.toString().replaceAll('.�', '.');
-      cero = cero.toString().replaceAll('AIC�', 'AIC');
-      cero = cero.toString().replaceAll(' �C', ' C');
-      cero = cero.toString().replaceAll('LTDA�', 'LTDA');
-      cero = cero.toString().replaceAll('SAR�', 'SARA');
-      cero = cero.toString().replaceAll('LAMBRA�O', 'LAMBRAÑO');
-      cero = cero.toString().replaceAll('LIDUE�A', 'LIDUEÑA');
-      cero = cero.toString().replaceAll('O�ATE', 'OÑATE');
-      cero = cero.toString().replaceAll('VISI�N', 'VISION');
-      cero = cero.toString().replaceAll('CALDER�N', 'CALDERON');
-      cero = cero.toString().replaceAll('SOF�A', 'SOFIA');
-      cero = cero.toString().replaceAll('MOIS�S', 'MOISES');
-      cero = cero.toString().replaceAll('ANG�LICA', 'ANGELICA');
-      cero = cero.toString().replaceAll('MONTA�O', 'MONTAÑO');
-      cero = cero.toString().replaceAll('PATI�O', 'PATIÑO');
-      cero = cero.toString().replaceAll('MU�IZ', 'MUÑIZ');
-      cero = cero.toString().replaceAll('G�MEZ', 'GÓMEZ');
-      cero = cero.toString().replaceAll('CASTA�O', 'CASTAÑO');
-      cero = cero.toString().replaceAll('MARI�A', 'MARIÑA');
-      cero = cero.toString().replaceAll('F�SICA', 'FISICA');
-      cero = cero.toString().replaceAll('MAR�A', 'MARIA');
-      cero = cero.toString().replaceAll('BA�OS', 'BAÑOS');
-      cero = cero.toString().replaceAll('KA�AKAT', 'KAÑAKAT');
-      cero = cero.toString().replaceAll('LONDO�O', 'LONDOÑO');
-      cero = cero.toString().replaceAll('SE�A', 'SEÑA');
-      cero = cero.toString().replaceAll('QUI�ONES', 'QUIÑONES');
-      cero = cero.toString().replaceAll('SE�AS', 'SEÑAS');
-      cero = cero.toString().replaceAll('T�MARA', 'TAMARA');
-      cero = cero.toString().replaceAll('CERME�O', 'CERMEÑO');
-      cero = cero.toString().replaceAll('JES�S', 'JESÚS');
-      cero = cero.toString().replaceAll('URBANIZACI�N', 'URBANIZACION');
       // cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
-      cero = cero.toString().replaceAll('Á', 'A');
-      cero = cero.toString().replaceAll('É', 'E');
-      cero = cero.toString().replaceAll('Í', 'I');
-      cero = cero.toString().replaceAll('Ó', 'O');
-      cero = cero.toString().replaceAll('Ú', 'U');
+      // cero = cero.toString().replaceAll('J�VENES', 'JOVENES');
+      // cero = cero.toString().replaceAll('MART�NEZ', 'MARTINEZ');
+      // cero = cero.toString().replaceAll('NU�EZ', 'NUÑEZ');
+      // cero = cero.toString().replaceAll('SE�ORA', 'SEÑORA');
+      // cero = cero.toString().replaceAll('MU�OZ', 'MUÑOZ');
+      // cero = cero.toString().replaceAll('IDENTIFICACI�N', 'IDENTIFICACION');
+      // cero = cero.toString().replaceAll('N�MERO', 'NUMERO');
+      // cero = cero.toString().replaceAll('ARI�O', 'ARÑIO');
+      // cero = cero.toString().replaceAll('BELE�O', 'BELEÑO');
+      // cero = cero.toString().replaceAll('ANDR�S', 'ANDRES');
+      // cero = cero.toString().replaceAll('A�EZ', 'AÑEZ');
+      // cero = cero.toString().replaceAll('PE�ARANDA', 'PEÑARANDA');
+      // cero = cero.toString().replaceAll('PE�ATE', 'PEÑATE');
+      // cero = cero.toString().replaceAll('BOLA�O', 'BOLAÑO');
+      // cero = cero.toString().replaceAll('AVENDA�O', 'AVENDAÑO');
+      // cero = cero.toString().replaceAll('ORDO�EZ', 'ORDOÑEZ');
+      // cero = cero.toString().replaceAll('C�DULA', 'CEDULA');
+      // cero = cero.toString().replaceAll('ZU�IGA', 'ZUÑIGA');
+      // cero = cero.toString().replaceAll('CIUDADAN�A', 'CIUDADANIA');
+      // cero = cero.toString().replaceAll('SECRETAR�A', 'SECRETARIA');
+      // cero = cero.toString().replaceAll('BRICE�O', 'BRICEÑO');
+      // cero = cero.toString().replaceAll('EXTRANJER�A', 'EXTRANJERIA');
+      // cero = cero.toString().replaceAll('CARRE�O', 'CARREÑO');
+      // cero = cero.toString().replaceAll('CASTA�EDA', 'CASTAÑEDA');
+      // cero = cero.toString().replaceAll('CATA�O', 'CATAÑO');
+      // cero = cero.toString().replaceAll('NI�O', 'NIÑO');
+      // cero = cero.toString().replaceAll('ACU�A', 'ACUÑA');
+      // cero = cero.toString().replaceAll('RIO�ACHA', 'RIOHACHA');
+      // cero = cero.toString().replaceAll('CA�O', 'CAÑO');
+      // cero = cero.toString().replaceAll('PE�A', 'PEÑA');
+      // cero = cero.toString().replaceAll('MART�N', 'MARTIN');
+      // cero = cero.toString().replaceAll('ESTUPI�AN', 'ESTUPIÑAN');
+      // cero = cero.toString().replaceAll('PE�ALOZA', 'PEÑALOZA');
+      // cero = cero.toString().replaceAll('JOS�', 'JOSE');
+      // cero = cero.toString().replaceAll('GAL�N', 'GALAN');
+      // cero = cero.toString().replaceAll('CAMA�O', 'CAMAÑO');
+      // cero = cero.toString().replaceAll('MERI�O', 'MERIÑO');
+      // cero = cero.toString().replaceAll('G�NESIS', 'GENESIS');
+      // cero = cero.toString().replaceAll('GUDI�O', 'GUDIÑO');
+      // cero = cero.toString().replaceAll('VICU�A', 'VICUÑA');
+      // cero = cero.toString().replaceAll(' �A', ' A');
+      // cero = cero.toString().replaceAll(' �E', ' E');
+      // cero = cero.toString().replaceAll(' �I', ' I');
+      // cero = cero.toString().replaceAll(' �O', ' O');
+      // cero = cero.toString().replaceAll(' �U', ' U');
+      // cero = cero.toString().replaceAll('.�', '.');
+      // cero = cero.toString().replaceAll('AIC�', 'AIC');
+      // cero = cero.toString().replaceAll(' �C', ' C');
+      // cero = cero.toString().replaceAll('LTDA�', 'LTDA');
+      // cero = cero.toString().replaceAll('SAR�', 'SARA');
+      // cero = cero.toString().replaceAll('LAMBRA�O', 'LAMBRAÑO');
+      // cero = cero.toString().replaceAll('LIDUE�A', 'LIDUEÑA');
+      // cero = cero.toString().replaceAll('O�ATE', 'OÑATE');
+      // cero = cero.toString().replaceAll('VISI�N', 'VISION');
+      // cero = cero.toString().replaceAll('CALDER�N', 'CALDERON');
+      // cero = cero.toString().replaceAll('SOF�A', 'SOFIA');
+      // cero = cero.toString().replaceAll('MOIS�S', 'MOISES');
+      // cero = cero.toString().replaceAll('ANG�LICA', 'ANGELICA');
+      // cero = cero.toString().replaceAll('MONTA�O', 'MONTAÑO');
+      // cero = cero.toString().replaceAll('PATI�O', 'PATIÑO');
+      // cero = cero.toString().replaceAll('MU�IZ', 'MUÑIZ');
+      // cero = cero.toString().replaceAll('G�MEZ', 'GÓMEZ');
+      // cero = cero.toString().replaceAll('CASTA�O', 'CASTAÑO');
+      // cero = cero.toString().replaceAll('MARI�A', 'MARIÑA');
+      // cero = cero.toString().replaceAll('F�SICA', 'FISICA');
+      // cero = cero.toString().replaceAll('MAR�A', 'MARIA');
+      // cero = cero.toString().replaceAll('BA�OS', 'BAÑOS');
+      // cero = cero.toString().replaceAll('KA�AKAT', 'KAÑAKAT');
+      // cero = cero.toString().replaceAll('LONDO�O', 'LONDOÑO');
+      // cero = cero.toString().replaceAll('SE�A', 'SEÑA');
+      // cero = cero.toString().replaceAll('QUI�ONES', 'QUIÑONES');
+      // cero = cero.toString().replaceAll('SE�AS', 'SEÑAS');
+      // cero = cero.toString().replaceAll('T�MARA', 'TAMARA');
+      // cero = cero.toString().replaceAll('CERME�O', 'CERMEÑO');
+      // cero = cero.toString().replaceAll('JES�S', 'JESÚS');
+      // cero = cero.toString().replaceAll('URBANIZACI�N', 'URBANIZACION');
+      // // cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
+      // cero = cero.toString().replaceAll('Á', 'A');
+      // cero = cero.toString().replaceAll('É', 'E');
+      // cero = cero.toString().replaceAll('Í', 'I');
+      // cero = cero.toString().replaceAll('Ó', 'O');
+      // cero = cero.toString().replaceAll('Ú', 'U');
       var uno = cero.toString().split(";");
       var uno1 = uno.toString().replaceAll(RegExp(', '), ',');
       var uno2 = uno1.toString().split(",");
@@ -1180,8 +1551,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     a.clear();
     await storage.put('simat', json.encode(users));
     await storage.put('simatData', simatData);
+    _isLoading2(true);
+    await saveSimatToDrive(simatData);
     setState(() {
       print('set estate');
+      simatFecha = simatFecha;
       users = users;
       usersTemp = users;
       numItems = users.length;
@@ -1208,16 +1582,23 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       'Cantidad en simat',
       simatData.length,
       simatData[0].length,
-      jsonEncode(simatData[0]),
-      jsonEncode(simatData[1])
+      // jsonEncode(simatData[0]),
+      // jsonEncode(simatData[1])
     ]);
     // print(['Cantidad de usuarios en', users.length, jsonEncode(users[0])]);
+    _isLoading2(false);
     input.remove();
   }
 
   _isLoading(bool state) {
     setState(() {
       isLoading = state;
+    });
+  }
+
+  _isLoading2(bool state) {
+    setState(() {
+      isLoading2 = state;
     });
   }
 
@@ -1345,6 +1726,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             'primaryEmail': primaryEmail,
             'orgUnitPath': '/Ensayo', //orgUnitPath,
             'organizations': '',
+            'thumbnailPhotoUrl': '',
+            'index': data['index'],
             "customSchemas": {
               "SIMAT": {
                 "ano": data["ano"],
@@ -1400,7 +1783,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             }
           });
         });
-        print(usersg);
+        // print(usersg);
         // print(
         //     ['Carga de users2 localStorage', usersg.length, jsonEncode(usersg)]);
       }
@@ -1409,7 +1792,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             ..timeout = const Duration(seconds: 60);
       var step = 75;
       var limit = (usersg.length / step).truncate();
-      print(['limit', limit]);
+      // print(['limit', limit]);
       var start;
       var end;
       for (var i = 0; i < limit; i++) {
@@ -1435,20 +1818,37 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     }
   }
 
-  iterableCloudFunction(HttpsCallable callable, users) async {
+  iterableCloudFunction(HttpsCallable callable, userst) async {
     try {
       HttpsCallableResult result;
-      print(['usuarios', users.length]);
+      print(['usuarios', userst.length]);
       result = await callable.call(
         <String, dynamic>{
-          'data': users,
+          'data': userst,
         },
       );
       // var usuarios = jsonDecode(result.data['usuarios']);
       // var errores = jsonDecode(result.data['errores']);
       // print(['Resultados ok', result.data]);
-      print(['Resultados ok', result.data['usuarios']]);
+      // print(['Resultados ok', result.data['usuarios']]);
       print(['Resultados errores', result.data['errores']]);
+      setState(() {
+        firebaseUsers += result.data['usuarios'].length;
+        gSuiteUsers += result.data['usuarios'].length;
+      });
+      users.forEach((user) {
+        // print(user.plataformaState);
+        setState(() {
+          user.plataformaState = 'ok';
+        });
+      });
+      result.data['errores'].forEach((userError) {
+        final usert = users.firstWhere((item) => item.doc == userError['doc'],
+            orElse: null);
+        if (usert != null)
+          setState(() => usert.plataformaState = userError['error']);
+      });
+      // print(['errores', errores]);
       var simatSheetId = result.data;
       await storage.put('simatSheetId', result.data);
       return simatSheetId;
@@ -1464,11 +1864,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   }
 }
 
-class DTS extends DataTableSource {
-  int _selectedCount = 0;
+int _rowsSelectedCount = 0;
+
+class DataTableRows extends DataTableSource {
   final List<Simat> _users;
-  // final Function onRowSelected;
-  DTS(this._users);
+  DataTableRows(this._users);
 
   @override
   DataRow getRow(int index) {
@@ -1479,11 +1879,11 @@ class DTS extends DataTableSource {
     return DataRow.byIndex(
       selected: user.selected,
       onSelectChanged: (bool value) {
-        _selectedCount += value ? 1 : -1;
-        assert(_selectedCount >= 0);
+        _rowsSelectedCount += value ? 1 : -1;
+        print(['selectedCount', _rowsSelectedCount]);
+        assert(_rowsSelectedCount >= 0);
         user.selected = value;
         notifyListeners();
-        print(['selectedCount', _selectedCount]);
         value ? print(index) : null;
       },
       index: index,
@@ -1518,6 +1918,13 @@ class DTS extends DataTableSource {
             chartType: CircularChartType.Radial,
           ),
         ),
+        DataCell(
+          (!isLoading)
+              ? Text(users[index].plataformaState.toString())
+              : Center(
+                  child: CircularProgressIndicator(),
+                ),
+        )
       ],
     );
   }
@@ -1529,7 +1936,15 @@ class DTS extends DataTableSource {
   int get rowCount => users.length;
 
   @override
-  int get selectedRowCount => 0;
+  int get selectedRowCount => _rowsSelectedCount;
+
+  void selectAll(bool isAllChecked) {
+    // _users.forEach((user) => user.selected = isAllChecked);
+    _rowsSelectedCount = isAllChecked ? _users.length : 0;
+    assert(_rowsSelectedCount >= 0);
+    notifyListeners();
+    print(['Hola todos', isAllChecked, _rowsSelectedCount]);
+  }
 }
 
 String getPrettyJSONString(jsonObject) {
@@ -1582,15 +1997,16 @@ toSheet(List<String> list) {
   return list;
 }
 
-saveSimatToDrive(simat) async {
-  simatData = await storage.get('simatData');
+DateTime simatFecha;
+saveSimatToDrive(simatData) async {
+  // simatData = await storage.get('simatData');
   // simatData = jsonEncode(simatData);
   final HttpsCallable callable = CloudFunctions.instance
       .getHttpsCallable(functionName: 'simatToSheet')
         ..timeout = const Duration(seconds: 30);
   try {
     HttpsCallableResult result;
-    print(['nextPageToken', simat]);
+    // print(['Simat data', simat]);
     result = await callable.call(
       <String, dynamic>{
         'data': simatData,
@@ -1599,7 +2015,13 @@ saveSimatToDrive(simat) async {
     // usuariosG.add(result.data['data']);
     print(['Resultado', result.data]);
     var simatSheetId = result.data;
+    simatFecha = DateTime.now().toLocal();
     await storage.put('simatSheetId', result.data);
+    await storage.put('simatFecha', simatFecha);
+    Firestore.instance.document('estudiantes/simat').setData({
+      'lastSimatSheetId': simatSheetId['sheet']['id'],
+      'lastSimatFecha': simatFecha
+    });
     return simatSheetId;
     // print(result.data['usuarios'].length);
     /* List<dynamic> data = [];

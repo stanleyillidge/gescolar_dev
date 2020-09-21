@@ -47,26 +47,27 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     _initStorage();
     return FutureBuilder<FirebaseUser>(
-        future: FirebaseAuth.instance.currentUser(),
-        builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
-          if (snapshot.hasData) {
-            // FirebaseUser user = snapshot.data; // this is your user instance
-            print(snapshot.data);
+      future: FirebaseAuth.instance.currentUser(),
+      builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
+        if (snapshot.hasData) {
+          // FirebaseUser user = snapshot.data; // this is your user instance
+          print(snapshot.data);
 
-            /// is because there is user already logged
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Flutter Demo 1',
-              home: HomePage(),
-            );
-          }
-
-          /// other way there is no user logged.
+          /// is because there is user already logged
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
-            home: LoginPage(),
+            title: 'Flutter Demo 2',
+            home: HomePage(),
           );
-        });
+        }
+
+        /// other way there is no user logged.
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          home: LoginPage(),
+        );
+      },
+    );
   }
 }

@@ -8,6 +8,7 @@ import 'package:gescolar_dev/pages/uno.dart';
 import 'package:gescolar_dev/pages/sedes.dart';
 import 'package:gescolar_dev/widgets/custom_navigation_drawer/commons/CollapsingNavigationBloc.dart';
 import 'package:gescolar_dev/widgets/custom_navigation_drawer/custom_navigation_drawer.dart';
+import 'package:intl/date_symbol_data_local.dart';
 // import 'package:gescolar_dev/widgets/sta_navbar/sta_navbar.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,6 +19,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void initState() {
+    super.initState();
+    initializeDateFormatting('es'); //very important
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

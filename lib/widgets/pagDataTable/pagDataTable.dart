@@ -285,13 +285,13 @@ class PagDataTableState extends State<PagDataTable> {
         widget.columns.map<DataCell>((DataColumn column) {
       if (!column.numeric) {
         haveProgressIndicator = true;
-        return const DataCell(CircularProgressIndicator());
+        return const DataCell(Text('')); // CircularProgressIndicator()
       }
       return DataCell.empty;
     }).toList();
     if (!haveProgressIndicator) {
       haveProgressIndicator = true;
-      cells[0] = const DataCell(CircularProgressIndicator());
+      cells[0] = const DataCell(Text('')); // CircularProgressIndicator()
     }
     return DataRow.byIndex(
       index: index,
