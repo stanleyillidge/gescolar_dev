@@ -143,7 +143,26 @@ class Simat {
 
   factory Simat.fromJson(Map<String, dynamic> json) {
     var nombre = ((json['nombre1'] != null) && (json['apellido1'] != null))
-        ? json['nombre1'] + ' ' + json['apellido1']
+        ? ((json['nombre1'] != null) &&
+                (json['apellido1'] != null) &&
+                (json['apellido2'] != null))
+            ? ((json['nombre1'] != null) &&
+                    (json['nombre2'] != null) &&
+                    (json['apellido1'] != null) &&
+                    (json['apellido2'] != null))
+                ? json['nombre1'] +
+                    ' ' +
+                    json['nombre2'] +
+                    ' ' +
+                    json['apellido1'] +
+                    ' ' +
+                    json['apellido2']
+                : json['nombre1'] +
+                    ' ' +
+                    json['apellido1'] +
+                    ' ' +
+                    json['apellido2']
+            : json['nombre1'] + ' ' + json['apellido1']
         : '';
     return Simat(
         ano: json['ano'],
@@ -176,7 +195,26 @@ class Simat {
   }
   factory Simat.fromLocal(Map<String, dynamic> json) {
     var nombre = ((json['NOMBRE1'] != null) && (json['APELLIDO1'] != null))
-        ? json['NOMBRE1'] + ' ' + json['APELLIDO1']
+        ? ((json['NOMBRE1'] != null) &&
+                (json['APELLIDO1'] != null) &&
+                (json['APELLIDO2'] != null))
+            ? ((json['NOMBRE1'] != null) &&
+                    (json['NOMBRE2'] != null) &&
+                    (json['APELLIDO1'] != null) &&
+                    (json['APELLIDO2'] != null))
+                ? json['NOMBRE1'] +
+                    ' ' +
+                    json['NOMBRE2'] +
+                    ' ' +
+                    json['APELLIDO1'] +
+                    ' ' +
+                    json['APELLIDO2']
+                : json['NOMBRE1'] +
+                    ' ' +
+                    json['APELLIDO1'] +
+                    ' ' +
+                    json['APELLIDO2']
+            : json['NOMBRE1'] + ' ' + json['APELLIDO1']
         : '';
     return Simat(
         ano: json['ANO'],
@@ -209,7 +247,14 @@ class Simat {
   }
   factory Simat.fromList(List<String> list) {
     var nombre = ((list[27] != null) && (list[25] != null))
-        ? list[27] + ' ' + list[25]
+        ? ((list[27] != null) && (list[25] != null) && (list[26] != null))
+            ? ((list[27] != null) &&
+                    (list[28] != null) &&
+                    (list[25] != null) &&
+                    (list[26] != null))
+                ? list[27] + ' ' + list[28] + ' ' + list[25] + ' ' + list[26]
+                : list[27] + ' ' + list[25] + ' ' + list[26]
+            : list[27] + ' ' + list[25]
         : '';
     return Simat(
         ano: list[0].substring(1),
@@ -475,8 +520,23 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         userst2.forEach((user) {
           var nombre =
               ((user.asMap().containsKey(27)) && (user.asMap().containsKey(25)))
-                  ? user[27] + ' ' + user[25]
-                  : 'no esta';
+                  ? ((user.asMap().containsKey(27)) &&
+                          (user.asMap().containsKey(25)) &&
+                          (user.asMap().containsKey(26)))
+                      ? ((user.asMap().containsKey(27)) &&
+                              (user.asMap().containsKey(28)) &&
+                              (user.asMap().containsKey(25)) &&
+                              (user.asMap().containsKey(26)))
+                          ? user[27] +
+                              ' ' +
+                              user[28] +
+                              ' ' +
+                              user[25] +
+                              ' ' +
+                              user[26]
+                          : user[27] + ' ' + user[25] + ' ' + user[26]
+                      : user[27] + ' ' + user[25]
+                  : '';
           var simatUser = {
             'ano': (user.asMap().containsKey(0)) ? user[0] : '',
             'estado': (user.asMap().containsKey(2)) ? user[2] : '',
@@ -1219,7 +1279,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             ],
           ),
         ),
-        Padding(
+        /* Padding(
           padding: const EdgeInsets.only(left: 80, top: 140),
           child: Container(
             width: 260,
@@ -1233,12 +1293,174 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
               tabs: myTabs,
             ),
           ),
-        ),
+        ), */
         Padding(
           padding: const EdgeInsets.only(
-              left: 80, top: 185.0, bottom: 10, right: 20),
+              left: 80, top: 145.0, bottom: 10, right: 20),
           child: Container(
-            child: TabBarView(
+            child: (users != null)
+                ? Card(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Positioned(
+                          top: 15,
+                          left: 30,
+                          child: Text(
+                            simatF,
+                            style: TextStyle(
+                              fontFamily: 'Spartan',
+                              fontWeight: FontWeight.w700,
+                              color: darkMode
+                                  ? Colors.white
+                                  : Colors.blueGrey[700],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 10,
+                          child: IconButton(
+                            icon: Icon(Icons.folder_open),
+                            tooltip: 'Cargar SIMAT TXT',
+                            onPressed: () async {
+                              print('onTap');
+                              _pickFiles();
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 50,
+                          child: IconButton(
+                            icon: Icon(Icons.add_to_drive),
+                            color: Colors.green[700],
+                            tooltip: 'Guardar SIMAT en Google Drive',
+                            onPressed: () {
+                              setState(() {
+                                saveSimatToDrive('simat');
+                              });
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 90,
+                          child: IconButton(
+                            icon: Icon(Icons.supervised_user_circle),
+                            color: Colors.orange[700],
+                            tooltip: 'Crear usuarios en Gsuite - Firebase',
+                            onPressed: () {
+                              addGsuiteUsers();
+                            },
+                          ),
+                        ),
+                        (!isLoading2)
+                            ? Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 20, top: 40, bottom: 10, right: 20),
+                                child: PagDataTable(
+                                  header: Text('Estudiantes'),
+                                  columns: columnas,
+                                  source: DataTableRows(users),
+                                  showCheckboxColumn: true,
+                                  onRowsPerPageChanged: (r) {
+                                    setState(() {
+                                      _rowPerPage = r;
+                                    });
+                                  },
+                                  rowsPerPage: _rowPerPage,
+                                  sortColumnIndex: _sortColumnIndex,
+                                  sortAscending: _sortAsc,
+                                  onSelectAll: (isAllChecked) {
+                                    users.forEach((user) {
+                                      setState(() {
+                                        user.selected = isAllChecked;
+                                      });
+                                    });
+                                    DataTableRows(users)
+                                        .selectAll(isAllChecked);
+                                    /* actions: <Widget>[
+                                    IconButton(
+                                      icon: Icon(Icons.add),
+                                      tooltip: "Add vaccination center",
+                                      onPressed: () {},
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete_forever),
+                                      tooltip: "Delete vaccination center(s).",
+                                      onPressed: () {},
+                                    )
+                                  ], */
+                                  },
+                                ),
+                              )
+                            : Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                      ],
+                    ),
+                  )
+                : Card(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Positioned(
+                          top: 15,
+                          left: 30,
+                          child: Text(
+                            simatF,
+                            style: TextStyle(
+                              fontFamily: 'Spartan',
+                              fontWeight: FontWeight.w700,
+                              color: darkMode
+                                  ? Colors.white
+                                  : Colors.blueGrey[700],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 10,
+                          child: IconButton(
+                            icon: Icon(Icons.folder_open),
+                            tooltip: 'Cargar SIMAT TXT',
+                            onPressed: () async {
+                              print('onTap');
+                              _pickFiles();
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 50,
+                          child: IconButton(
+                            icon: Icon(Icons.add_to_drive),
+                            color: Colors.grey,
+                            tooltip: 'Guardar SIMAT en Google Drive',
+                            onPressed: () {
+                              setState(() {
+                                saveSimatToDrive('simat');
+                              });
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 90,
+                          child: IconButton(
+                            icon: Icon(Icons.supervised_user_circle),
+                            color: Colors.grey,
+                            tooltip: 'Crear usuarios en Gsuite - Firebase',
+                            onPressed: () {
+                              addGsuiteUsers();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+            /* child: TabBarView(
               controller: _tabController,
               children: <Widget>[
                 (users != null)
@@ -1409,7 +1631,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                 Container(),
                 Container(),
               ],
-            ),
+            ), */
           ),
         ),
       ],

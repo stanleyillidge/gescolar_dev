@@ -185,7 +185,7 @@ class PagDataTable extends StatefulWidget {
   ///
   /// Useful when initializing the field that will hold the current
   /// [rowsPerPage], when implemented [onRowsPerPageChanged].
-  static const int defaultRowsPerPage = 4;
+  static const int defaultRowsPerPage = 5;
 
   /// The options to offer for the rowsPerPage.
   ///
