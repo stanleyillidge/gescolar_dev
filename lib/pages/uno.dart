@@ -35,29 +35,31 @@ class Uno extends StatefulWidget {
 // LocalStorage storage = new LocalStorage('gescolar_app');
 
 const firebaseConfig = FirebaseOptions(
-  googleAppID: "1:395322918531:web:aaf5e5a050a3743d2e7db6",
-  apiKey: "AIzaSyCdCTYPL1-PPQb3rpOi5Ls_oGoMfPjvXG8",
-  databaseURL: "https://g-escolar-plus-demo.firebaseio.com",
-  projectID: "g-escolar-plus-demo",
-  storageBucket: "g-escolar-plus-demo.appspot.com",
+  appId: '1:395322918531:web:aaf5e5a050a3743d2e7db6',
+  apiKey: 'AIzaSyCdCTYPL1-PPQb3rpOi5Ls_oGoMfPjvXG8',
+  databaseURL: 'https://g-escolar-plus-demo.firebaseio.com',
+  projectId: 'g-escolar-plus-demo',
+  messagingSenderId: '395322918531',
+  storageBucket: 'g-escolar-plus-demo.appspot.com',
 );
 
 const firebaseConfig1 = FirebaseOptions(
-  googleAppID: "1:535423458946:web:e97e26d6b4455259d5de9b",
-  apiKey: "AIzaSyApbwMngB5Xeu4xyADVV6Q2DcDDWM6DvDM",
-  databaseURL: "https://inventarios-9bd11.firebaseio.com",
-  projectID: "inventarios-9bd11",
-  storageBucket: "inventarios-9bd11.appspot.com",
+  appId: '1:535423458946:web:e97e26d6b4455259d5de9b',
+  apiKey: 'AIzaSyApbwMngB5Xeu4xyADVV6Q2DcDDWM6DvDM',
+  databaseURL: 'https://inventarios-9bd11.firebaseio.com',
+  projectId: 'inventarios-9bd11',
+  messagingSenderId: '535423458946',
+  storageBucket: 'inventarios-9bd11.appspot.com',
 );
 FirebaseApp app;
 FirebaseApp app1;
 
 _initDataBases() async {
-  app = await FirebaseApp.configure(
+  app = await Firebase.initializeApp(
     name: 'principal',
     options: firebaseConfig,
   );
-  app1 = await FirebaseApp.configure(
+  app1 = await Firebase.initializeApp(
     name: 'subBase1',
     options: firebaseConfig1,
   );

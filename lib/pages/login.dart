@@ -14,6 +14,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool darkMode = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   /* void initState() {
     super.initState();
     WidgetsBinding.instance
@@ -23,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     // _checkLogin(context);
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: darkMode ? Colors.grey[850] : Colors.grey[300],
       body: Center(
         child: Column(

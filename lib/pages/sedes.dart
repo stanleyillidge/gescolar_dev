@@ -484,19 +484,19 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     _isLoading2(true);
     googleAuthStorage = await Hive.openBox('googleAuthStorage');
     storage = await Hive.openBox('myBox');
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('estudiantes')
-        .document('simat')
+        .doc('simat')
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         setState(() {
-          simatFecha = documentSnapshot.data['lastSimatFecha'].toDate();
+          simatFecha = documentSnapshot.data()['lastSimatFecha'].toDate();
           simatF = 'Ultima actualización el dia ' +
               capitalize(format.format(simatFecha).toString());
         });
-        getSheetData(documentSnapshot.data['lastSimatSheetId']);
-        print([documentSnapshot.data, simatFecha]);
+        getSheetData(documentSnapshot.data()['lastSimatSheetId']);
+        print(['Data simat', documentSnapshot.data(), simatFecha]);
       }
     });
   }

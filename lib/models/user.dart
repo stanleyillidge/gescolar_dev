@@ -1,4 +1,4 @@
-class Simat {
+/* class Simat {
   String ano;
   String estado;
   String sede;
@@ -135,9 +135,9 @@ class Simat {
         'paisOrigen': paisOrigen,
         'correo': correo,
       };
-}
+} */
 
-class User {
+/* class User {
   String uid;
   String email;
   String photoUrl;
@@ -149,7 +149,7 @@ class User {
     this.photoUrl,
     this.displayName,
   });
-}
+} */
 /* import 'package:meta/meta.dart';
 
 @immutable

@@ -12,19 +12,12 @@ class AuthService {
   final dominio = 'lreginaldofischione.edu.co';
   // auth change user strem
   Stream<User> get user {
-    return _auth.onAuthStateChanged.map(_userFromFirebaseUser);
+    return _auth.onAuthStateChanged.map(_userFromUser);
   }
 
-  // create user obj based on FirebaseUser
-  User _userFromFirebaseUser(FirebaseUser user) {
-    return user != null
-        ? User(
-            uid: user.uid,
-            email: user.email,
-            photoUrl: user.photoUrl,
-            displayName: user.displayName,
-          )
-        : null;
+  // create user obj based on User
+  User _userFromUser(User user) {
+    return user != null ? user : null;
   }
 
   // sign in with google
@@ -42,8 +35,7 @@ class AuthService {
       var domain = email.split("@");
       print('domain: ' + domain[1]);
       if (domain[1] == dominio) {
-        final FirebaseUser user =
-            (await _auth.signInWithCredential(credential)).user;
+        final User user = (await _auth.signInWithCredential(credential)).user;
         print("signed in " + user.displayName);
         return user;
       } else {
@@ -91,9 +83,9 @@ class AuthService {
   // sign in anon
   Future signInAnon() async {
     try {
-      AuthResult result = await _auth.signInAnonymously();
-      FirebaseUser user = result.user;
-      return _userFromFirebaseUser(user);
+      var result = await _auth.signInAnonymously();
+      User user = result.user;
+      return _userFromUser(user);
     } catch (e) {
       print(e.toString());
       return null;
@@ -112,16 +104,16 @@ class AuthService {
     }
   }
   /* Future<bool> isUserLogged() async {
-      FirebaseUser firebaseUser = await getLoggedFirebaseUser();
-      if (firebaseUser != null) {
-          IdTokenResult tokenResult = await firebaseUser.getIdToken(refresh: true);
+      User User = await getLoggedUser();
+      if (User != null) {
+          IdTokenResult tokenResult = await User.getIdToken(refresh: true);
           return tokenResult.token != null;
       } else {
           return false;
       }
   }
 
-  Future<FirebaseUser> getLoggedFirebaseUser() {
+  Future<User> getLoggedUser() {
       return firebaseAuthInstance().currentUser();
   } */
 }

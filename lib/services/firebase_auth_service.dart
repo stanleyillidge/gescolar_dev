@@ -30,7 +30,7 @@ class FirebaseAuthService {
               ],
             );
 
-  User _userFromFirebase(FirebaseUser user) {
+  User _userFromFirebase(User user) {
     if (user == null) {
       return null;
     }
@@ -40,12 +40,7 @@ class FirebaseAuthService {
       'displayName': user.displayName,
       'photoUrl': user.photoUrl,
     });
-    return User(
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoUrl: user.photoUrl,
-    );
+    return user;
   }
 
   Stream<User> get onAuthStateChanged {
@@ -152,7 +147,7 @@ class FirebaseAuthService {
   }
 
   Future<User> currentUser() async {
-    final FirebaseUser user = await _firebaseAuth.currentUser();
+    final User user = await _firebaseAuth.currentUser;
     return _userFromFirebase(user);
   }
 }
