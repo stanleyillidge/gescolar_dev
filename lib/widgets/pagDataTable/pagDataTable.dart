@@ -451,7 +451,7 @@ class PagDataTableState extends State<PagDataTable> {
                   child: IconTheme.merge(
                     data: const IconThemeData(opacity: 0.54),
                     child: Ink(
-                      height: 64.0,
+                      height: 32.0, // 64
                       color: _selectedRowCount > 0
                           ? themeData.secondaryHeaderColor
                           : null,

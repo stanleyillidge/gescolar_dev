@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gescolar_dev/pages/home.dart';
 import 'package:gescolar_dev/services/auth.dart';
 import 'package:gescolar_dev/services/firebase_auth_service.dart';
+import 'package:gescolar_dev/widgets/Google/Drive/drive.dart';
 import 'package:gescolar_dev/widgets/Neomorphic/neoButton.dart';
 
 class LoginPage extends StatefulWidget {
@@ -74,6 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: GestureDetector(
                     onTap: () {
                       FirebaseAuthService().signInWithGoogle().then((value) => {
+                            GoogleDrive(),
                             print(['Login Ok :', value]),
                             Navigator.push(
                               context,

@@ -275,8 +275,8 @@
         public año: string; // valor del AñoLectivo activo
             public uid: string; // UID generado desde el Auth
             public acudientes: Relaciones[];
-                public grado: string;
-                public grupo: string;
+            public grado: string;
+            public grupo: string;
         constructor(uid: string, acud: Relaciones[], g: string, gr: string) {
             this.año = new Date().getFullYear().toString();
             this.uid = uid;

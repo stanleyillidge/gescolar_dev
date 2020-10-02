@@ -38,6 +38,7 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
   }
 
   void _onItemCheckedChange(V itemValue, bool checked) {
+    // print(['selectedValues', itemValue]);
     setState(() {
       if (checked) {
         _selectedValues.add(itemValue);
