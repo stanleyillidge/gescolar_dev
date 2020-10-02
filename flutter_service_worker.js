@@ -3,7 +3,7 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "main.dart.js": "f4ce740c140b4aeb446e0d2748396c39",
+  "main.dart.js": "00903c14e2171aa5a790fc5c2e2ffd9a",
 "assets/NOTICES": "ed0c1069658b50dcb19560e5c5c6309d",
 "assets/FontManifest.json": "3a2c387e6ff9f311a5b6be7689372c3d",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "115e937bb829a890521f72d2e664b632",
@@ -20,7 +20,7 @@ const RESOURCES = {
 "assets/fonts/Cheveuxdange.ttf": "b719e4da42b0e9318d5f2b06cd2e1300",
 "assets/fonts/BungeeInlineRegular.ttf": "b5db0222ce5354b7eb01874198685d71",
 "assets/fonts/Marvel-Italic.ttf": "48e5e57afda1e95b67d6c704b5c1154e",
-"assets/fonts/MaterialIcons-Regular.otf": "a68d2a28c526b3b070aefca4bac93d25",
+"assets/fonts/MaterialIcons-Regular.otf": "1288c9e28052e028aba623321f7826ac",
 "assets/fonts/Spartan.ttf": "e9fb5ac5844b6ffa324f5be47ca14b23",
 "assets/fonts/CoalhandLuke.ttf": "29aa40404bde09a459f713f9a002fe1e",
 "assets/fonts/Marvel-BoldItalic.ttf": "c1a4f515598294de30ab868e41fd90ee",
@@ -52,8 +52,8 @@ const RESOURCES = {
 "assets/images/p1.jpg": "2d67fe2e7ffc72cb1171fc7b59115d93",
 "assets/AssetManifest.json": "8c4dc38df5471fa75cc8083cebe73340",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
-"index.html": "edbe655b2e0aa410dd745a4c2f83a284",
-"/": "edbe655b2e0aa410dd745a4c2f83a284",
+"index.html": "635f2a64d5b2122d35c2a1ee406a2a5e",
+"/": "635f2a64d5b2122d35c2a1ee406a2a5e",
 "manifest.json": "d9e6cf4c425faf6b99d42915e6abac6f",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1"
