@@ -5,7 +5,6 @@ import 'dart:html';
 import 'dart:io' as io;
 import 'dart:typed_data';
 import 'package:file_picker_web/file_picker_web.dart';
-import 'package:floating_search_bar/floating_search_bar.dart';
 import 'package:flutter/material.dart';
 // import 'package:gescolar_dev/models/user.dart';
 import 'package:gescolar_dev/widgets/Google/Drive/drive.dart';
@@ -24,9 +23,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:json_table/json_table.dart';
 // TODO Algoritmo para filtrar la tabla
 // TODO Editar al estudiante en : nombre - sede - jornada - grupo - estado de la matricula
-
-// 1o0LtSWmLE7vNgU213a_75Qy2FCKQzij7z311LaDjvgk
-
 final drive = GoogleDrive();
 bool darkMode = false;
 bool isLoading = false;
@@ -252,8 +248,8 @@ class Simat {
         nombre: nombre,
         plataformaState: 'pendiente');
   }
-  factory Simat.fromList(List<dynamic> list) {
-    /* var nombre = ((list[27] != null) && (list[25] != null))
+  factory Simat.fromList(List<String> list) {
+    var nombre = ((list[27] != null) && (list[25] != null))
         ? ((list[27] != null) && (list[25] != null) && (list[26] != null))
             ? ((list[27] != null) &&
                     (list[28] != null) &&
@@ -262,46 +258,31 @@ class Simat {
                 ? list[27] + ' ' + list[28] + ' ' + list[25] + ' ' + list[26]
                 : list[27] + ' ' + list[25] + ' ' + list[26]
             : list[27] + ' ' + list[25]
-        : ''; */
-    var nombre = ((list.asMap().containsKey(27)) &&
-            (list.asMap().containsKey(25)))
-        ? ((list.asMap().containsKey(27)) &&
-                (list.asMap().containsKey(25)) &&
-                (list.asMap().containsKey(26)))
-            ? ((list.asMap().containsKey(27)) &&
-                    (list.asMap().containsKey(28)) &&
-                    (list.asMap().containsKey(25)) &&
-                    (list.asMap().containsKey(26)))
-                ? list[27] + ' ' + list[28] + ' ' + list[25] + ' ' + list[26]
-                : list[27] + ' ' + list[25] + ' ' + list[26]
-            : list[27] + ' ' + list[25]
         : '';
     return Simat(
-        ano: list.asMap().containsKey(0) ? list[0].substring(1) : '',
-        estado: list.asMap().containsKey(2) ? list[2] : '',
-        sede: list.asMap().containsKey(8) ? list[8] : '',
-        codigoDaneSede: list.asMap().containsKey(9) ? list[9] : '',
-        zonaSede: list.asMap().containsKey(11) ? list[11] : '',
-        jornada: list.asMap().containsKey(12) ? list[12] : '',
-        gradoCod: list.asMap().containsKey(13) ? list[13] : '',
-        grupo: list.asMap().containsKey(14) ? list[14] : '',
-        fechaini: list.asMap().containsKey(17) ? list[17] : '',
-        nui: list.asMap().containsKey(19) ? list[19] : '',
-        estrato: list.asMap().containsKey(20) ? list[20] : '',
-        doc: list.asMap().containsKey(23) ? list[23] : '',
-        tipodoc: list.asMap().containsKey(24) ? list[24] : '',
-        apellido1: list.asMap().containsKey(25) ? list[25] : '',
-        apellido2: list.asMap().containsKey(26) ? list[26] : '',
-        nombre1: list.asMap().containsKey(27) ? list[27] : '',
-        nombre2: list.asMap().containsKey(28) ? list[28] : '',
-        genero: list.asMap().containsKey(29) ? list[29] : '',
-        fechaNacimiento: list.asMap().containsKey(30) ? list[30] : '',
-        epsEstudiante: list.asMap().containsKey(32) ? list[32] : '',
-        discapacidad: list.asMap().containsKey(40) ? list[40] : '',
-        paisOrigen: list.asMap().containsKey(41) ? list[41] : '',
-        correo: list.asMap().containsKey(42)
-            ? list[42].substring(list[42].length)
-            : '',
+        ano: list[0].substring(1),
+        estado: list[2],
+        sede: list[8],
+        codigoDaneSede: list[9],
+        zonaSede: list[11],
+        jornada: list[12],
+        gradoCod: list[13],
+        grupo: list[14],
+        fechaini: list[17],
+        nui: list[19],
+        estrato: list[20],
+        doc: list[23],
+        tipodoc: list[24],
+        apellido1: list[25],
+        apellido2: list[26],
+        nombre1: list[27],
+        nombre2: list[28],
+        genero: list[29],
+        fechaNacimiento: list[30],
+        epsEstudiante: list[32],
+        discapacidad: list[40],
+        paisOrigen: list[41],
+        correo: list[42].substring(list[42].length),
         selected: false,
         index: 0,
         nombre: nombre,
@@ -415,212 +396,6 @@ class GsuiteUser {
       };
 }
 
-class GescolarUser {
-  String ano;
-  String photoURL;
-  String nombre;
-  String sede;
-  String jornada;
-  String grado;
-  String grupo;
-  String fechaCreacion;
-  bool activo;
-  bool editado;
-  String rol;
-  String email;
-  String genero;
-  String fechaMatricula;
-  String fechaNacimiento;
-  String documentoTipo;
-  String documentoNum;
-  String telefonos;
-  String direcciones;
-  String relaciones;
-  String token;
-  String fechaEdicion;
-  //------------
-  bool selected;
-  int index;
-  String plataformaState;
-
-  GescolarUser(
-      {this.ano,
-      this.photoURL,
-      this.nombre,
-      this.sede,
-      this.jornada,
-      this.grado,
-      this.grupo,
-      this.fechaCreacion,
-      this.activo,
-      this.editado,
-      this.rol,
-      this.email,
-      this.genero,
-      this.fechaMatricula,
-      this.fechaNacimiento,
-      this.documentoTipo,
-      this.documentoNum,
-      this.telefonos,
-      this.direcciones,
-      this.relaciones,
-      this.token,
-      this.fechaEdicion,
-      this.selected,
-      this.index,
-      this.plataformaState});
-
-  factory GescolarUser.fromJson(Map<String, dynamic> json) {
-    var nombre = ((json['nombre1'] != null) && (json['apellido1'] != null))
-        ? ((json['nombre1'] != null) &&
-                (json['apellido1'] != null) &&
-                (json['apellido2'] != null))
-            ? ((json['nombre1'] != null) &&
-                    (json['nombre2'] != null) &&
-                    (json['apellido1'] != null) &&
-                    (json['apellido2'] != null))
-                ? json['nombre1'] +
-                    ' ' +
-                    json['nombre2'] +
-                    ' ' +
-                    json['apellido1'] +
-                    ' ' +
-                    json['apellido2']
-                : json['nombre1'] +
-                    ' ' +
-                    json['apellido1'] +
-                    ' ' +
-                    json['apellido2']
-            : json['nombre1'] + ' ' + json['apellido1']
-        : '';
-    return GescolarUser(
-      ano: json['ano'],
-      nombre: nombre,
-      sede: json['sede'],
-      jornada: json['jornada'],
-      grado: json['gradoCod'],
-      grupo: json['grupo'],
-      fechaCreacion: DateTime.now().toString(),
-      activo: true,
-      editado: false,
-      rol: 'Estudiante',
-      fechaMatricula: json['fechaini'],
-      documentoNum: json['doc'],
-      documentoTipo: json['tipodoc'],
-      genero: json['genero'],
-      fechaNacimiento: json['fechaNacimiento'],
-      email: json['correo'],
-      selected: false,
-      index: 0,
-      plataformaState: 'pendiente',
-    );
-  }
-  factory GescolarUser.fromLocal(Map<String, dynamic> json) {
-    var nombre = ((json['NOMBRE1'] != null) && (json['APELLIDO1'] != null))
-        ? ((json['NOMBRE1'] != null) &&
-                (json['APELLIDO1'] != null) &&
-                (json['APELLIDO2'] != null))
-            ? ((json['NOMBRE1'] != null) &&
-                    (json['NOMBRE2'] != null) &&
-                    (json['APELLIDO1'] != null) &&
-                    (json['APELLIDO2'] != null))
-                ? json['NOMBRE1'] +
-                    ' ' +
-                    json['NOMBRE2'] +
-                    ' ' +
-                    json['APELLIDO1'] +
-                    ' ' +
-                    json['APELLIDO2']
-                : json['NOMBRE1'] +
-                    ' ' +
-                    json['APELLIDO1'] +
-                    ' ' +
-                    json['APELLIDO2']
-            : json['NOMBRE1'] + ' ' + json['APELLIDO1']
-        : '';
-    return GescolarUser(
-      ano: json['ANO'],
-      nombre: nombre,
-      sede: json['SEDE'],
-      jornada: json['JORNADA'],
-      grado: json['GRADO_COD'],
-      grupo: json['GRUPO'],
-      fechaCreacion: DateTime.now().toString(),
-      activo: true,
-      editado: false,
-      rol: 'Estudiante',
-      fechaMatricula: json['FECHAINI'],
-      documentoNum: json['DOC'],
-      documentoTipo: json['TIPODOC'],
-      genero: json['GENERO'],
-      fechaNacimiento: json['FECHA_NACIMIENTO'],
-      email: json['CORREO'],
-      selected: false,
-      index: 0,
-      plataformaState: 'pendiente',
-    );
-  }
-  factory GescolarUser.fromList(List<dynamic> list) {
-    var nombre = ((list.asMap().containsKey(27)) &&
-            (list.asMap().containsKey(25)))
-        ? ((list.asMap().containsKey(27)) &&
-                (list.asMap().containsKey(25)) &&
-                (list.asMap().containsKey(26)))
-            ? ((list.asMap().containsKey(27)) &&
-                    (list.asMap().containsKey(28)) &&
-                    (list.asMap().containsKey(25)) &&
-                    (list.asMap().containsKey(26)))
-                ? list[27] + ' ' + list[28] + ' ' + list[25] + ' ' + list[26]
-                : list[27] + ' ' + list[25] + ' ' + list[26]
-            : list[27] + ' ' + list[25]
-        : '';
-    return GescolarUser(
-      ano: (list.asMap().containsKey(0)) ? list[0] : '',
-      nombre: nombre,
-      sede: (list.asMap().containsKey(8)) ? list[8] : '',
-      jornada: (list.asMap().containsKey(12)) ? list[12] : '',
-      grado: (list.asMap().containsKey(13)) ? list[13] : '',
-      grupo: (list.asMap().containsKey(14)) ? list[14] : '',
-      fechaCreacion: DateTime.now().toString(),
-      activo: true,
-      editado: false,
-      rol: 'Estudiante',
-      fechaMatricula: (list.asMap().containsKey(17)) ? list[17] : '',
-      documentoNum: (list.asMap().containsKey(23)) ? list[23] : '',
-      documentoTipo: (list.asMap().containsKey(24)) ? list[24] : '',
-      genero: (list.asMap().containsKey(29)) ? list[29] : '',
-      fechaNacimiento: (list.asMap().containsKey(30)) ? list[30] : '',
-      email: (list.asMap().containsKey(42))
-          ? list[42].substring(list[42].length)
-          : '',
-      selected: false,
-      index: 0,
-      plataformaState: 'pendiente',
-    );
-  }
-  Map toJson() => {
-        'ano': ano,
-        'nombre': nombre,
-        'sede': sede,
-        'jornada': jornada,
-        'grado': grado,
-        'grupo': grupo,
-        'fechaCreacion': fechaCreacion,
-        'activo': activo,
-        'editado': editado,
-        'rol': rol,
-        'fechaMatricula': fechaMatricula,
-        'documentoNum': documentoNum,
-        'documentoTipo': documentoTipo,
-        'genero': genero,
-        'fechaNacimiento': fechaNacimiento,
-        'email': email,
-        'selected': selected,
-        'index': index,
-        'plataformaState': plataformaState,
-      };
-}
-
 class EstadoF {
   bool existe;
   bool actualizado;
@@ -669,10 +444,17 @@ List<Filtro> filtros = [
   Filtro('grupo', 'grupo', List<Simat>(), EstadoF(false, false, true, 0))
 ];
 
-List<GescolarUser> users;
+List<Simat> users;
 List<GsuiteUser> usersGsuite;
-List<GescolarUser> gescolarUsers;
-List<GescolarUser> usersTemp;
+List<Simat> usersTemp;
+// List<dynamic> users2 = (json.decode(jsonSample) as List)
+//     .map((data) => Simat.fromJson(data))
+//     .toList();
+// String users3 = json.encode(users2);
+
+// List<Simat> users = (json.decode(jsonSample) as List)
+//     .map((data) => Simat.fromJson(data))
+//     .toList();
 
 var jornadas = ['jornada'];
 var grupos = ['grupo'];
@@ -738,9 +520,55 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         dynamic userst = [];
         var indext = -1;
         userst2.forEach((user) {
-          // print(user);
-          var _user = Simat.fromList(user).toJson();
-          userst.add(_user);
+          var nombre =
+              ((user.asMap().containsKey(27)) && (user.asMap().containsKey(25)))
+                  ? ((user.asMap().containsKey(27)) &&
+                          (user.asMap().containsKey(25)) &&
+                          (user.asMap().containsKey(26)))
+                      ? ((user.asMap().containsKey(27)) &&
+                              (user.asMap().containsKey(28)) &&
+                              (user.asMap().containsKey(25)) &&
+                              (user.asMap().containsKey(26)))
+                          ? user[27] +
+                              ' ' +
+                              user[28] +
+                              ' ' +
+                              user[25] +
+                              ' ' +
+                              user[26]
+                          : user[27] + ' ' + user[25] + ' ' + user[26]
+                      : user[27] + ' ' + user[25]
+                  : '';
+          var simatUser = {
+            'ano': (user.asMap().containsKey(0)) ? user[0] : '',
+            'estado': (user.asMap().containsKey(2)) ? user[2] : '',
+            'sede': (user.asMap().containsKey(8)) ? user[8] : '',
+            'codigoDaneSede': (user.asMap().containsKey(9)) ? user[9] : '',
+            'zonaSede': (user.asMap().containsKey(11)) ? user[11] : '',
+            'jornada': (user.asMap().containsKey(12)) ? user[12] : '',
+            'gradoCod': (user.asMap().containsKey(13)) ? user[13] : '',
+            'grupo': (user.asMap().containsKey(14)) ? user[14] : '',
+            'fechaini': (user.asMap().containsKey(17)) ? user[17] : '',
+            'nui': (user.asMap().containsKey(19)) ? user[19] : '',
+            'estrato': (user.asMap().containsKey(20)) ? user[20] : '',
+            'doc': (user.asMap().containsKey(23)) ? user[23] : '',
+            'tipodoc': (user.asMap().containsKey(24)) ? user[24] : '',
+            'apellido1': (user.asMap().containsKey(25)) ? user[25] : '',
+            'apellido2': (user.asMap().containsKey(26)) ? user[26] : '',
+            'nombre1': (user.asMap().containsKey(27)) ? user[27] : '',
+            'nombre2': (user.asMap().containsKey(28)) ? user[28] : '',
+            'genero': (user.asMap().containsKey(29)) ? user[29] : '',
+            'fechaNacimiento': (user.asMap().containsKey(30)) ? user[30] : '',
+            'epsEstudiante': (user.asMap().containsKey(32)) ? user[32] : '',
+            'discapacidad': (user.asMap().containsKey(40)) ? user[40] : '',
+            'paisOrigen': (user.asMap().containsKey(41)) ? user[41] : '',
+            'correo': (user.asMap().containsKey(42)) ? user[42] : '',
+            'selected': false,
+            'index': indext++,
+            'nombre': nombre,
+            'plataformaState': 'pendiente'
+          };
+          userst.add(simatUser);
         });
         userst = json.encode(userst);
         // print(userst2);
@@ -830,13 +658,9 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           userst = userst.toString().replaceAll('Í', 'I');
           userst = userst.toString().replaceAll('Ó', 'O');
           userst = userst.toString().replaceAll('Ú', 'U');
-          // userst = json.encode(userst);
           // print(userst);
-          /* users = (json.decode(userst) as List)
-              .map((data) => Simat.fromJson(data))
-              .toList(); */
           users = (json.decode(userst) as List)
-              .map((data) => GescolarUser.fromJson(data))
+              .map((data) => Simat.fromJson(data))
               .toList();
           print([
             'Carga de users2 localStorage',
@@ -890,15 +714,15 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         return userst;
       } else {
         _isLoading2(false);
-        print(['Error1 getSheetData', response.body]);
+        print(['Response error', response.body]);
       }
     } catch (e) {
       _isLoading2(false);
-      print(['Error0 getSheetData', e]);
+      print(['Error getSheetData', e]);
     }
   }
 
-  /* _getLoacalUsers() async {
+  _getLoacalUsers() async {
     try {
       googleAuthStorage = await Hive.openBox('googleAuthStorage');
       storage = await Hive.openBox('myBox');
@@ -1030,7 +854,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     } catch (e) {
       print(['Error get local', e]);
     }
-  } */
+  }
 
   initiateSearch(value) {
     /* if (value.length == 0) {
@@ -1090,7 +914,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     // _json = jsonDecode(jsonSample);
     int _rowPerPage = PagDataTable.defaultRowsPerPage;
     List<DataColumn> columnas = [
-      /* DataColumn(
+      DataColumn(
         label: Text('nombre'),
         onSort: (columnIndex, sortAscending) {
           setState(() {
@@ -1316,145 +1140,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           });
         },
       ),
-      DataColumn(label: Text('')), */
-      DataColumn(
-        label: Text('Nombre'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort((a, b) => a.nombre.compareTo(b.nombre));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
-      DataColumn(
-        label: Text('Sede'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort((a, b) => a.sede.compareTo(b.sede));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
-      DataColumn(
-        label: Text('Jornada'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort((a, b) => a.jornada.compareTo(b.jornada));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
-      DataColumn(
-        label: Text('Grupo'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort((a, b) => a.grupo.compareTo(b.grupo));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
-      /* DataColumn(
-        label: Text('Grado'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort((a, b) => a.grado.compareTo(b.grado));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ), */
-      DataColumn(
-        label: Text('doc'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort((a, b) => a.documentoNum.compareTo(b.documentoNum));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
-      DataColumn(
-        label: Text('Matricula'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users.sort(
-                (a, b) => a.activo.toString().compareTo(b.activo.toString()));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
-      DataColumn(
-        label: Text('Estado'),
-        onSort: (columnIndex, sortAscending) {
-          setState(() {
-            if (columnIndex == _sortColumnIndex) {
-              _sortAsc = _sortNameAsc = sortAscending;
-            } else {
-              _sortColumnIndex = columnIndex;
-              _sortAsc = _sortNameAsc;
-            }
-            users
-                .sort((a, b) => a.plataformaState.compareTo(b.plataformaState));
-            if (!_sortAsc) {
-              users = users.reversed.toList();
-            }
-          });
-        },
-      ),
+      DataColumn(label: Text('')),
+      DataColumn(label: Text('Estado'))
     ];
     return Stack(
       children: [
@@ -2120,28 +1807,110 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     var conta = 0;
     simatData = [];
     a.forEach((element) {
-      try {
-        var rta = stringAdapt(element);
-        if (rta['error'] > -1) {
-          rta['arry'].forEach((palabra) {
-            var esp2 = palabra.toString().indexOf('�');
-            if (esp2 > -1) {
-              var uno4 = rta['string'].toString().replaceAll('�', '');
-              var uno3 = palabra.toString().replaceAll('�', '');
-              print(['String-Error', esp2, uno3, uno4]);
-            }
-          });
-        }
-        var lista = toSheet(rta['data']);
-        // var dos = Simat.fromList(rta['data']);
-        var dos = GescolarUser.fromList(rta['data']);
-        dos.index = conta;
-        if (conta != 0) {
-          simatData.add(lista);
-          users.add(dos);
-        }
-      } catch (e) {
-        print(['Error array', e]);
+      var cero = element.toString().replaceAll('MA�ANA', 'MAÑANA');
+      cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
+      cero = cero.toString().replaceAll('J�VENES', 'JOVENES');
+      cero = cero.toString().replaceAll('MART�NEZ', 'MARTINEZ');
+      cero = cero.toString().replaceAll('NU�EZ', 'NUÑEZ');
+      cero = cero.toString().replaceAll('SE�ORA', 'SEÑORA');
+      cero = cero.toString().replaceAll('MU�OZ', 'MUÑOZ');
+      cero = cero.toString().replaceAll('IDENTIFICACI�N', 'IDENTIFICACION');
+      cero = cero.toString().replaceAll('N�MERO', 'NUMERO');
+      cero = cero.toString().replaceAll('ARI�O', 'ARÑIO');
+      cero = cero.toString().replaceAll('BELE�O', 'BELEÑO');
+      cero = cero.toString().replaceAll('ANDR�S', 'ANDRES');
+      cero = cero.toString().replaceAll('A�EZ', 'AÑEZ');
+      cero = cero.toString().replaceAll('PE�ARANDA', 'PEÑARANDA');
+      cero = cero.toString().replaceAll('PE�ATE', 'PEÑATE');
+      cero = cero.toString().replaceAll('BOLA�O', 'BOLAÑO');
+      cero = cero.toString().replaceAll('AVENDA�O', 'AVENDAÑO');
+      cero = cero.toString().replaceAll('ORDO�EZ', 'ORDOÑEZ');
+      cero = cero.toString().replaceAll('C�DULA', 'CEDULA');
+      cero = cero.toString().replaceAll('ZU�IGA', 'ZUÑIGA');
+      cero = cero.toString().replaceAll('CIUDADAN�A', 'CIUDADANIA');
+      cero = cero.toString().replaceAll('SECRETAR�A', 'SECRETARIA');
+      cero = cero.toString().replaceAll('BRICE�O', 'BRICEÑO');
+      cero = cero.toString().replaceAll('EXTRANJER�A', 'EXTRANJERIA');
+      cero = cero.toString().replaceAll('CARRE�O', 'CARREÑO');
+      cero = cero.toString().replaceAll('CASTA�EDA', 'CASTAÑEDA');
+      cero = cero.toString().replaceAll('CATA�O', 'CATAÑO');
+      cero = cero.toString().replaceAll('NI�O', 'NIÑO');
+      cero = cero.toString().replaceAll('ACU�A', 'ACUÑA');
+      cero = cero.toString().replaceAll('RIO�ACHA', 'RIOHACHA');
+      cero = cero.toString().replaceAll('CA�O', 'CAÑO');
+      cero = cero.toString().replaceAll('PE�A', 'PEÑA');
+      cero = cero.toString().replaceAll('MART�N', 'MARTIN');
+      cero = cero.toString().replaceAll('ESTUPI�AN', 'ESTUPIÑAN');
+      cero = cero.toString().replaceAll('PE�ALOZA', 'PEÑALOZA');
+      cero = cero.toString().replaceAll('JOS�', 'JOSE');
+      cero = cero.toString().replaceAll('GAL�N', 'GALAN');
+      cero = cero.toString().replaceAll('CAMA�O', 'CAMAÑO');
+      cero = cero.toString().replaceAll('MERI�O', 'MERIÑO');
+      cero = cero.toString().replaceAll('G�NESIS', 'GENESIS');
+      cero = cero.toString().replaceAll('GUDI�O', 'GUDIÑO');
+      cero = cero.toString().replaceAll('VICU�A', 'VICUÑA');
+      cero = cero.toString().replaceAll(' �A', ' A');
+      cero = cero.toString().replaceAll(' �E', ' E');
+      cero = cero.toString().replaceAll(' �I', ' I');
+      cero = cero.toString().replaceAll(' �O', ' O');
+      cero = cero.toString().replaceAll(' �U', ' U');
+      cero = cero.toString().replaceAll('.�', '.');
+      cero = cero.toString().replaceAll('AIC�', 'AIC');
+      cero = cero.toString().replaceAll(' �C', ' C');
+      cero = cero.toString().replaceAll('LTDA�', 'LTDA');
+      cero = cero.toString().replaceAll('SAR�', 'SARA');
+      cero = cero.toString().replaceAll('LAMBRA�O', 'LAMBRAÑO');
+      cero = cero.toString().replaceAll('LIDUE�A', 'LIDUEÑA');
+      cero = cero.toString().replaceAll('O�ATE', 'OÑATE');
+      cero = cero.toString().replaceAll('VISI�N', 'VISION');
+      cero = cero.toString().replaceAll('CALDER�N', 'CALDERON');
+      cero = cero.toString().replaceAll('SOF�A', 'SOFIA');
+      cero = cero.toString().replaceAll('MOIS�S', 'MOISES');
+      cero = cero.toString().replaceAll('ANG�LICA', 'ANGELICA');
+      cero = cero.toString().replaceAll('MONTA�O', 'MONTAÑO');
+      cero = cero.toString().replaceAll('PATI�O', 'PATIÑO');
+      cero = cero.toString().replaceAll('MU�IZ', 'MUÑIZ');
+      cero = cero.toString().replaceAll('G�MEZ', 'GÓMEZ');
+      cero = cero.toString().replaceAll('CASTA�O', 'CASTAÑO');
+      cero = cero.toString().replaceAll('MARI�A', 'MARIÑA');
+      cero = cero.toString().replaceAll('F�SICA', 'FISICA');
+      cero = cero.toString().replaceAll('MAR�A', 'MARIA');
+      cero = cero.toString().replaceAll('BA�OS', 'BAÑOS');
+      cero = cero.toString().replaceAll('KA�AKAT', 'KAÑAKAT');
+      cero = cero.toString().replaceAll('LONDO�O', 'LONDOÑO');
+      cero = cero.toString().replaceAll('SE�A', 'SEÑA');
+      cero = cero.toString().replaceAll('QUI�ONES', 'QUIÑONES');
+      cero = cero.toString().replaceAll('SE�AS', 'SEÑAS');
+      cero = cero.toString().replaceAll('T�MARA', 'TAMARA');
+      cero = cero.toString().replaceAll('CERME�O', 'CERMEÑO');
+      cero = cero.toString().replaceAll('JES�S', 'JESÚS');
+      cero = cero.toString().replaceAll('URBANIZACI�N', 'URBANIZACION');
+      // cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
+      cero = cero.toString().replaceAll('Á', 'A');
+      cero = cero.toString().replaceAll('É', 'E');
+      cero = cero.toString().replaceAll('Í', 'I');
+      cero = cero.toString().replaceAll('Ó', 'O');
+      cero = cero.toString().replaceAll('Ú', 'U');
+      var uno = cero.toString().split(";");
+      var uno1 = uno.toString().replaceAll(RegExp(', '), ',');
+      var uno2 = uno1.toString().split(",");
+      var esp = cero.toString().indexOf('�');
+      if (esp > -1) {
+        uno.forEach((palabra) {
+          var esp2 = palabra.toString().indexOf('�');
+          if (esp2 > -1) {
+            var uno4 = cero.toString().replaceAll('�', '');
+            var uno3 = palabra.toString().replaceAll('�', '');
+            print(['String-Error', esp2, uno3, uno4]);
+          }
+        });
+      }
+      var lista = toSheet(uno2);
+      var dos = Simat.fromList(uno2);
+      dos.index = conta;
+      if (conta != 0) {
+        simatData.add(lista);
+        users.add(dos);
       }
       // else{encabezados = uno1.toString().split(",");}
       conta += 1; // Simat.fromList(dos)
@@ -2150,7 +1919,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     await storage.put('simat', json.encode(users));
     await storage.put('simatData', simatData);
     _isLoading2(true);
-    // await saveSimatToDrive(simatData);
+    await saveSimatToDrive(simatData);
     setState(() {
       print('set estate');
       simatFecha = simatFecha;
@@ -2326,7 +2095,6 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             'organizations': '',
             'thumbnailPhotoUrl': '',
             'index': data['index'],
-            'rol': 'Estudiante',
             "customSchemas": {
               "SIMAT": {
                 "ano": data["ano"],
@@ -2442,8 +2210,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         });
       });
       result.data['errores'].forEach((userError) {
-        final usert = users.firstWhere(
-            (item) => item.documentoNum == userError['documentoNum'],
+        final usert = users.firstWhere((item) => item.doc == userError['doc'],
             orElse: null);
         if (usert != null)
           setState(() => usert.plataformaState = userError['error']);
@@ -2464,109 +2231,17 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   }
 }
 
-stringAdapt(String dato) {
-  var cero = dato.toString().replaceAll('MA�ANA', 'MAÑANA');
-  cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
-  cero = cero.toString().replaceAll('J�VENES', 'JOVENES');
-  cero = cero.toString().replaceAll('MART�NEZ', 'MARTINEZ');
-  cero = cero.toString().replaceAll('NU�EZ', 'NUÑEZ');
-  cero = cero.toString().replaceAll('SE�ORA', 'SEÑORA');
-  cero = cero.toString().replaceAll('MU�OZ', 'MUÑOZ');
-  cero = cero.toString().replaceAll('IDENTIFICACI�N', 'IDENTIFICACION');
-  cero = cero.toString().replaceAll('N�MERO', 'NUMERO');
-  cero = cero.toString().replaceAll('ARI�O', 'ARÑIO');
-  cero = cero.toString().replaceAll('BELE�O', 'BELEÑO');
-  cero = cero.toString().replaceAll('ANDR�S', 'ANDRES');
-  cero = cero.toString().replaceAll('A�EZ', 'AÑEZ');
-  cero = cero.toString().replaceAll('PE�ARANDA', 'PEÑARANDA');
-  cero = cero.toString().replaceAll('PE�ATE', 'PEÑATE');
-  cero = cero.toString().replaceAll('BOLA�O', 'BOLAÑO');
-  cero = cero.toString().replaceAll('AVENDA�O', 'AVENDAÑO');
-  cero = cero.toString().replaceAll('ORDO�EZ', 'ORDOÑEZ');
-  cero = cero.toString().replaceAll('C�DULA', 'CEDULA');
-  cero = cero.toString().replaceAll('ZU�IGA', 'ZUÑIGA');
-  cero = cero.toString().replaceAll('CIUDADAN�A', 'CIUDADANIA');
-  cero = cero.toString().replaceAll('SECRETAR�A', 'SECRETARIA');
-  cero = cero.toString().replaceAll('BRICE�O', 'BRICEÑO');
-  cero = cero.toString().replaceAll('EXTRANJER�A', 'EXTRANJERIA');
-  cero = cero.toString().replaceAll('CARRE�O', 'CARREÑO');
-  cero = cero.toString().replaceAll('CASTA�EDA', 'CASTAÑEDA');
-  cero = cero.toString().replaceAll('CATA�O', 'CATAÑO');
-  cero = cero.toString().replaceAll('NI�O', 'NIÑO');
-  cero = cero.toString().replaceAll('ACU�A', 'ACUÑA');
-  cero = cero.toString().replaceAll('RIO�ACHA', 'RIOHACHA');
-  cero = cero.toString().replaceAll('CA�O', 'CAÑO');
-  cero = cero.toString().replaceAll('PE�A', 'PEÑA');
-  cero = cero.toString().replaceAll('MART�N', 'MARTIN');
-  cero = cero.toString().replaceAll('ESTUPI�AN', 'ESTUPIÑAN');
-  cero = cero.toString().replaceAll('PE�ALOZA', 'PEÑALOZA');
-  cero = cero.toString().replaceAll('JOS�', 'JOSE');
-  cero = cero.toString().replaceAll('GAL�N', 'GALAN');
-  cero = cero.toString().replaceAll('CAMA�O', 'CAMAÑO');
-  cero = cero.toString().replaceAll('MERI�O', 'MERIÑO');
-  cero = cero.toString().replaceAll('G�NESIS', 'GENESIS');
-  cero = cero.toString().replaceAll('GUDI�O', 'GUDIÑO');
-  cero = cero.toString().replaceAll('VICU�A', 'VICUÑA');
-  cero = cero.toString().replaceAll(' �A', ' A');
-  cero = cero.toString().replaceAll(' �E', ' E');
-  cero = cero.toString().replaceAll(' �I', ' I');
-  cero = cero.toString().replaceAll(' �O', ' O');
-  cero = cero.toString().replaceAll(' �U', ' U');
-  cero = cero.toString().replaceAll('.�', '.');
-  cero = cero.toString().replaceAll('AIC�', 'AIC');
-  cero = cero.toString().replaceAll(' �C', ' C');
-  cero = cero.toString().replaceAll('LTDA�', 'LTDA');
-  cero = cero.toString().replaceAll('SAR�', 'SARA');
-  cero = cero.toString().replaceAll('LAMBRA�O', 'LAMBRAÑO');
-  cero = cero.toString().replaceAll('LIDUE�A', 'LIDUEÑA');
-  cero = cero.toString().replaceAll('O�ATE', 'OÑATE');
-  cero = cero.toString().replaceAll('VISI�N', 'VISION');
-  cero = cero.toString().replaceAll('CALDER�N', 'CALDERON');
-  cero = cero.toString().replaceAll('SOF�A', 'SOFIA');
-  cero = cero.toString().replaceAll('MOIS�S', 'MOISES');
-  cero = cero.toString().replaceAll('ANG�LICA', 'ANGELICA');
-  cero = cero.toString().replaceAll('MONTA�O', 'MONTAÑO');
-  cero = cero.toString().replaceAll('PATI�O', 'PATIÑO');
-  cero = cero.toString().replaceAll('MU�IZ', 'MUÑIZ');
-  cero = cero.toString().replaceAll('G�MEZ', 'GÓMEZ');
-  cero = cero.toString().replaceAll('CASTA�O', 'CASTAÑO');
-  cero = cero.toString().replaceAll('MARI�A', 'MARIÑA');
-  cero = cero.toString().replaceAll('F�SICA', 'FISICA');
-  cero = cero.toString().replaceAll('MAR�A', 'MARIA');
-  cero = cero.toString().replaceAll('BA�OS', 'BAÑOS');
-  cero = cero.toString().replaceAll('KA�AKAT', 'KAÑAKAT');
-  cero = cero.toString().replaceAll('LONDO�O', 'LONDOÑO');
-  cero = cero.toString().replaceAll('SE�A', 'SEÑA');
-  cero = cero.toString().replaceAll('QUI�ONES', 'QUIÑONES');
-  cero = cero.toString().replaceAll('SE�AS', 'SEÑAS');
-  cero = cero.toString().replaceAll('T�MARA', 'TAMARA');
-  cero = cero.toString().replaceAll('CERME�O', 'CERMEÑO');
-  cero = cero.toString().replaceAll('JES�S', 'JESÚS');
-  cero = cero.toString().replaceAll('URBANIZACI�N', 'URBANIZACION');
-  // cero = cero.toString().replaceAll('EDUCACI�N', 'EDUCACION');
-  cero = cero.toString().replaceAll('Á', 'A');
-  cero = cero.toString().replaceAll('É', 'E');
-  cero = cero.toString().replaceAll('Í', 'I');
-  cero = cero.toString().replaceAll('Ó', 'O');
-  cero = cero.toString().replaceAll('Ú', 'U');
-  var uno = cero.toString().split(";");
-  var uno1 = uno.toString().replaceAll(RegExp(', '), ',');
-  var uno2 = uno1.toString().split(",");
-  var esp = cero.toString().indexOf('�');
-  return {'data': uno2, 'error': esp, 'array': uno, 'string': cero};
-}
-
 int _rowsSelectedCount = 0;
 
 class DataTableRows extends DataTableSource {
-  final List<GescolarUser> _users;
+  final List<Simat> _users;
   DataTableRows(this._users);
 
   @override
   DataRow getRow(int index) {
     assert(index >= 0);
     if (index >= _users.length) return null;
-    final GescolarUser user = _users[index];
+    final Simat user = _users[index];
     user.index = index;
     return DataRow.byIndex(
       selected: user.selected,
@@ -2581,13 +2256,10 @@ class DataTableRows extends DataTableSource {
       index: index,
       cells: [
         DataCell(Text(users[index].nombre)),
-        DataCell(Text(users[index].sede.toString())),
         DataCell(Text(users[index].jornada.toString())),
         DataCell(Text(users[index].grupo.toString())),
-        // DataCell(Text(users[index].grado.toString())),
-        DataCell(Text(users[index].documentoNum.toString())),
-        DataCell(Text(users[index].activo.toString())),
-        /* DataCell(
+        DataCell(Text(users[index].doc.toString())),
+        DataCell(
           AnimatedCircularChart(
             key: GlobalKey<AnimatedCircularChartState>(),
             size: const Size(20.0, 20.0),
@@ -2612,7 +2284,7 @@ class DataTableRows extends DataTableSource {
             ],
             chartType: CircularChartType.Radial,
           ),
-        ), */
+        ),
         DataCell(
           (!isLoading)
               ? Text(users[index].plataformaState.toString())
@@ -2713,7 +2385,7 @@ saveSimatToDrive(simatData) async {
     simatFecha = DateTime.now().toLocal();
     await storage.put('simatSheetId', result.data);
     await storage.put('simatFecha', simatFecha);
-    FirebaseFirestore.instance.doc('estudiantes/simat').set({
+    Firestore.instance.document('estudiantes/simat').setData({
       'lastSimatSheetId': simatSheetId['sheet']['id'],
       'lastSimatFecha': simatFecha
     });

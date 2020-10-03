@@ -17,7 +17,7 @@ class CollapsingNavigationDrawerState extends State<CollapsingNavigationDrawer>
   double minWidth = 58;
   // double _width = 210;
   int duration = 200;
-  bool isCollapsed = false;
+  bool isCollapsed = true;
   AnimationController _animationController;
   Animation<double> widthAnimation;
   List<int> currentSelectedIndex = [0, 99];

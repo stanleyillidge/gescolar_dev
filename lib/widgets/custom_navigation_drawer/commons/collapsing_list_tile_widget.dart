@@ -6,8 +6,8 @@ class CollapsingListTile extends StatefulWidget {
   final IconData icon;
   final AnimationController animationController;
   final bool isSelected;
-  bool isExpanded;
-  bool isCollapsed;
+  bool isExpanded = false;
+  bool isCollapsed = true;
   final Function onTap;
 
   CollapsingListTile({
@@ -16,8 +16,8 @@ class CollapsingListTile extends StatefulWidget {
     @required this.animationController,
     this.isSelected = false,
     this.onTap,
-    this.isExpanded,
-    this.isCollapsed,
+    this.isExpanded = false,
+    this.isCollapsed = true,
   });
 
   @override

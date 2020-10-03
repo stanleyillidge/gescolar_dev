@@ -841,11 +841,11 @@
                 });
             }
         }
-        MultiFilter(obj, filters) {
+        /* MultiFilter(obj, filters) {
             const array = Object.values(obj);
             return array.filter(o =>
                 Object.keys(filters).every(k =>
                     [].concat(filters[k]).some(v => o[k].toLowerCase().includes(v.toLowerCase()))));
-        }
+        } */
     }
 // ------------------------------
