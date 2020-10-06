@@ -78,13 +78,16 @@ Future<FirebaseApp> _db1() async {
       .onChildAdded
       .forEach((event) => {print(event.snapshot.value)}); */
 
-  Firestore(app: app).collection('colegios').getDocuments().then((value) => {
-        value.documents.forEach((element) {
-          print(element.documentID);
-          // lista.add(element.documentID);
-          // storage.setItem('database1', element.documentID);
-        })
-      });
+  FirebaseFirestore.instanceFor(app: app)
+      .collection('colegios')
+      .get()
+      .then((value) => {
+            value.docs.forEach((element) {
+              print(element.id);
+              // lista.add(element.documentID);
+              // storage.setItem('database1', element.documentID);
+            })
+          });
 }
 
 Future<Firestore> _db2() async {

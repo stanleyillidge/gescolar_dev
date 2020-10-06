@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:file_picker_web/file_picker_web.dart';
 import 'package:floating_search_bar/floating_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:gescolar_dev/pages/editUser.dart';
 import 'package:gescolar_dev/services/firebase_auth_service.dart';
 // import 'package:gescolar_dev/models/user.dart';
 import 'package:gescolar_dev/widgets/Google/Drive/drive.dart';
@@ -1065,6 +1066,7 @@ int numItems;
 String simatF = 'Fecha de actualización';
 List<bool> selected;
 List<bool> simatSelected;
+int _rowPerPage = PagDataTable.defaultRowsPerPage;
 
 class Sedes extends StatefulWidget {
   Sedes({Key key}) : super(key: key);
@@ -1273,7 +1275,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         _isLoading2(false);
         usersTemp = users;
         await storage.put('simat', json.encode(users));
-        print(['Carga users', json.encode(users)]);
+        // print(['Carga users', json.encode(users)]);
         return userst;
       } else {
         _isLoading2(false);
@@ -1486,7 +1488,6 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     // _json = jsonDecode(jsonSample);
-    int _rowPerPage = PagDataTable.defaultRowsPerPage;
     List<DataColumn> columnas = [
       /* DataColumn(
         label: Text('nombre'),
@@ -1801,7 +1802,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         },
       ), */
       DataColumn(
-        label: Text('doc'),
+        label: Text('Doc'),
         onSort: (columnIndex, sortAscending) {
           setState(() {
             if (columnIndex == _sortColumnIndex) {
@@ -1836,7 +1837,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         },
       ),
       DataColumn(
-        label: Text('Estado'),
+        label: Text('Sync'),
         onSort: (columnIndex, sortAscending) {
           setState(() {
             if (columnIndex == _sortColumnIndex) {
@@ -1847,6 +1848,24 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             }
             users
                 .sort((a, b) => a.plataformaState.compareTo(b.plataformaState));
+            if (!_sortAsc) {
+              users = users.reversed.toList();
+            }
+          });
+        },
+      ),
+      DataColumn(
+        label: Text('Opciones'),
+        onSort: (columnIndex, sortAscending) {
+          setState(() {
+            if (columnIndex == _sortColumnIndex) {
+              _sortAsc = _sortNameAsc = sortAscending;
+            } else {
+              _sortColumnIndex = columnIndex;
+              _sortAsc = _sortNameAsc;
+            }
+            users.sort(
+                (a, b) => a.editado.toString().compareTo(b.editado.toString()));
             if (!_sortAsc) {
               users = users.reversed.toList();
             }
@@ -2234,13 +2253,16 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                 padding: const EdgeInsets.only(
                                     left: 10, top: 95, bottom: 10, right: 10),
                                 child: PagDataTable(
+                                  columnSpacing: 10,
+                                  horizontalMargin: 6,
                                   header: Container(),
                                   columns: columnas,
-                                  source: DataTableRows(users),
+                                  source: DataTableRows(context, users),
                                   showCheckboxColumn: true,
                                   onRowsPerPageChanged: (r) {
                                     setState(() {
                                       _rowPerPage = r;
+                                      print(['_rowPerPage', _rowPerPage]);
                                     });
                                   },
                                   rowsPerPage: _rowPerPage,
@@ -2252,7 +2274,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                         user.selected = isAllChecked;
                                       });
                                     });
-                                    DataTableRows(users)
+                                    DataTableRows(context, users)
                                         .selectAll(isAllChecked);
                                     /* actions: <Widget>[
                                       IconButton(
@@ -2489,7 +2511,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   }
 
   Future<void> _pickFiles() async {
-    print(['que paso?', users]);
+    // print(['que paso?', users]);
     final completer = Completer<List<String>>();
     final InputElement input = FileUploadInputElement();
     input.click();
@@ -2537,7 +2559,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                 .where((item) => item.documentoNum == dos.documentoNum)
                 .length >
             0;
-        print(['Data', userok, users.length]);
+        // print(['Data', userok, users.length]);
         if (conta != 0) {
           simatData.add(lista);
           if (users.length == 0) {
@@ -2907,6 +2929,15 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       print(e);
     }
   }
+
+  _goTo() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditUser(),
+      ),
+    );
+  }
 }
 
 stringAdapt(String dato) {
@@ -3002,11 +3033,12 @@ stringAdapt(String dato) {
 }
 
 int _rowsSelectedCount = 0;
+bool _showEditIcon = false;
 
 class DataTableRows extends DataTableSource {
   final List<GescolarUser> _users;
-  DataTableRows(this._users);
-
+  final BuildContext context;
+  DataTableRows(this.context, this._users);
   @override
   DataRow getRow(int index) {
     assert(index >= 0);
@@ -3025,13 +3057,126 @@ class DataTableRows extends DataTableSource {
       },
       index: index,
       cells: [
-        DataCell(Text(users[index].nombre)),
-        DataCell(Text(users[index].sede.toString())),
-        DataCell(Text(users[index].jornada.toString())),
-        DataCell(Text(users[index].grupo.toString())),
-        // DataCell(Text(users[index].grado.toString())),
-        DataCell(Text(users[index].documentoNum.toString())),
-        DataCell(Text(users[index].activo.toString())),
+        DataCell(
+            (users[index].editado)
+                ? TextFormField(
+                    onChanged: (val) {
+                      print('onChanged $val');
+                      users[index].nombre = val;
+                      users[index].plataformaState = 'pendiente';
+                    },
+                    initialValue: users[index].nombre.toString(),
+                    onFieldSubmitted: (val) {
+                      print('onSubmited $val');
+                    },
+                  )
+                : Text(users[index].nombre.toString()),
+            showEditIcon: users[index].editado),
+        DataCell(
+            (users[index].editado)
+                ? TextFormField(
+                    onChanged: (val) {
+                      print('onChanged $val');
+                      users[index].sede = val;
+                      users[index].plataformaState = 'pendiente';
+                    },
+                    initialValue: users[index].sede.toString(),
+                    onFieldSubmitted: (val) {
+                      print('onSubmited $val');
+                    },
+                  )
+                : Text(users[index].sede.toString()),
+            showEditIcon: users[index].editado),
+        DataCell(
+            (users[index].editado)
+                ? TextFormField(
+                    onChanged: (val) {
+                      print('onChanged $val');
+                      users[index].jornada = val;
+                      users[index].plataformaState = 'pendiente';
+                    },
+                    initialValue: users[index].jornada.toString(),
+                    onFieldSubmitted: (val) {
+                      print('onSubmited $val');
+                    },
+                  )
+                : Text(users[index].jornada.toString()),
+            showEditIcon: users[index].editado),
+        DataCell(
+            (users[index].editado)
+                ? TextFormField(
+                    onChanged: (val) {
+                      print('onChanged $val');
+                      users[index].grupo = val;
+                      users[index].plataformaState = 'pendiente';
+                    },
+                    initialValue: users[index].grupo.toString(),
+                    onFieldSubmitted: (val) {
+                      print('onSubmited $val');
+                    },
+                  )
+                : Text(users[index].grupo.toString()),
+            showEditIcon: users[index].editado),
+        /* DataCell(
+            (users[index].editado)
+                ? TextFormField(
+                    onChanged: (val) {
+                      print('onChanged $val');
+                      users[index].grado = val;
+                      users[index].plataformaState = 'pendiente';
+                    },
+                    initialValue: users[index].grado.toString(),
+                    onFieldSubmitted: (val) {
+                      print('onSubmited $val');
+                    },
+                  )
+                : Text(users[index].grado.toString()),
+            showEditIcon: users[index].editado), */
+        // DataCell(Text(users[index].documentoNum.toString())),
+        DataCell(
+            (users[index].editado)
+                ? TextFormField(
+                    onChanged: (val) {
+                      print('onChanged $val');
+                      users[index].documentoNum = val;
+                      users[index].plataformaState = 'pendiente';
+                    },
+                    initialValue: users[index].documentoNum.toString(),
+                    onFieldSubmitted: (val) {
+                      print('onSubmited $val');
+                    },
+                  )
+                : Text(users[index].documentoNum.toString()),
+            showEditIcon: users[index].editado),
+        // DataCell(Text(users[index].activo.toString())),
+        DataCell(
+            (users[index].editado)
+                ? DropdownButton<String>(
+                    value: users[index].activo ? 'Matriculado' : 'Pendiente',
+                    // icon: Icon(Icons.arrow_downward),
+                    iconSize: 16,
+                    elevation: 16,
+                    style: TextStyle(color: Colors.deepPurple),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                    onChanged: (String newValue) {
+                      users[index].activo =
+                          (newValue == 'Pendiente') ? false : true;
+                      users[index].plataformaState = 'pendiente';
+                      notifyListeners();
+                    },
+                    items: <String>['Matriculado', 'Pendiente']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  )
+                : Text(users[index].activo ? 'Matriculado' : 'Pendiente'),
+            showEditIcon: users[index].editado),
         /* DataCell(
           AnimatedCircularChart(
             key: GlobalKey<AnimatedCircularChartState>(),
@@ -3064,7 +3209,51 @@ class DataTableRows extends DataTableSource {
               : Center(
                   child: CircularProgressIndicator(),
                 ),
-        )
+        ),
+        // DataCell(Text(users[index].editado.toString())),
+        /* DataCell(
+          IconButton(
+            icon: Icon(Icons.volume_up),
+            tooltip: 'Increase volume by 10',
+            onPressed: () {
+              print(['Hola', user.index]);
+            },
+          ),
+        ), */
+        DataCell(
+          PopupMenuButton<int>(
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 1,
+                child:
+                    (users[index].editado) ? Text("Guardar") : Text("Editar"),
+              ),
+              PopupMenuItem(
+                value: 2,
+                child: Text("Second"),
+              ),
+            ],
+            onCanceled: () {
+              print("You have canceled the menu.");
+            },
+            onSelected: (value) {
+              if (value == 1) {
+                print(["value:$value", user.index]);
+                users[index].editado = !users[index].editado;
+                notifyListeners();
+              } else if (value == 2) {
+                print(["value:$value", user.index]);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditUser(),
+                  ),
+                );
+              }
+            },
+            // icon: Icon(Icons.list),
+          ),
+        ),
       ],
     );
   }
