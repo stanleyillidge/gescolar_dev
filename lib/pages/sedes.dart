@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:file_picker_web/file_picker_web.dart';
 import 'package:floating_search_bar/floating_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:gescolar_dev/services/firebase_auth_service.dart';
 // import 'package:gescolar_dev/models/user.dart';
 import 'package:gescolar_dev/widgets/Google/Drive/drive.dart';
 // import 'package:gescolar_dev/pages/tabla.dart';
@@ -20,7 +21,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'string_apis.dart';
 // import 'package:json_table/json_table.dart';
 // TODO Algoritmo para filtrar la tabla
 // TODO Editar al estudiante en : nombre - sede - jornada - grupo - estado de la matricula
@@ -53,43 +54,8 @@ List<CircularStackEntry> dataC = <CircularStackEntry>[
   ),
 ];
 
-/* class Filas {
-  String name;
-  String email;
-  int age;
-  String income;
-  String country;
-  String area;
-  bool selected;
-  Widget grafico;
-  int index;
-
-  Filas(
-      {this.name,
-      this.email,
-      this.age,
-      this.income,
-      this.country,
-      this.area,
-      this.grafico,
-      this.selected,
-      this.index});
-
-  factory Filas.fromJson(Map<String, dynamic> json) {
-    return new Filas(
-      name: json['name'],
-      email: json['email'],
-      age: json['age'],
-      income: json['income'],
-      country: json['country'],
-      area: json['area'],
-      selected: false,
-      index: 0,
-    );
-  }
-} */
-
-class Simat {
+/* class Simat2 {
+  String id;
   String ano;
   String estado;
   String sede;
@@ -119,8 +85,9 @@ class Simat {
   String nombre;
   String plataformaState;
 
-  Simat(
-      {this.ano,
+  Simat2(
+      {this.id,
+      this.ano,
       this.estado,
       this.sede,
       this.codigoDaneSede,
@@ -148,7 +115,7 @@ class Simat {
       this.nombre,
       this.plataformaState});
 
-  factory Simat.fromJson(Map<String, dynamic> json) {
+  factory Simat2.fromJson(Map<String, dynamic> json) {
     var nombre = ((json['nombre1'] != null) && (json['apellido1'] != null))
         ? ((json['nombre1'] != null) &&
                 (json['apellido1'] != null) &&
@@ -171,7 +138,7 @@ class Simat {
                     json['apellido2']
             : json['nombre1'] + ' ' + json['apellido1']
         : '';
-    return Simat(
+    return Simat2(
         ano: json['ano'],
         estado: json['estado'],
         sede: json['sede'],
@@ -200,7 +167,7 @@ class Simat {
         nombre: nombre,
         plataformaState: 'pendiente');
   }
-  factory Simat.fromLocal(Map<String, dynamic> json) {
+  factory Simat2.fromLocal(Map<String, dynamic> json) {
     var nombre = ((json['NOMBRE1'] != null) && (json['APELLIDO1'] != null))
         ? ((json['NOMBRE1'] != null) &&
                 (json['APELLIDO1'] != null) &&
@@ -223,7 +190,7 @@ class Simat {
                     json['APELLIDO2']
             : json['NOMBRE1'] + ' ' + json['APELLIDO1']
         : '';
-    return Simat(
+    return Simat2(
         ano: json['ANO'],
         estado: json['ESTADO'],
         sede: json['SEDE'],
@@ -252,7 +219,7 @@ class Simat {
         nombre: nombre,
         plataformaState: 'pendiente');
   }
-  factory Simat.fromList(List<dynamic> list) {
+  factory Simat2.fromList(List<dynamic> list) {
     /* var nombre = ((list[27] != null) && (list[25] != null))
         ? ((list[27] != null) && (list[25] != null) && (list[26] != null))
             ? ((list[27] != null) &&
@@ -276,8 +243,8 @@ class Simat {
                 : list[27] + ' ' + list[25] + ' ' + list[26]
             : list[27] + ' ' + list[25]
         : '';
-    return Simat(
-        ano: list.asMap().containsKey(0) ? list[0].substring(1) : '',
+    return Simat2(
+        ano: list.asMap().containsKey(0) ? list[0] : '',
         estado: list.asMap().containsKey(2) ? list[2] : '',
         sede: list.asMap().containsKey(8) ? list[8] : '',
         codigoDaneSede: list.asMap().containsKey(9) ? list[9] : '',
@@ -307,6 +274,21 @@ class Simat {
         nombre: nombre,
         plataformaState: 'pendiente');
   }
+
+  /* List toSheet(Simat2 data) {
+    List<dynamic> simat = [];
+    var list = data.toJson();
+    list.forEach((key, value) {
+      print([key.toString(), value.toString()]);
+      if ((value.toString().length == 0) || (value.toString().length == 1)) {
+        simat.add('NO DATA');
+      } else if (value.toString().length >= 2) {
+        simat.add(value);
+      }
+    });
+    return simat;
+  } */
+
   Map toJson() => {
         'ano': ano,
         'estado': estado,
@@ -335,6 +317,402 @@ class Simat {
         'index': index,
         'nombre': nombre,
         'plataformaState': plataformaState
+      };
+} */
+
+class Simat {
+  String ano;
+  String etc;
+  String estado;
+  String jerarquia;
+  String institucion;
+  String dane;
+  String calendario;
+  String sector;
+  String sede;
+  String codigoDaneSede;
+  String consecutivo;
+  String zonaSede;
+  String jornada;
+  String gradoCod;
+  String grupo;
+  String modelo;
+  String motivo;
+  String fechaini;
+  String fechafin;
+  String nui;
+  String estrato;
+  String sisbenTres;
+  String perId;
+  String doc;
+  String tipodoc;
+  String apellido1;
+  String apellido2;
+  String nombre1;
+  String nombre2;
+  String genero;
+  String fechaNacimiento;
+  String barrio;
+  String eps;
+  String tipoDeSangre;
+  String matriculacontratada;
+  String fuenteRecursos;
+  String internado;
+  String numContrato;
+  String apoyoAcademicoEspecial;
+  String srpa;
+  String discapacidad;
+  String paisOrigen;
+  String correo;
+  //------------
+  String id;
+  String nombre;
+  bool activo;
+  bool editado;
+  String fechaEdicion;
+  String fechaCreacion;
+  String plataformaState;
+
+  Simat({
+    this.ano,
+    this.etc,
+    this.estado,
+    this.jerarquia,
+    this.institucion,
+    this.dane,
+    this.calendario,
+    this.sector,
+    this.sede,
+    this.codigoDaneSede,
+    this.consecutivo,
+    this.zonaSede,
+    this.jornada,
+    this.gradoCod,
+    this.grupo,
+    this.modelo,
+    this.motivo,
+    this.fechaini,
+    this.fechafin,
+    this.nui,
+    this.estrato,
+    this.sisbenTres,
+    this.perId,
+    this.doc,
+    this.tipodoc,
+    this.apellido1,
+    this.apellido2,
+    this.nombre1,
+    this.nombre2,
+    this.genero,
+    this.fechaNacimiento,
+    this.barrio,
+    this.eps,
+    this.tipoDeSangre,
+    this.matriculacontratada,
+    this.fuenteRecursos,
+    this.internado,
+    this.numContrato,
+    this.apoyoAcademicoEspecial,
+    this.srpa,
+    this.discapacidad,
+    this.paisOrigen,
+    this.correo,
+    this.id,
+    this.activo,
+    this.editado,
+    this.nombre,
+    this.fechaEdicion,
+    this.fechaCreacion,
+    this.plataformaState,
+  });
+  factory Simat.fromJson(Map<String, dynamic> json) {
+    var nombre = ((json['nombre1'] != null) && (json['apellido1'] != null))
+        ? ((json['nombre1'] != null) &&
+                (json['apellido1'] != null) &&
+                (json['apellido2'] != null))
+            ? ((json['nombre1'] != null) &&
+                    (json['nombre2'] != null) &&
+                    (json['apellido1'] != null) &&
+                    (json['apellido2'] != null))
+                ? json['nombre1'] +
+                    ' ' +
+                    json['nombre2'] +
+                    ' ' +
+                    json['apellido1'] +
+                    ' ' +
+                    json['apellido2']
+                : json['nombre1'] +
+                    ' ' +
+                    json['apellido1'] +
+                    ' ' +
+                    json['apellido2']
+            : json['nombre1'] + ' ' + json['apellido1']
+        : '';
+    return Simat(
+      ano: json['ano'],
+      etc: json['etc'],
+      estado: json['estado'],
+      jerarquia: json['jerarquia'],
+      institucion: json['institucion'],
+      dane: json['dane'],
+      calendario: json['calendario'],
+      sector: json['sector'],
+      sede: json['sede'],
+      codigoDaneSede: json['codigoDaneSede'],
+      consecutivo: json['consecutivo'],
+      zonaSede: json['zonaSede'],
+      jornada: json['jornada'],
+      gradoCod: json['gradoCod'],
+      grupo: json['grupo'],
+      modelo: json['modelo'],
+      motivo: json['motivo'],
+      fechaini: json['fechaini'],
+      fechafin: json['fechafin'],
+      nui: json['nui'],
+      estrato: json['estrato'],
+      sisbenTres: json['sisbenTres'],
+      perId: json['perId'],
+      doc: json['doc'],
+      tipodoc: json['tipodoc'],
+      apellido1: json['apellido1'],
+      apellido2: json['apellido2'],
+      nombre1: json['nombre1'],
+      nombre2: json['nombre2'],
+      genero: json['genero'],
+      fechaNacimiento: json['fechaNacimiento'],
+      barrio: json['barrio'],
+      eps: json['eps'],
+      tipoDeSangre: json['tipoDeSangre'],
+      matriculacontratada: json['matriculacontratada'],
+      fuenteRecursos: json['fuenteRecursos'],
+      internado: json['internado'],
+      numContrato: json['numContrato'],
+      apoyoAcademicoEspecial: json['apoyoAcademicoEspecial'],
+      srpa: json['srpa'],
+      discapacidad: json['discapacidad'],
+      paisOrigen: json['paisOrigen'],
+      correo: json['correo'],
+      id: json['id'],
+      nombre: json['nombre'],
+      activo: json['activo'],
+      editado: json['editado'],
+      fechaEdicion: json['fechaEdicion'],
+      fechaCreacion: json['fechaCreacion'],
+      plataformaState: json['plataformaState'],
+    );
+  }
+  factory Simat.fromLocal(Map<String, dynamic> json) {
+    var nombre = ((json['NOMBRE1'] != null) && (json['APELLIDO1'] != null))
+        ? ((json['NOMBRE1'] != null) &&
+                (json['APELLIDO1'] != null) &&
+                (json['APELLIDO2'] != null))
+            ? ((json['NOMBRE1'] != null) &&
+                    (json['NOMBRE2'] != null) &&
+                    (json['APELLIDO1'] != null) &&
+                    (json['APELLIDO2'] != null))
+                ? json['NOMBRE1'] +
+                    ' ' +
+                    json['NOMBRE2'] +
+                    ' ' +
+                    json['APELLIDO1'] +
+                    ' ' +
+                    json['APELLIDO2']
+                : json['NOMBRE1'] +
+                    ' ' +
+                    json['APELLIDO1'] +
+                    ' ' +
+                    json['APELLIDO2']
+            : json['NOMBRE1'] + ' ' + json['APELLIDO1']
+        : '';
+    return Simat(
+        ano: json['AÑO'],
+        etc: json['ETC'],
+        estado: json['ESTADO'],
+        jerarquia: json['JERARQUIA'],
+        institucion: json['INSTITUCION'],
+        dane: json['DANE'],
+        calendario: json['CALENDARIO'],
+        sector: json['SECTOR'],
+        sede: json['SEDE'],
+        codigoDaneSede: json['CODIGO_DANE_SEDE'],
+        consecutivo: json['CONSECUTIVO'],
+        zonaSede: json['ZONA_SEDE'],
+        jornada: json['JORNADA'],
+        gradoCod: json['GRADO_COD'],
+        grupo: json['GRUPO'],
+        modelo: json['MODELO'],
+        motivo: json['MOTIVO'],
+        fechaini: json['FECHAINI'],
+        fechafin: json['FECHAFIN'],
+        nui: json['NUI'],
+        estrato: json['ESTRATO'],
+        sisbenTres: json['SISBEN_TRES'],
+        perId: json['PER_ID'],
+        doc: json['DOC'],
+        tipodoc: json['TIPODOC'],
+        apellido1: json['APELLIDO1'],
+        apellido2: json['APELLIDO2'],
+        nombre1: json['NOMBRE1'],
+        nombre2: json['NOMBRE2'],
+        genero: json['GENERO'],
+        fechaNacimiento: json['FECHA_NACIMIENTO'],
+        barrio: json['BARRIO'],
+        eps: json['EPS'],
+        tipoDeSangre: json['TIPO DE SANGRE'],
+        matriculacontratada: json['MATRICULACONTRATADA'],
+        fuenteRecursos: json['FUENTE_RECURSOS'],
+        internado: json['INTERNADO'],
+        numContrato: json['NUM_CONTRATO'],
+        apoyoAcademicoEspecial: json['APOYO_ACADEMICO_ESPECIAL'],
+        srpa: json['SRPA'],
+        discapacidad: json['DISCAPACIDAD'],
+        paisOrigen: json['PAIS_ORIGEN'],
+        correo: json['CORREO'],
+        id: json['ID'],
+        activo: json['ACTIVO'],
+        editado: json['EDITADO'],
+        fechaEdicion: json['FECHAEDICION'],
+        fechaCreacion: json['FECHACREACION'],
+        nombre: (json['NOMBRE']) ? json['NOMBRE'] : nombre,
+        plataformaState: json['PLATAFORMASTATE']);
+  }
+  factory Simat.fromList(List<dynamic> list) {
+    var nombre = ((list.asMap().containsKey(27)) &&
+            (list.asMap().containsKey(25)))
+        ? ((list.asMap().containsKey(27)) &&
+                (list.asMap().containsKey(25)) &&
+                (list.asMap().containsKey(26)))
+            ? ((list.asMap().containsKey(27)) &&
+                    (list.asMap().containsKey(28)) &&
+                    (list.asMap().containsKey(25)) &&
+                    (list.asMap().containsKey(26)))
+                ? list[27] + ' ' + list[28] + ' ' + list[25] + ' ' + list[26]
+                : list[27] + ' ' + list[25] + ' ' + list[26]
+            : list[27] + ' ' + list[25]
+        : '';
+    return Simat(
+      ano: list.asMap().containsKey(0) ? list[0] : '',
+      etc: list.asMap().containsKey(1) ? list[1] : '',
+      estado: list.asMap().containsKey(2) ? list[2] : '',
+      jerarquia: list.asMap().containsKey(3) ? list[3] : '',
+      institucion: list.asMap().containsKey(4) ? list[4] : '',
+      dane: list.asMap().containsKey(5) ? list[5] : '',
+      calendario: list.asMap().containsKey(6) ? list[6] : '',
+      sector: list.asMap().containsKey(7) ? list[7] : '',
+      sede: list.asMap().containsKey(8) ? list[8] : '',
+      codigoDaneSede: list.asMap().containsKey(9) ? list[9] : '',
+      consecutivo: list.asMap().containsKey(10) ? list[10] : '',
+      zonaSede: list.asMap().containsKey(11) ? list[11] : '',
+      jornada: list.asMap().containsKey(12) ? list[12] : '',
+      gradoCod: list.asMap().containsKey(13) ? list[13] : '',
+      grupo: list.asMap().containsKey(14) ? list[14] : '',
+      modelo: list.asMap().containsKey(15) ? list[15] : '',
+      motivo: list.asMap().containsKey(16) ? list[16] : '',
+      fechaini: list.asMap().containsKey(17) ? list[17] : '',
+      fechafin: list.asMap().containsKey(18) ? list[18] : '',
+      nui: list.asMap().containsKey(19) ? list[19] : '',
+      estrato: list.asMap().containsKey(20) ? list[20] : '',
+      sisbenTres: list.asMap().containsKey(21) ? list[21] : '',
+      perId: list.asMap().containsKey(22) ? list[22] : '',
+      doc: list.asMap().containsKey(23) ? list[23] : '',
+      tipodoc: list.asMap().containsKey(24) ? list[24] : '',
+      apellido1: list.asMap().containsKey(25) ? list[25] : '',
+      apellido2: list.asMap().containsKey(26) ? list[26] : '',
+      nombre1: list.asMap().containsKey(27) ? list[27] : '',
+      nombre2: list.asMap().containsKey(28) ? list[28] : '',
+      genero: list.asMap().containsKey(29) ? list[29] : '',
+      fechaNacimiento: list.asMap().containsKey(30) ? list[30] : '',
+      barrio: list.asMap().containsKey(31) ? list[31] : '',
+      eps: list.asMap().containsKey(32) ? list[32] : '',
+      tipoDeSangre: list.asMap().containsKey(33) ? list[33] : '',
+      matriculacontratada: list.asMap().containsKey(34) ? list[34] : '',
+      fuenteRecursos: list.asMap().containsKey(35) ? list[35] : '',
+      internado: list.asMap().containsKey(36) ? list[36] : '',
+      numContrato: list.asMap().containsKey(37) ? list[37] : '',
+      apoyoAcademicoEspecial: list.asMap().containsKey(38) ? list[38] : '',
+      srpa: list.asMap().containsKey(39) ? list[39] : '',
+      discapacidad: list.asMap().containsKey(40) ? list[40] : '',
+      paisOrigen: list.asMap().containsKey(41) ? list[41] : '',
+      correo: list.asMap().containsKey(42) ? list[42] : '',
+      id: list.asMap().containsKey(43) ? list[43].toString() : '',
+      nombre: list.asMap().containsKey(44) ? list[44].toString() : nombre,
+      activo: list.asMap().containsKey(45)
+          ? list[45].toString().toLowerCase().parseBool()
+          : true,
+      editado: list.asMap().containsKey(46)
+          ? list[46].toString().toLowerCase().parseBool()
+          : false,
+      fechaEdicion: list.asMap().containsKey(47) ? list[47] : '',
+      fechaCreacion: list.asMap().containsKey(48) ? list[48] : '',
+      plataformaState: list.asMap().containsKey(49) ? list[49].toString() : '',
+    );
+  }
+
+  List toSheet(Simat data) {
+    List<dynamic> simat = [];
+    var list = data.toJson();
+    list.forEach((key, value) {
+      // print([key.toString(), value.toString()]);
+      if ((value.toString().length == 0) || (value.toString().length == 1)) {
+        simat.add('');
+      } else if (value.toString().length >= 2) {
+        simat.add(value);
+      }
+    });
+    return simat;
+  }
+
+  Map toJson() => {
+        'ano': ano,
+        'etc': etc,
+        'estado': estado,
+        'jerarquia': jerarquia,
+        'institucion': institucion,
+        'dane': dane,
+        'calendario': calendario,
+        'sector': sector,
+        'sede': sede,
+        'codigoDaneSede': codigoDaneSede,
+        'consecutivo': consecutivo,
+        'zonaSede': zonaSede,
+        'jornada': jornada,
+        'gradoCod': gradoCod,
+        'grupo': grupo,
+        'modelo': modelo,
+        'motivo': motivo,
+        'fechaini': fechaini,
+        'fechafin': fechafin,
+        'nui': nui,
+        'estrato': estrato,
+        'sisbenTres': sisbenTres,
+        'perId': perId,
+        'doc': doc,
+        'tipodoc': tipodoc,
+        'apellido1': apellido1,
+        'apellido2': apellido2,
+        'nombre1': nombre1,
+        'nombre2': nombre2,
+        'genero': genero,
+        'fechaNacimiento': fechaNacimiento,
+        'barrio': barrio,
+        'eps': eps,
+        'tipoDeSangre': tipoDeSangre,
+        'matriculacontratada': matriculacontratada,
+        'fuenteRecursos': fuenteRecursos,
+        'internado': internado,
+        'numContrato': numContrato,
+        'apoyoAcademicoEspecial': apoyoAcademicoEspecial,
+        'srpa': srpa,
+        'discapacidad': discapacidad,
+        'paisOrigen': paisOrigen,
+        'correo': correo,
+        'id': id,
+        'nombre': nombre,
+        'activo': activo,
+        'editado': editado,
+        'fechaEdicion': fechaEdicion,
+        'fechaCreacion': fechaCreacion,
+        'plataformaState': plataformaState,
       };
 }
 
@@ -416,6 +794,7 @@ class GsuiteUser {
 }
 
 class GescolarUser {
+  String id;
   String ano;
   String photoURL;
   String nombre;
@@ -442,9 +821,11 @@ class GescolarUser {
   bool selected;
   int index;
   String plataformaState;
+  Simat simat;
 
   GescolarUser(
-      {this.ano,
+      {this.id,
+      this.ano,
       this.photoURL,
       this.nombre,
       this.sede,
@@ -468,7 +849,8 @@ class GescolarUser {
       this.fechaEdicion,
       this.selected,
       this.index,
-      this.plataformaState});
+      this.plataformaState,
+      this.simat});
 
   factory GescolarUser.fromJson(Map<String, dynamic> json) {
     var nombre = ((json['nombre1'] != null) && (json['apellido1'] != null))
@@ -501,7 +883,8 @@ class GescolarUser {
       grado: json['gradoCod'],
       grupo: json['grupo'],
       fechaCreacion: DateTime.now().toString(),
-      activo: true,
+      activo:
+          (json['plataformaState'] == 'ok') ? true : false, // TODO como activar
       editado: false,
       rol: 'Estudiante',
       fechaMatricula: json['fechaini'],
@@ -512,7 +895,8 @@ class GescolarUser {
       email: json['correo'],
       selected: false,
       index: 0,
-      plataformaState: 'pendiente',
+      plataformaState: json['plataformaState'],
+      simat: Simat.fromJson(json),
     );
   }
   factory GescolarUser.fromLocal(Map<String, dynamic> json) {
@@ -558,6 +942,7 @@ class GescolarUser {
       selected: false,
       index: 0,
       plataformaState: 'pendiente',
+      simat: Simat.fromLocal(json),
     );
   }
   factory GescolarUser.fromList(List<dynamic> list) {
@@ -590,12 +975,11 @@ class GescolarUser {
       documentoTipo: (list.asMap().containsKey(24)) ? list[24] : '',
       genero: (list.asMap().containsKey(29)) ? list[29] : '',
       fechaNacimiento: (list.asMap().containsKey(30)) ? list[30] : '',
-      email: (list.asMap().containsKey(42))
-          ? list[42].substring(list[42].length)
-          : '',
+      email: (list.asMap().containsKey(42)) ? list[42] : '',
       selected: false,
       index: 0,
       plataformaState: 'pendiente',
+      simat: Simat.fromList(list),
     );
   }
   Map toJson() => {
@@ -618,6 +1002,7 @@ class GescolarUser {
         'selected': selected,
         'index': index,
         'plataformaState': plataformaState,
+        'simat': simat,
       };
 }
 
@@ -703,8 +1088,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     googleAuthStorage = await Hive.openBox('googleAuthStorage');
     storage = await Hive.openBox('myBox');
     FirebaseFirestore.instance
-        .collection('estudiantes')
-        .doc('simat')
+        .collection('simat')
+        .doc('last')
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
@@ -725,7 +1110,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       var autorization = 'Bearer ' + accessToken;
       var url = 'https://sheets.googleapis.com/v4/spreadsheets/' +
           id +
-          '/values:batchGet?majorDimension=ROWS&ranges=A%3AAQ&key=AIzaSyCdCTYPL1-PPQb3rpOi5Ls_oGoMfPjvXG8';
+          '/values:batchGet?majorDimension=ROWS&ranges=A%3AAX&key=AIzaSyCdCTYPL1-PPQb3rpOi5Ls_oGoMfPjvXG8';
       final http.Response response =
           await http.get(url, headers: <String, String>{
         'Authorization': autorization,
@@ -887,10 +1272,23 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         }
         _isLoading2(false);
         usersTemp = users;
+        await storage.put('simat', json.encode(users));
+        print(['Carga users', json.encode(users)]);
         return userst;
       } else {
         _isLoading2(false);
+        var e = json.decode(response.body);
         print(['Error1 getSheetData', response.body]);
+        // print(['Error1.1 getSheetData', e['error']]);
+        if ((e['error']['code'] == 401) &&
+            (e['error']['status'] == "UNAUTHENTICATED")) {
+          FirebaseAuthService().signInWithGoogle().then(
+                (value) => {
+                  print(['Re-Login Ok :', value]),
+                  getFirebaseSimat()
+                },
+              );
+        }
       }
     } catch (e) {
       _isLoading2(false);
@@ -1914,11 +2312,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                             icon: Icon(Icons.add_to_drive),
                             color: Colors.grey,
                             tooltip: 'Guardar SIMAT en Google Drive',
-                            onPressed: () {
-                              setState(() {
-                                saveSimatToDrive('simat');
-                              });
-                            },
+                            onPressed: () {},
                           ),
                         ),
                         Positioned(
@@ -1928,9 +2322,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                             icon: Icon(Icons.supervised_user_circle),
                             color: Colors.grey,
                             tooltip: 'Crear usuarios en Gsuite - Firebase',
-                            onPressed: () {
-                              addGsuiteUsers();
-                            },
+                            onPressed: () {},
                           ),
                         ),
                       ],
@@ -2097,6 +2489,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   }
 
   Future<void> _pickFiles() async {
+    print(['que paso?', users]);
     final completer = Completer<List<String>>();
     final InputElement input = FileUploadInputElement();
     input.click();
@@ -2115,10 +2508,14 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     // input.click(); can be here
     final List<String> r = await completer.future;
     var a = r.toString().split("\n");
-    users = [];
+    // users = [];
+    if (users == null) {
+      users = [];
+    }
     // var encabezados;
     var conta = 0;
     simatData = [];
+    print(['Tamaño', users.length, a.length]);
     a.forEach((element) {
       try {
         var rta = stringAdapt(element);
@@ -2136,25 +2533,34 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         // var dos = Simat.fromList(rta['data']);
         var dos = GescolarUser.fromList(rta['data']);
         dos.index = conta;
+        var userok = users
+                .where((item) => item.documentoNum == dos.documentoNum)
+                .length >
+            0;
+        print(['Data', userok, users.length]);
         if (conta != 0) {
           simatData.add(lista);
-          users.add(dos);
+          if (users.length == 0) {
+            users.add(dos);
+          } else if (!userok) {
+            users.add(dos);
+          }
         }
       } catch (e) {
         print(['Error array', e]);
       }
-      // else{encabezados = uno1.toString().split(",");}
-      conta += 1; // Simat.fromList(dos)
+      conta += 1;
     });
     a.clear();
     await storage.put('simat', json.encode(users));
     await storage.put('simatData', simatData);
     _isLoading2(true);
+    // print(['simatData', simatData]);
     // await saveSimatToDrive(simatData);
     setState(() {
       print('set estate');
       simatFecha = simatFecha;
-      users = users;
+      // users = users;
       usersTemp = users;
       numItems = users.length;
       _simatLength = numItems;
@@ -2180,6 +2586,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       'Cantidad en simat',
       simatData.length,
       simatData[0].length,
+      // jsonEncode(users),
       // jsonEncode(simatData[0]),
       // jsonEncode(simatData[1])
     ]);
@@ -2200,9 +2607,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     });
   }
 
+  var simatData = [];
   addGsuiteUsers() async {
     try {
       _isLoading(true);
+      simatData = [];
       var userst = await storage.get('simat');
       var usersg = [];
       // var usersg2 = [];
@@ -2236,21 +2645,21 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       if (userst != null) {
         userst = (json.decode(userst) as List);
         userst.forEach((data) {
-          var apellido1 = data['apellido1'].toString().toLowerCase();
+          var apellido1 = data['simat']['apellido1'].toString().toLowerCase();
           apellido1 = apellido1[0].toString().toUpperCase() +
               apellido1.substring(1).toString();
-          var apellido2 = (data['apellido2'] != '')
-              ? data['apellido2'].toString().toLowerCase()
+          var apellido2 = (data['simat']['apellido2'] != '')
+              ? data['simat']['apellido2'].toString().toLowerCase()
               : null;
           apellido2 = (apellido2 != null)
               ? apellido2[0].toString().toUpperCase() +
                   apellido2.substring(1).toString()
               : null;
-          var nombre1 = data['nombre1'].toString().toLowerCase();
+          var nombre1 = data['simat']['nombre1'].toString().toLowerCase();
           nombre1 = nombre1[0].toString().toUpperCase() +
               nombre1.substring(1).toString();
-          var nombre2 = (data['nombre2'] != '')
-              ? data['nombre2'].toString().toLowerCase()
+          var nombre2 = (data['simat']['nombre2'] != '')
+              ? data['simat']['nombre2'].toString().toLowerCase()
               : null;
           nombre2 = (nombre2 != null)
               ? nombre2[0].toString().toUpperCase() +
@@ -2295,7 +2704,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           // print(['GivenName', givenName]);
           // print(['FullName', fullName]);
           var sede = '';
-          switch (data['sede']) {
+          switch (data['simat']['sede']) {
             case 'LIVIO REGINALDO FISCHIONE':
               sede = 'Principal';
               break;
@@ -2307,11 +2716,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
               break;
             default:
           }
-          data['correo'] = primaryEmail;
+          data['simat']['correo'] = primaryEmail;
           var orgUnitPath = '/Ensayo/' +
               sede +
               '/' +
-              capitalize(data['jornada']) +
+              capitalize(data['simat']['jornada']) +
               '/Estudiantes/2020';
           usersg.add({
             'id': '',
@@ -2329,55 +2738,55 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             'rol': 'Estudiante',
             "customSchemas": {
               "SIMAT": {
-                "ano": data["ano"],
-                "estado": data["estado"],
-                "sede": data["sede"],
-                "codigoDaneSede": data["codigoDaneSede"],
-                "zonaSede": data["zonaSede"],
-                "jornada": data["jornada"],
-                "gradoCod": data["gradoCod"],
-                "grupo": data["grupo"],
+                "ano": data['simat']["ano"],
+                "estado": data['simat']["estado"],
+                "sede": data['simat']["sede"],
+                "codigoDaneSede": data['simat']["codigoDaneSede"],
+                "zonaSede": data['simat']["zonaSede"],
+                "jornada": data['simat']["jornada"],
+                "gradoCod": data['simat']["gradoCod"],
+                "grupo": data['simat']["grupo"],
                 "fechaini": (DateFormat('yyyy-MM-d')
-                        .parse(data["fechaini"])
+                        .parse(data['simat']["fechaini"])
                         .year
                         .toString() +
                     "-" +
                     DateFormat('yyyy-MM-d')
-                        .parse(data["fechaini"])
+                        .parse(data['simat']["fechaini"])
                         .month
                         .toString() +
                     "-" +
                     DateFormat('yyyy-MM-d')
-                        .parse(data["fechaini"])
+                        .parse(data['simat']["fechaini"])
                         .day
                         .toString()),
-                "nui": data["nui"],
-                "estrato": data["estrato"],
-                "doc": data["doc"],
-                "tipodoc": data["tipodoc"],
-                "apellido1": data["apellido1"],
-                "apellido2": data["apellido2"],
-                "nombre1": data["nombre1"],
-                "nombre2": data["nombre2"],
-                "genero": data["genero"],
+                "nui": data['simat']["nui"],
+                "estrato": data['simat']["estrato"],
+                "doc": data['simat']["doc"],
+                "tipodoc": data['simat']["tipodoc"],
+                "apellido1": data['simat']["apellido1"],
+                "apellido2": data['simat']["apellido2"],
+                "nombre1": data['simat']["nombre1"],
+                "nombre2": data['simat']["nombre2"],
+                "genero": data['simat']["genero"],
                 "fechaNacimiento": (DateFormat('d/MM/yyyy')
-                        .parse(data["fechaNacimiento"])
+                        .parse(data['simat']["fechaNacimiento"])
                         .year
                         .toString() +
                     "-" +
                     DateFormat('d/MM/yyyy')
-                        .parse(data["fechaNacimiento"])
+                        .parse(data['simat']["fechaNacimiento"])
                         .month
                         .toString() +
                     "-" +
                     DateFormat('d/MM/yyyy')
-                        .parse(data["fechaNacimiento"])
+                        .parse(data['simat']["fechaNacimiento"])
                         .day
                         .toString()),
-                "epsEstudiante": data["epsEstudiante"],
-                "discapacidad": data["discapacidad"],
-                "paisOrigen": data["paisOrigen"],
-                "correo": data["correo"],
+                "epsEstudiante": data['simat']["epsEstudiante"],
+                "discapacidad": data['simat']["discapacidad"],
+                "paisOrigen": data['simat']["paisOrigen"],
+                "correo": data['simat']["correo"],
               }
             }
           });
@@ -2410,6 +2819,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         print(['Ultimo - start, end', residuo, start, end]);
         await iterableCloudFunction(callable, usersg2);
       }
+      // print(['simatData', simatData]);
+      await saveSimatToDrive(simatData);
       _isLoading(false);
     } catch (e) {
       print(['Error addGsuiteUsers2', e]);
@@ -2428,30 +2839,64 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       );
       // var usuarios = jsonDecode(result.data['usuarios']);
       // var errores = jsonDecode(result.data['errores']);
-      // print(['Resultados ok', result.data]);
+      // print(['Resultados', result.data]);
       // print(['Resultados ok', result.data['usuarios']]);
-      print(['Resultados errores', result.data['errores']]);
+      // print(['Resultados errores', result.data['errores']]);
       setState(() {
         firebaseUsers += result.data['usuarios'].length;
         gSuiteUsers += result.data['usuarios'].length;
       });
+      var ok = result.data['usuarios'].length;
+      var er = result.data['errores'].length;
       users.forEach((user) {
-        // print(user.plataformaState);
-        setState(() {
-          user.plataformaState = 'ok';
-        });
+        try {
+          if (result.data['usuarios']
+                  .where((item) => item['documentoNum'] == user.documentoNum)
+                  .length >
+              0) {
+            ok = ok - 1;
+            var userok = result.data['usuarios'].firstWhere(
+                (item) => item['documentoNum'] == user.documentoNum,
+                orElse: null);
+            setState(() => {
+                  user.plataformaState = 'ok',
+                  user.id = userok['uid'],
+                  user.email = userok['email'],
+                  // simat
+                  user.simat.id = userok['uid'],
+                  user.simat.correo = userok['email'],
+                  user.simat.activo = user.activo,
+                  user.simat.editado = user.editado,
+                  user.simat.fechaEdicion = user.fechaEdicion,
+                  user.simat.fechaCreacion =
+                      DateTime.now().toLocal().toString(),
+                  user.simat.plataformaState = 'ok',
+                  simatData.add(user.simat.toSheet(user.simat)),
+                });
+          }
+          if (result.data['errores']
+                  .where((item) => item['doc'] == user.documentoNum)
+                  .length >
+              0) {
+            er = er - 1;
+            var userError = result.data['errores'].firstWhere(
+                (item) => item['doc'] == user.documentoNum,
+                orElse: null);
+            if (userError['error'] != 'Entity already exists.') {
+              setState(() => {
+                    user.plataformaState = userError['error'],
+                  });
+            }
+            simatData.add(user.simat.toSheet(user.simat));
+          }
+        } catch (e) {
+          print(['Iteración Ok', e]);
+        }
       });
-      result.data['errores'].forEach((userError) {
-        final usert = users.firstWhere(
-            (item) => item.documentoNum == userError['documentoNum'],
-            orElse: null);
-        if (usert != null)
-          setState(() => usert.plataformaState = userError['error']);
-      });
-      // print(['errores', errores]);
-      var simatSheetId = result.data;
-      await storage.put('simatSheetId', result.data);
-      return simatSheetId;
+      // print(['users', users]);
+      // var simatSheetId = result.data;
+      // await storage.put('simatSheetId', result.data);
+      return result.data;
     } on CloudFunctionsException catch (e) {
       print('addGsuiteUsers2 functions exception');
       print(e.code);
@@ -2696,6 +3141,10 @@ DateTime simatFecha;
 saveSimatToDrive(simatData) async {
   // simatData = await storage.get('simatData');
   // simatData = jsonEncode(simatData);
+  // var simatData;
+  // usuarios.forEach((usuario) {
+  //   simatData.add(usuario.simat);
+  // });
   final HttpsCallable callable = CloudFunctions.instance
       .getHttpsCallable(functionName: 'simatToSheet')
         ..timeout = const Duration(seconds: 30);
@@ -2713,7 +3162,7 @@ saveSimatToDrive(simatData) async {
     simatFecha = DateTime.now().toLocal();
     await storage.put('simatSheetId', result.data);
     await storage.put('simatFecha', simatFecha);
-    FirebaseFirestore.instance.doc('estudiantes/simat').set({
+    FirebaseFirestore.instance.doc('simat/last').set({
       'lastSimatSheetId': simatSheetId['sheet']['id'],
       'lastSimatFecha': simatFecha
     });
