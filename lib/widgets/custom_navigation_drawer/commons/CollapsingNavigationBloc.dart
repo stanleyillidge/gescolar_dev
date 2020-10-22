@@ -5,7 +5,9 @@ abstract class NavigationStates {}
 
 class Dashboard extends NavigationStates {}
 
-class SedesPage extends NavigationStates {}
+class Institucional extends NavigationStates {}
+
+class Matriculas extends NavigationStates {}
 
 class Search extends NavigationStates {}
 
@@ -17,7 +19,8 @@ class Settings extends NavigationStates {}
 
 enum NavigationEvents {
   Dashboard,
-  SedesPage,
+  Institucional,
+  Matriculas,
   Search,
   Errors,
   Notifications,
@@ -34,8 +37,11 @@ class CollapsingNavigationBloc
       case NavigationEvents.Dashboard:
         yield Dashboard();
         break;
-      case NavigationEvents.SedesPage:
-        yield SedesPage();
+      case NavigationEvents.Institucional:
+        yield Institucional();
+        break;
+      case NavigationEvents.Matriculas:
+        yield Matriculas();
         break;
       case NavigationEvents.Errors:
         yield Errors();

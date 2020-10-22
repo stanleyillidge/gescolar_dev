@@ -208,7 +208,7 @@ class MultiSelectFormField2 extends FormField<dynamic> {
           onSaved: onSaved,
           validator: validator,
           initialValue: initialValue,
-          autovalidate: autovalidate,
+          // autovalidate: autovalidate,
           builder: (FormFieldState<dynamic> state) {
             List<Widget> _buildSelectedOptions(state) {
               List<Widget> selectedOptions = [];
@@ -229,8 +229,8 @@ class MultiSelectFormField2 extends FormField<dynamic> {
               return selectedOptions;
             }
 
-            return InkWell(
-              onTap: () async {
+            /* return RaisedButton.icon(
+              onPressed: () async {
                 List initialSelected = state.value;
                 if (initialSelected == null) {
                   initialSelected = List();
@@ -260,14 +260,23 @@ class MultiSelectFormField2 extends FormField<dynamic> {
                   state.save();
                 }
               },
-              child: InputDecorator(
+              label: Text(
+                titleText,
+                style: TextStyle(fontSize: 16.0, color: Colors.black87),
+              ),
+              icon: Icon(
+                Icons.arrow_drop_down,
+                color: Colors.black87,
+                size: 25.0,
+              ),
+              /* child: InputDecorator(
                 decoration: InputDecoration(
-                  filled: true,
-                  errorText: state.hasError ? state.errorText : null,
-                  errorMaxLines: 4,
-                  fillColor: fillColor ?? Theme.of(state.context).canvasColor,
-                  border: border ?? UnderlineInputBorder(),
-                ),
+                    // filled: true,
+                    // errorText: state.hasError ? state.errorText : null,
+                    // errorMaxLines: 4,
+                    // fillColor: fillColor ?? Theme.of(state.context).canvasColor,
+                    // border: border ?? UnderlineInputBorder(),
+                    ),
                 isEmpty: state.value == null || state.value == '',
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,13 +287,15 @@ class MultiSelectFormField2 extends FormField<dynamic> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
-                            child: Text(
-                              titleText,
-                              style: TextStyle(
-                                  fontSize: 18.0, color: Colors.black54),
+                            child: Center(
+                              child: Text(
+                                titleText,
+                                style: TextStyle(
+                                    fontSize: 16.0, color: Colors.black87),
+                              ),
                             ),
                           ),
-                          required
+                          /* required
                               ? Padding(
                                   padding: EdgeInsets.only(top: 0, right: 0),
                                   child: Text(
@@ -295,7 +306,7 @@ class MultiSelectFormField2 extends FormField<dynamic> {
                                     ),
                                   ),
                                 )
-                              : Container(),
+                              : Container(), */
                           Icon(
                             Icons.arrow_drop_down,
                             color: Colors.black87,
@@ -322,7 +333,54 @@ class MultiSelectFormField2 extends FormField<dynamic> {
                         ), */
                   ],
                 ),
+              ), */
+            ); */
+            return RaisedButton(
+              onPressed: () async {
+                List initialSelected = state.value;
+                if (initialSelected == null) {
+                  initialSelected = List();
+                }
+
+                final items = List<MultiSelectDialogItem<dynamic>>();
+                dataSource.forEach((item) {
+                  items.add(
+                      MultiSelectDialogItem(item[valueField], item[textField]));
+                });
+
+                List selectedValues = await showDialog<List>(
+                  context: state.context,
+                  builder: (BuildContext context) {
+                    return MultiSelectDialog(
+                      title: titleText,
+                      okButtonLabel: okButtonLabel,
+                      cancelButtonLabel: cancelButtonLabel,
+                      items: items,
+                      initialSelectedValues: initialSelected,
+                    );
+                  },
+                );
+
+                if (selectedValues != null) {
+                  state.didChange(selectedValues);
+                  state.save();
+                }
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    titleText,
+                    style: TextStyle(fontSize: 16.0, color: Colors.black54),
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.black87,
+                    size: 25.0,
+                  ),
+                ],
               ),
+              /*color: Colors.purple,*/
             );
           },
         );

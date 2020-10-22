@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gescolar_dev/pages/cinco.dart';
 import 'package:gescolar_dev/pages/cuatro.dart';
 import 'package:gescolar_dev/pages/dos.dart';
+import 'package:gescolar_dev/pages/matriculas.dart';
 import 'package:gescolar_dev/pages/tres.dart';
 import 'package:gescolar_dev/pages/uno.dart';
 import 'package:gescolar_dev/pages/sedes.dart';
@@ -36,8 +37,10 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, state) {
                   if (state is Dashboard) {
                     return Sedes();
-                  } else if (state is SedesPage) {
+                  } else if (state is Institucional) {
                     return Uno();
+                  } else if (state is Matriculas) {
+                    return MatriculasPage();
                   } else if (state is Errors) {
                     return Dos();
                   } else if (state is Search) {

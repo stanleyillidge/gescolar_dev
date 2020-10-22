@@ -1,0 +1,64 @@
+{
+    "nivelEstudios": [
+        "Registro Civil",
+        "Tarjeta de identidad",
+        "Cedula",
+        "Pasaporte",
+        "Cedula extrangera"
+    ],
+    "generoAtendido": [
+        "inscripciones",
+        "abierto",
+        "cerrado",
+        "nivelaciones",
+        "promocion"
+    ],
+    "calendario": [
+        "calendarioA",
+        "calendarioB"
+    ],
+    "jornadas": [
+        "mañana",
+        "tarde",
+        "nocturna",
+        "sabatina",
+        "unica"
+    ],
+    "roles": [
+        "Super",
+        "Rector",
+        "Admin",
+        "Auxiliar",
+        "Coordinador",
+        "Docente",
+        "Estudiante",
+        "Acudiente"
+    ],
+    "documentoTipo": [
+        "Registro Civil",
+        "Tarjeta de identidad",
+        "Cedula",
+        "Pasaporte",
+        "Cedula extrangera"
+    ],
+    "estadoPeridoAcademico": [
+        "inscripciones",
+        "abierto",
+        "cerrado",
+        "nivelaciones",
+        "promocion"
+    ],
+    "asistencias": [
+        "asistio",
+        "asistio y no entro",
+        "no asistio",
+        "excusa"
+    ],
+    "estadoEstudianteAñoLectivo": [
+        "aprobo",
+        "reprobo",
+        "aplazado",
+        "retirado",
+        "en curso"
+    ]
+}

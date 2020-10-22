@@ -49,7 +49,7 @@ List<NavigationModel> navigationItems = [
       height: 0,
       submenu: [
         NavigationModel(
-          title: "Sedes",
+          title: "Año lectivo",
           icon: Icons.error,
           isExpanded: false,
           isCollapsed: true,
@@ -58,7 +58,7 @@ List<NavigationModel> navigationItems = [
           navigationEvent: NavigationEvents.Dashboard,
           submenu: [
             NavigationModel(
-              title: "Sedes",
+              title: "Año lectivo",
               icon: Icons.error,
               isExpanded: false,
               isCollapsed: false,
@@ -67,23 +67,33 @@ List<NavigationModel> navigationItems = [
               navigationEvent: NavigationEvents.Dashboard,
             ),
             NavigationModel(
-                title: "Sedes2",
+                title: "Matriculas",
                 icon: Icons.bluetooth_searching,
                 isExpanded: false,
                 isCollapsed: false,
                 size: Size(50, 200),
                 height: 0,
-                navigationEvent: NavigationEvents.SedesPage)
+                navigationEvent: NavigationEvents.Institucional)
           ],
         ),
         NavigationModel(
-            title: "Sedes2",
-            icon: Icons.bluetooth_searching,
-            isExpanded: false,
-            isCollapsed: false,
-            size: Size(50, 200),
-            height: 0,
-            navigationEvent: NavigationEvents.SedesPage)
+          title: "Institucional",
+          icon: Icons.bluetooth_searching,
+          isExpanded: false,
+          isCollapsed: false,
+          size: Size(50, 200),
+          height: 0,
+          navigationEvent: NavigationEvents.Institucional,
+        ),
+        NavigationModel(
+          title: "Matriculas",
+          icon: Icons.bluetooth_searching,
+          isExpanded: false,
+          isCollapsed: false,
+          size: Size(50, 200),
+          height: 0,
+          navigationEvent: NavigationEvents.Matriculas,
+        )
       ],
       navigationEvent: NavigationEvents.Dashboard),
   NavigationModel(

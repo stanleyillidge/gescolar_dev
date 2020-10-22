@@ -47,7 +47,7 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
       onPointerDown: _onPointerDown,
       onPointerUp: _onPointerUp,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 60),
         padding: (widget.imagen != null)
             ? EdgeInsets.all(2.0)
             : EdgeInsets.all(widget.padding),
