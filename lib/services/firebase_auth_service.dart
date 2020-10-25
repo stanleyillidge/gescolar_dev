@@ -38,7 +38,7 @@ class FirebaseAuthService {
       'uid': user.uid,
       'email': user.email,
       'displayName': user.displayName,
-      'photoUrl': user.photoUrl,
+      'photoUrl': user.photoURL,
     });
     return user;
   }
@@ -55,7 +55,7 @@ class FirebaseAuthService {
   Future<User> signInWithGoogle() async {
     final googleUser = await _googleSignIn.signIn();
     GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.getCredential(
+    final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
@@ -91,7 +91,7 @@ class FirebaseAuthService {
     };
     var indexD = email.toString().indexOf('lreginaldofischione.edu.co');
     if (indexD > -1) {
-      final HttpsCallable callable = CloudFunctions.instance
+      /* final HttpsCallable callable = CloudFunctions.instance
           .getHttpsCallable(functionName: 'addGsuiteUser')
             ..timeout = const Duration(seconds: 60);
       try {
@@ -123,6 +123,20 @@ class FirebaseAuthService {
       } catch (e) {
         print('addGsuiteUser generic exception');
         print(e);
+      } */
+      try {
+        final authResult = await _firebaseAuth.signInWithCredential(credential);
+        await storage.put('accessToken', googleAuth.accessToken);
+        await storage.put('idToken', googleAuth.idToken);
+        // var accessToken = await storage.get('accessToken');
+        // var idToken = await storage.get('accessToken');
+        // print(['googleAuth.accessToken', googleAuth.accessToken]);
+        // print(['googleAuth.idToken', googleAuth.idToken]);
+        // print(['googleAuth.accessTokenS', accessToken]);
+        // print(['googleAuth.idTokenS', idToken]);
+        return _userFromFirebase(authResult.user);
+      } catch (e) {
+        print(['signInWithCredential', e]);
       }
     } else {
       AlertDialog(

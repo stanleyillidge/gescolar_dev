@@ -77,9 +77,7 @@ class MyApp extends StatelessWidget {
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:gescolar_dev/pages/home.dart';
 import 'package:gescolar_dev/pages/landingPage.dart';
-import 'package:gescolar_dev/pages/login.dart';
 import 'package:hive/hive.dart';
 
 void main() {

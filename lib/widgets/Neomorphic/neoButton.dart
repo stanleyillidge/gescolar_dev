@@ -91,16 +91,16 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
               ? null
               : [
                   BoxShadow(
-                      color:
-                          widget.darkMode ? Colors.black54 : Colors.grey[500],
+                      color: widget.darkMode ? Colors.black54 : Colors.grey[500]
+                        ..withOpacity(0.7),
                       offset: Offset(4.0, 4.0),
-                      blurRadius: 15.0,
-                      spreadRadius: 1.0),
+                      blurRadius: 6.0, //15
+                      spreadRadius: 3.0), //1
                   BoxShadow(
                       color: widget.darkMode ? Colors.grey[800] : Colors.white,
                       offset: Offset(-4.0, -4.0),
-                      blurRadius: 15.0,
-                      spreadRadius: 1.0),
+                      blurRadius: 6.0,
+                      spreadRadius: 3.0),
                 ],
         ),
         child: Row(

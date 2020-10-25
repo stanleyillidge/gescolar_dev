@@ -1091,6 +1091,7 @@ class _MatriculasPageState extends State<MatriculasPage>
     _isLoading2(true);
     googleAuthStorage = await Hive.openBox('googleAuthStorage');
     storage = await Hive.openBox('myBox');
+    var accessToken = await googleAuthStorage.get('accessToken');
     FirebaseFirestore.instance
         .collection('simat')
         .doc('last')
@@ -1102,15 +1103,16 @@ class _MatriculasPageState extends State<MatriculasPage>
           simatF = 'Ultima actualización el dia ' +
               capitalize(format.format(simatFecha).toString());
         });
-        getSheetData(documentSnapshot.data()['lastSimatSheetId']);
+        print(['accessToken', accessToken]);
+        getSheetData(documentSnapshot.data()['lastSimatSheetId'], accessToken);
         print(['Data simat', documentSnapshot.data(), simatFecha]);
       }
     });
   }
 
-  Future<dynamic> getSheetData(dynamic id) async {
+  Future<dynamic> getSheetData(dynamic id, dynamic accessToken) async {
     try {
-      var accessToken = await googleAuthStorage.get('accessToken');
+      // var accessToken = await googleAuthStorage.get('accessToken');
       var autorization = 'Bearer ' + accessToken;
       var url = 'https://sheets.googleapis.com/v4/spreadsheets/' +
           id +
