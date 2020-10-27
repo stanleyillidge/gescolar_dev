@@ -5,12 +5,16 @@ class NeumorphicButton extends StatefulWidget {
   final double bevel;
   final Offset blurOffset;
   final Color color;
+  Color background;
   final bool darkMode;
   final String imagen;
   final double padding;
+  final Function onTap;
 
   NeumorphicButton({
     Key key,
+    this.onTap,
+    this.background,
     this.darkMode,
     this.imagen,
     this.padding,
@@ -36,6 +40,10 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
   void _onPointerUp(PointerUpEvent event) {
     setState(() {
       _isPressed = false;
+      if (null != widget.onTap) {
+        // Raise the event
+        widget.onTap();
+      }
     });
   }
 
@@ -84,7 +92,11 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
                 ],
         ), */
         decoration: BoxDecoration(
-          color: widget.darkMode ? Colors.grey[850] : Colors.grey[300],
+          color: widget.darkMode
+              ? Colors.grey[850]
+              : (widget.background != null)
+                  ? widget.background
+                  : Colors.grey[300],
           // borderRadius: BorderRadius.all(Radius.circular(50)),
           borderRadius: BorderRadius.circular(widget.bevel * 2),
           boxShadow: _isPressed
@@ -129,7 +141,201 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
           ],
         ),
       ),
+      /* child: GestureDetector(
+        // onTap: widget.onTap,
+        onTap: () {
+          if (null != widget.onTap) {
+            // Raise the event
+            widget.onTap();
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 60),
+          padding: (widget.imagen != null)
+              ? EdgeInsets.all(2.0)
+              : EdgeInsets.all(widget.padding),
+          /* decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(widget.bevel * 5),
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  _isPressed ? color : color.mix(Colors.black, .1),
+                  _isPressed ? color.mix(Colors.black, .05) : color,
+                  _isPressed ? color.mix(Colors.black, .05) : color,
+                  color.mix(Colors.white, _isPressed ? .2 : .5),
+                ],
+                stops: [
+                  0.0,
+                  .3,
+                  .6,
+                  1.0,
+                ]),
+            boxShadow: _isPressed
+                ? null
+                : [
+                    BoxShadow(
+                      blurRadius: widget.bevel,
+                      offset: -widget.blurOffset,
+                      color: color.mix(Colors.white, .6),
+                    ),
+                    BoxShadow(
+                      blurRadius: widget.bevel,
+                      offset: widget.blurOffset,
+                      color: color.mix(Colors.black, .3),
+                    )
+                  ],
+          ), */
+          decoration: BoxDecoration(
+            color: widget.darkMode
+                ? Colors.grey[850]
+                : (widget.background != null)
+                    ? widget.background
+                    : Colors.grey[300],
+            // borderRadius: BorderRadius.all(Radius.circular(50)),
+            borderRadius: BorderRadius.circular(widget.bevel * 2),
+            boxShadow: _isPressed
+                ? null
+                : [
+                    BoxShadow(
+                        color:
+                            widget.darkMode ? Colors.black54 : Colors.grey[500]
+                              ..withOpacity(0.7),
+                        offset: Offset(4.0, 4.0),
+                        blurRadius: 6.0, //15
+                        spreadRadius: 3.0), //1
+                    BoxShadow(
+                        color:
+                            widget.darkMode ? Colors.grey[800] : Colors.white,
+                        offset: Offset(-4.0, -4.0),
+                        blurRadius: 6.0,
+                        spreadRadius: 3.0),
+                  ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              (widget.imagen != null)
+                  ? Container(
+                      padding: const EdgeInsets.all(0.0),
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          alignment: Alignment.center,
+                          image: AssetImage(widget.imagen),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    )
+                  : Container(),
+              Container(
+                margin: (widget.imagen != null)
+                    ? EdgeInsets.only(left: 5, right: 5)
+                    : EdgeInsets.only(left: 0, right: 0),
+                child: widget.child,
+              ),
+            ],
+          ),
+        ),
+      ), */
     );
+    /* return GestureDetector(
+      // onTap: widget.onTap,
+      onTap: () {
+        if (null != widget.onTap) {
+          // Raise the event
+          return widget.onTap();
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 60),
+        padding: (widget.imagen != null)
+            ? EdgeInsets.all(2.0)
+            : EdgeInsets.all(widget.padding),
+        /* decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(widget.bevel * 5),
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  _isPressed ? color : color.mix(Colors.black, .1),
+                  _isPressed ? color.mix(Colors.black, .05) : color,
+                  _isPressed ? color.mix(Colors.black, .05) : color,
+                  color.mix(Colors.white, _isPressed ? .2 : .5),
+                ],
+                stops: [
+                  0.0,
+                  .3,
+                  .6,
+                  1.0,
+                ]),
+            boxShadow: _isPressed
+                ? null
+                : [
+                    BoxShadow(
+                      blurRadius: widget.bevel,
+                      offset: -widget.blurOffset,
+                      color: color.mix(Colors.white, .6),
+                    ),
+                    BoxShadow(
+                      blurRadius: widget.bevel,
+                      offset: widget.blurOffset,
+                      color: color.mix(Colors.black, .3),
+                    )
+                  ],
+          ), */
+        decoration: BoxDecoration(
+          color: widget.darkMode
+              ? Colors.grey[850]
+              : (widget.background != null)
+                  ? widget.background
+                  : Colors.grey[300],
+          // borderRadius: BorderRadius.all(Radius.circular(50)),
+          borderRadius: BorderRadius.circular(widget.bevel * 2),
+          boxShadow: _isPressed
+              ? null
+              : [
+                  BoxShadow(
+                      color: widget.darkMode ? Colors.black54 : Colors.grey[500]
+                        ..withOpacity(0.7),
+                      offset: Offset(4.0, 4.0),
+                      blurRadius: 6.0, //15
+                      spreadRadius: 3.0), //1
+                  BoxShadow(
+                      color: widget.darkMode ? Colors.grey[800] : Colors.white,
+                      offset: Offset(-4.0, -4.0),
+                      blurRadius: 6.0,
+                      spreadRadius: 3.0),
+                ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            (widget.imagen != null)
+                ? Container(
+                    padding: const EdgeInsets.all(0.0),
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        alignment: Alignment.center,
+                        image: AssetImage(widget.imagen),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                : Container(),
+            Container(
+              margin: (widget.imagen != null)
+                  ? EdgeInsets.only(left: 5, right: 5)
+                  : EdgeInsets.only(left: 0, right: 0),
+              child: widget.child,
+            ),
+          ],
+        ),
+      ),
+    ); */
   }
 }
 

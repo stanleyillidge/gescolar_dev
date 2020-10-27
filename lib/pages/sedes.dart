@@ -1,24 +1,13 @@
+import 'package:fluid_layout/fluid_layout.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:gescolar_dev/models/models.dart';
 import 'package:gescolar_dev/widgets/Custom_ExpansionTile/CustomExpansionTile.dart';
+import 'package:gescolar_dev/widgets/Neomorphic/neoButton.dart';
 
 //--- variables ------
 bool darkMode = false;
 const double filtrobtspace = 6.0;
-
-class NewGrado {
-  String nivelEstudios;
-  String nombre;
-  String siguiente;
-  bool siguienteTest = false;
-  NewGrado();
-  Map toJson() => {
-        'nivelEstudios': nivelEstudios,
-        'nombre': nombre,
-        'siguiente': siguiente,
-        'siguienteTest': siguienteTest,
-      };
-}
 
 class Sedes extends StatefulWidget {
   Sedes({Key key}) : super(key: key);
@@ -30,6 +19,8 @@ class Sedes extends StatefulWidget {
 List<Widget> grados = [];
 
 class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
+  final ValueNotifier<String> _selectedAnolectivo =
+      ValueNotifier<String>('2019');
   void initState() {
     super.initState();
     if (grados.length == 0) {
@@ -130,9 +121,10 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     }
   }
 
+  // valueListenable: _selectedAnolectivo,
   // var _controller = TextEditingController();
   @override
-  Widget build(BuildContext context) {
+  /* Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     double searchWidth = size.width * 0.8;
     return Stack(
@@ -496,83 +488,246 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         ),
       ],
     );
-  }
-
-  String _selectedNivelEstudios;
-  bool checkedValue = false;
-  Future<void> _showMyDialog() {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('AlertDialog Title'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('This is a demo alert dialog.'),
-                DropdownButton<String>(
-                  items: <String>['A', 'B', 'C', 'D'].map((String nvalue) {
-                    return DropdownMenuItem<String>(
-                      value: nvalue,
-                      child: Text(nvalue),
-                    );
-                  }).toList(),
-                  hint: Text('Please choose a location'),
-                  value: _selectedNivelEstudios,
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedNivelEstudios = newValue;
-                      print(newValue);
-                    });
-                  },
-                ),
-                /* PopupMenuButton<int>(
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 1,
-                      child: Text(
-                          "Editar"), // (users[index].editado) ? Text("Guardar") : Text("Editar"),
+  } */
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        color: Colors.grey[200],
+        child: FluidLayout(
+          child: Builder(
+            builder: (context) => SingleChildScrollView(
+              child: Padding(
+                padding:
+                    // const EdgeInsets.only(left: 80.0, top: 20),
+                    EdgeInsets.symmetric(
+                        horizontal: 0.0,
+                        vertical: FluidLayout.of(context).horizontalPadding),
+                child: FluidGridView(
+                  shrinkWrap: true,
+                  children: [
+                    FluidCell.withFluidHeight(
+                      size: context.fluid(2, m: 2, s: 2, xs: 4),
+                      heightSize: context.fluid(1, m: 1, s: 1, xs: 2),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          NeumorphicButton(
+                            onTap: () {
+                              _anolectivo(context);
+                              print(['onTap', _selectedAnolectivo.value]);
+                              setState(() {
+                                _selectedAnolectivo.value =
+                                    _selectedAnolectivo.value;
+                              });
+                            },
+                            darkMode: darkMode,
+                            padding: 10,
+                            bevel: 5,
+                            background: Colors.grey[100],
+                            child: Text(
+                              'Año ' + _selectedAnolectivo.value,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  // fontFamily: 'Cheveuxdange',
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      darkMode ? Colors.white : Colors.black),
+                            ),
+                          ),
+                          Spacer(),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            color: Colors.black54,
+                            tooltip: 'Añadir un año lectivo',
+                            onPressed: () {},
+                          ),
+                        ],
+                      ),
+                      /* child: TextFormField(
+                        textAlignVertical: TextAlignVertical.center,
+                        // autofocus: true,
+                        autocorrect: true,
+                        onChanged: (value) => {
+                          setState(() {
+                            // Filtrar los estudiantes de la tabla
+                          })
+                        },
+                        style: TextStyle(fontSize: 16),
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.account_box,
+                            size: 20.0,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.search),
+                            onPressed: () {
+                              debugPrint('222');
+                            },
+                          ),
+                          isDense: true, // Added this
+                          contentPadding:
+                              EdgeInsets.only(left: 18, top: 0, bottom: 0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          labelText: "Buscar",
+                        ),
+                      ), */
                     ),
-                    PopupMenuItem(
-                      value: 2,
-                      child: Text("Eliminar"),
+                    FluidCell.withFluidHeight(
+                      size: context.fluid(8, m: 7, s: 7, xs: 3),
+                      heightSize: context.fluid(2, m: 2, s: 2, xs: 3),
+                      child: Container(),
+                    ),
+                    FluidCell.withFluidHeight(
+                      size: context.fluid(2, m: 3, s: 3, xs: 5),
+                      heightSize: context.fluid(2, m: 2, s: 2, xs: 3),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                /* Expanded(
+                                  flex: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: filtrobtspace * 9,
+                                        right: filtrobtspace),
+                                    child: TextFormField(
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      // autofocus: true,
+                                      autocorrect: true,
+                                      onChanged: (value) => {
+                                        setState(() {
+                                          // Filtrar los estudiantes de la tabla
+                                        })
+                                      },
+                                      style: TextStyle(fontSize: 16),
+                                      decoration: InputDecoration(
+                                        prefixIcon: Icon(
+                                          Icons.account_box,
+                                          size: 20.0,
+                                        ),
+                                        suffixIcon: IconButton(
+                                          icon: Icon(Icons.search),
+                                          onPressed: () {
+                                            debugPrint('222');
+                                          },
+                                        ),
+                                        isDense: true, // Added this
+                                        contentPadding: EdgeInsets.only(
+                                            left: 18, top: 0, bottom: 0),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        labelText: "Buscar",
+                                      ),
+                                    ),
+                                  ),
+                                ), */
+                                Expanded(
+                                  // flex: 2,
+                                  /* child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 80, right: 3),
+                                    child: Text("Stanley M. Illidge A."),
+                                  ), */
+                                  child: Text("Stanley M. Illidge A."),
+                                ),
+                                Expanded(
+                                  child: Material(
+                                    elevation: 4.0,
+                                    shape: CircleBorder(),
+                                    clipBehavior: Clip.hardEdge,
+                                    color: Colors.transparent,
+                                    child: Ink.image(
+                                      image: AssetImage('images/monica.png'),
+                                      fit: BoxFit.contain,
+                                      width: 45.0,
+                                      height: 45.0,
+                                      child: InkWell(
+                                        onTap: () {},
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    FluidCell.withFluidHeight(
+                      size: context.fluid(3, m: 3, s: 4, xs: 6),
+                      // heightSize: context.fluid(2, m: 2, s: 2, xs: 2),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: darkMode ? Colors.grey[850] : Colors.grey[100],
+                          // borderRadius: BorderRadius.all(Radius.circular(50)),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: false
+                              ? null
+                              : [
+                                  BoxShadow(
+                                      color: darkMode
+                                          ? Colors.black54
+                                          : Colors.grey[500]
+                                        ..withOpacity(0.7),
+                                      offset: Offset(4.0, 4.0),
+                                      blurRadius: 6.0,
+                                      spreadRadius: 3.5),
+                                  BoxShadow(
+                                      color: darkMode
+                                          ? Colors.grey[700]
+                                          : Colors.white,
+                                      offset: Offset(-4.0, -4.0),
+                                      blurRadius: 6.0,
+                                      spreadRadius: 3.5),
+                                ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Column(
+                            children: <Widget>[
+                              // SizedBox(height: 20.0),
+                              CustomExpansionTile(
+                                title: Text(
+                                  "Grados",
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                // subtitle: Text('dos'),
+                                // leading: Icon(Icons.grade_rounded),
+                                children: grados,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ],
-                  onCanceled: () {
-                    print("You have canceled the menu.");
-                  },
-                  onSelected: (value) {
-                    if (value == 1) {
-                      print('Editado');
-                      // users[index].editado = !users[index].editado;
-                      // notifyListeners();
-                    } else if (value == 2) {
-                      print('Eliminado');
-                    }
-                  },
-                  // icon: Icon(Icons.list),
-                ), */
-              ],
+                ),
+              ),
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Approve'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+        ),
+      ),
     );
   }
 
+  bool checkedValue = false;
   Future _showDialog(context) async {
     return await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
+        var size = MediaQuery.of(context).size;
+        double searchWidth = size.width * 0.8;
         NewGrado grado = NewGrado();
         return AlertDialog(
           content: StatefulBuilder(
@@ -687,48 +842,50 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                         : validate;
                   });
                   if (validate) {
-                    setState(() => {
-                          grados.add(
-                            ListTile(
-                              title: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text(grado.nombre),
-                                  ),
-                                  PopupMenuButton<int>(
-                                    itemBuilder: (context) => [
-                                      PopupMenuItem(
-                                        value: 1,
-                                        child: Text(
-                                            "Editar"), // (users[index].editado) ? Text("Guardar") : Text("Editar"),
-                                      ),
-                                      PopupMenuItem(
-                                        value: 2,
-                                        child: Text("Eliminar"),
-                                      ),
-                                    ],
-                                    onCanceled: () {
-                                      print("You have canceled the menu.");
-                                    },
-                                    onSelected: (value) {
-                                      if (value == 1) {
-                                        print('Editado');
-                                        // users[index].editado = !users[index].editado;
-                                        // notifyListeners();
-                                      } else if (value == 2) {
-                                        print('Eliminado');
-                                      }
-                                    },
-                                    // icon: Icon(Icons.list),
-                                  ),
-                                ],
-                              ),
+                    setState(
+                      () => {
+                        grados.add(
+                          ListTile(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 6.0, bottom: 2),
+                                  child: Text(grado.nombre),
+                                ),
+                                PopupMenuButton<int>(
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: Text(
+                                          "Editar"), // (users[index].editado) ? Text("Guardar") : Text("Editar"),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 2,
+                                      child: Text("Eliminar"),
+                                    ),
+                                  ],
+                                  onCanceled: () {
+                                    print("You have canceled the menu.");
+                                  },
+                                  onSelected: (value) {
+                                    if (value == 1) {
+                                      print('Editado');
+                                      // users[index].editado = !users[index].editado;
+                                      // notifyListeners();
+                                    } else if (value == 2) {
+                                      print('Eliminado');
+                                    }
+                                  },
+                                  // icon: Icon(Icons.list),
+                                ),
+                              ],
                             ),
-                          )
-                        });
+                          ),
+                        )
+                      },
+                    );
                   }
                   print([grado.toJson(), validate]);
                   grado = NewGrado();
@@ -739,6 +896,80 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           ],
         );
       },
+    );
+  }
+
+  Future _anolectivo(context) async {
+    return await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  //your code dropdown button here
+                  Text('Grados'),
+                  DropdownButton<String>(
+                    items: <String>["2019", "2020"].map((String nvalue) {
+                      return DropdownMenuItem<String>(
+                        value: nvalue,
+                        child: Text(nvalue),
+                      );
+                    }).toList(),
+                    hint: Text('Seleccione un año lectivo'),
+                    value: _selectedAnolectivo.value,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedAnolectivo.value = newValue;
+                      });
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0, bottom: 8.0),
+              child: TextButton(
+                child: Text('ok'),
+                onPressed: () {
+                  // print(_selectedAnolectivo.value);
+                  Navigator.of(context).pop();
+                  setState(() {
+                    _selectedAnolectivo.value = _selectedAnolectivo.value;
+                  });
+                  return _selectedAnolectivo.value;
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class CustomCard extends StatelessWidget {
+  final Widget child;
+  final Color color;
+  final Function() onTap;
+
+  const CustomCard({Key key, this.child, this.color, this.onTap})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: color ?? Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+          child: Padding(child: child, padding: EdgeInsets.all(20)),
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12)),
+      shadowColor: Colors.grey,
+      elevation: 12,
     );
   }
 }

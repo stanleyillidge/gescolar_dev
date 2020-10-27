@@ -74,7 +74,32 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(top: 50, right: 3),
-                  child: GestureDetector(
+                  child: NeumorphicButton(
+                    onTap: () {
+                      FirebaseAuthService().signInWithGoogle().then((value) => {
+                            GoogleDrive(),
+                            print(['Login Ok :', value]),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()),
+                            )
+                          });
+                    },
+                    darkMode: darkMode,
+                    imagen: 'images/GoogleLogo.png',
+                    padding: 8,
+                    bevel: 5,
+                    child: Text(
+                      'Correo institucional',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontFamily: 'Cheveuxdange',
+                          fontWeight: FontWeight.w600,
+                          color: darkMode ? Colors.white : Colors.black),
+                    ),
+                  ),
+                  /* child: GestureDetector(
                     onTap: () {
                       FirebaseAuthService().signInWithGoogle().then((value) => {
                             GoogleDrive(),
@@ -100,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                             color: darkMode ? Colors.white : Colors.black),
                       ),
                     ),
-                  ),
+                  ), */
                 ),
                 /* Padding(
                   padding: EdgeInsets.only(top: 50, right: 3),
