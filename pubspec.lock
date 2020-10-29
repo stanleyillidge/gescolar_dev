@@ -64,6 +64,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0-nullsafety.1"
+  clay_containers:
+    dependency: "direct main"
+    description:
+      name: clay_containers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.2"
   clock:
     dependency: transitive
     description:
@@ -478,6 +485,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.4"
+  nm_generators:
+    dependency: "direct main"
+    description:
+      name: nm_generators
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   octo_image:
     dependency: transitive
     description:

@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(top: 50, right: 3),
-                  child: NeumorphicButton(
+                  child: CustomNeumorphicButton(
                     onTap: () {
                       FirebaseAuthService().signInWithGoogle().then((value) => {
                             GoogleDrive(),

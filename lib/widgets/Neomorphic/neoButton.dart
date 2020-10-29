@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class NeumorphicButton extends StatefulWidget {
+class CustomNeumorphicButton extends StatefulWidget {
   final Widget child;
   final double bevel;
   final Offset blurOffset;
@@ -11,7 +11,7 @@ class NeumorphicButton extends StatefulWidget {
   final double padding;
   final Function onTap;
 
-  NeumorphicButton({
+  CustomNeumorphicButton({
     Key key,
     this.onTap,
     this.background,
@@ -25,10 +25,10 @@ class NeumorphicButton extends StatefulWidget {
         super(key: key);
 
   @override
-  _NeumorphicButtonState createState() => _NeumorphicButtonState();
+  _CustomNeumorphicButtonState createState() => _CustomNeumorphicButtonState();
 }
 
-class _NeumorphicButtonState extends State<NeumorphicButton> {
+class _CustomNeumorphicButtonState extends State<CustomNeumorphicButton> {
   bool _isPressed = false;
 
   void _onPointerDown(PointerDownEvent event) {
@@ -103,16 +103,16 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
               ? null
               : [
                   BoxShadow(
-                      color: widget.darkMode ? Colors.black54 : Colors.grey[500]
+                      color: widget.darkMode ? Colors.black54 : Colors.grey[400]
                         ..withOpacity(0.7),
-                      offset: Offset(4.0, 4.0),
-                      blurRadius: 6.0, //15
-                      spreadRadius: 3.0), //1
+                      offset: Offset(2.0, 2.0),
+                      blurRadius: 5.0,
+                      spreadRadius: 3.5),
                   BoxShadow(
-                      color: widget.darkMode ? Colors.grey[800] : Colors.white,
-                      offset: Offset(-4.0, -4.0),
-                      blurRadius: 6.0,
-                      spreadRadius: 3.0),
+                      color: widget.darkMode ? Colors.grey[700] : Colors.white,
+                      offset: Offset(-3.0, -3.0),
+                      blurRadius: 5.0,
+                      spreadRadius: 3.5),
                 ],
         ),
         child: Row(

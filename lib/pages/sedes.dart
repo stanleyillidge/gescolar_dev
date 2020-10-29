@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:gescolar_dev/models/models.dart';
 import 'package:gescolar_dev/widgets/Custom_ExpansionTile/CustomExpansionTile.dart';
+import 'package:gescolar_dev/widgets/Neomorphic/clay.dart';
 import 'package:gescolar_dev/widgets/Neomorphic/neoButton.dart';
+import 'package:gescolar_dev/widgets/Neomorphic/neoCard.dart';
+import 'package:nm_generators/nm_generators.dart';
 
 //--- variables ------
 bool darkMode = false;
@@ -21,6 +24,8 @@ List<Widget> grados = [];
 class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   final ValueNotifier<String> _selectedAnolectivo =
       ValueNotifier<String>('2019');
+  // final ValueNotifier<DateTime> selectedDate =
+  //     ValueNotifier<DateTime>(DateTime.now());
   void initState() {
     super.initState();
     if (grados.length == 0) {
@@ -121,6 +126,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     }
   }
 
+  DateTime selectedDate = DateTime.now();
+  int switchValue;
   // valueListenable: _selectedAnolectivo,
   // var _controller = TextEditingController();
   @override
@@ -506,12 +513,12 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                   shrinkWrap: true,
                   children: [
                     FluidCell.withFluidHeight(
-                      size: context.fluid(2, m: 2, s: 2, xs: 4),
+                      size: context.fluid(3, m: 2, s: 2, xs: 4),
                       heightSize: context.fluid(1, m: 1, s: 1, xs: 2),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          NeumorphicButton(
+                          /* NeumorphicButton(
                             onTap: () {
                               _anolectivo(context);
                               print(['onTap', _selectedAnolectivo.value]);
@@ -534,13 +541,48 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                   color:
                                       darkMode ? Colors.white : Colors.black),
                             ),
+                          ), */
+                          ClayContainer(
+                            onTap: () {
+                              _anolectivo(context);
+                              print(['onTap', _selectedAnolectivo.value]);
+                              setState(() {
+                                _selectedAnolectivo.value =
+                                    _selectedAnolectivo.value;
+                              });
+                            },
+                            color: Colors.grey[200], //..withOpacity(0.0),
+                            // emboss: true,
+                            padding: 8,
+                            borderRadius: 6,
+                            child: Text(
+                              'Año ' + _selectedAnolectivo.value,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  // fontFamily: 'Cheveuxdange',
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      darkMode ? Colors.white : Colors.black),
+                            ),
                           ),
-                          Spacer(),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            color: Colors.black54,
-                            tooltip: 'Añadir un año lectivo',
-                            onPressed: () {},
+                          // Spacer(),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15.0),
+                            child: ClayContainer(
+                              // emboss: true,
+                              onTap: () {
+                                _newAnolectivo(context);
+                              },
+                              color: Colors.grey[200],
+                              padding: 0,
+                              height: 35,
+                              width: 35,
+                              borderRadius: 8,
+                              child: Icon(Icons.add,
+                                  color: Colors.redAccent[700], size: 30),
+                              // curveType: CurveType.concave,
+                            ),
                           ),
                         ],
                       ),
@@ -576,7 +618,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       ), */
                     ),
                     FluidCell.withFluidHeight(
-                      size: context.fluid(8, m: 7, s: 7, xs: 3),
+                      size: context.fluid(7, m: 8, s: 7, xs: 3),
                       heightSize: context.fluid(2, m: 2, s: 2, xs: 3),
                       child: Container(),
                     ),
@@ -676,17 +718,17 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                   BoxShadow(
                                       color: darkMode
                                           ? Colors.black54
-                                          : Colors.grey[500]
+                                          : Colors.grey[400]
                                         ..withOpacity(0.7),
-                                      offset: Offset(4.0, 4.0),
-                                      blurRadius: 6.0,
+                                      offset: Offset(2.0, 2.0),
+                                      blurRadius: 5.0,
                                       spreadRadius: 3.5),
                                   BoxShadow(
                                       color: darkMode
                                           ? Colors.grey[700]
                                           : Colors.white,
-                                      offset: Offset(-4.0, -4.0),
-                                      blurRadius: 6.0,
+                                      offset: Offset(-3.0, -3.0),
+                                      blurRadius: 5.0,
                                       spreadRadius: 3.5),
                                 ],
                         ),
@@ -942,6 +984,105 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                     _selectedAnolectivo.value = _selectedAnolectivo.value;
                   });
                   return _selectedAnolectivo.value;
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future _newAnolectivo(context) async {
+    return await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              _selectDate(BuildContext context) async {
+                final DateTime picked = await showDatePicker(
+                  context: context,
+                  initialDate: selectedDate, // Refer step 1
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2025),
+                );
+                if (picked != null && picked != selectedDate)
+                  setState(() {
+                    selectedDate = picked;
+                  });
+                return selectedDate;
+              }
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Text(
+                        'Inicio: ',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.normal),
+                      ),
+                      Text(
+                        selectedDate.toLocal().toString().split(' ')[0],
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          _selectDate(context);
+                          setState(() {
+                            selectedDate = selectedDate;
+                          });
+                        },
+                        icon: Icon(Icons.calendar_today_rounded,
+                            color: Colors.redAccent[700], size: 20),
+                      ),
+                    ],
+                  ),
+                  SizedBox(),
+                  Row(
+                    children: [
+                      Text(
+                        'Fin:     ',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.normal),
+                      ),
+                      Text(
+                        selectedDate.toLocal().toString().split(' ')[0],
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          _selectDate(context);
+                          setState(() {
+                            selectedDate = selectedDate;
+                          });
+                        },
+                        icon: Icon(Icons.calendar_today_rounded,
+                            color: Colors.redAccent[700], size: 20),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0, bottom: 8.0),
+              child: TextButton(
+                child: Text('ok'),
+                onPressed: () {
+                  print('ok');
+                  print(selectedDate);
+                  Navigator.of(context).pop();
+                  setState(() {
+                    selectedDate = selectedDate;
+                  });
+                  return selectedDate;
                 },
               ),
             ),

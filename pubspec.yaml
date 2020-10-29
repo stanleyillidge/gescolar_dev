@@ -26,6 +26,7 @@ dependencies:
   adv_fab: ^1.0.5
   animations: ^1.1.1
   bloc: ^5.0.1
+  clay_containers: ^0.2.2
   cloud_firestore: ^0.14.1+2
   cloud_firestore_web: ^0.2.0+3
   cloud_functions: ^0.6.0+1
@@ -49,6 +50,7 @@ dependencies:
   intl: ^0.16.1
   json_table: ^1.4.0
   mask_text_input_formatter: ^1.0.7
+  nm_generators: ^0.1.0
   provider: ^4.1.2
   responsive_framework: ^0.0.11
   responsive_table: ^0.1.1+8
