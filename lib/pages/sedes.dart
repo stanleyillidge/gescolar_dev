@@ -109,14 +109,22 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                     labelText: "Grados",
                   ),
                 ), */
-                child: ButtonTheme(
-                  minWidth: 300.0,
-                  child: RaisedButton.icon(
-                      icon: Icon(Icons.add),
-                      label: Text("Añadir grado"),
-                      onPressed: () => _showDialog(context),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0))),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: RaisedButton(
+                    color: Colors.redAccent[700],
+                    // icon: Icon(Icons.add),
+                    child: Text(
+                      "Añadir grado",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    onPressed: () => _showDialog(context),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -126,7 +134,6 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     }
   }
 
-  DateTime selectedDate = DateTime.now();
   int switchValue;
   // valueListenable: _selectedAnolectivo,
   // var _controller = TextEditingController();
@@ -737,16 +744,41 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                           child: Column(
                             children: <Widget>[
                               // SizedBox(height: 20.0),
-                              CustomExpansionTile(
-                                title: Text(
-                                  "Grados",
-                                  style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold),
+                              Theme(
+                                data: ThemeData(
+                                  // Define the default brightness and colors.
+                                  brightness: Brightness.light,
+                                  primaryColor: Colors.lightBlue[800],
+                                  accentColor: Colors
+                                      .redAccent[700], // Colors.cyan[600],
+
+                                  // Define the default font family.
+                                  // fontFamily: 'Georgia',
+
+                                  // Define the default TextTheme. Use this to specify the default
+                                  // text styling for headlines, titles, bodies of text, and more.
+                                  textTheme: TextTheme(
+                                    headline1: TextStyle(
+                                        fontSize: 72.0,
+                                        fontWeight: FontWeight.bold),
+                                    headline6: TextStyle(
+                                        fontSize: 36.0,
+                                        fontStyle: FontStyle.italic),
+                                    bodyText2: TextStyle(
+                                        fontSize: 14.0, fontFamily: 'Hind'),
+                                  ),
                                 ),
-                                // subtitle: Text('dos'),
-                                // leading: Icon(Icons.grade_rounded),
-                                children: grados,
+                                child: CustomExpansionTile(
+                                  title: Text(
+                                    "Grados",
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  // subtitle: Text('dos'),
+                                  // leading: Icon(Icons.grade_rounded),
+                                  children: grados,
+                                ),
                               ),
                             ],
                           ),
@@ -994,29 +1026,68 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   }
 
   Future _newAnolectivo(context) async {
+    AnoLectivo anoLectivo = AnoLectivo();
+    anoLectivo.inicio = DateTime.now();
+    anoLectivo.fin = DateTime.now();
     return await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-              _selectDate(BuildContext context) async {
+              _selectDate(BuildContext context, String campo) async {
                 final DateTime picked = await showDatePicker(
                   context: context,
-                  initialDate: selectedDate, // Refer step 1
+                  initialDate: (campo == 'inicio')
+                      ? anoLectivo.inicio
+                      : anoLectivo.fin, // Refer step 1
                   firstDate: DateTime(2000),
                   lastDate: DateTime(2025),
                 );
-                if (picked != null && picked != selectedDate)
+                if (picked != null &&
+                    picked !=
+                        ((campo == 'inicio')
+                            ? anoLectivo.inicio
+                            : anoLectivo.fin))
                   setState(() {
-                    selectedDate = picked;
+                    (campo == 'inicio')
+                        ? anoLectivo.inicio = picked
+                        : anoLectivo.fin = picked;
                   });
-                return selectedDate;
+                return ((campo == 'inicio')
+                    ? anoLectivo.inicio
+                    : anoLectivo.fin);
               }
 
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  TextFormField(
+                    // controller: _controller,
+                    textAlignVertical: TextAlignVertical.center,
+                    // autofocus: true,
+                    autocorrect: true,
+                    onChanged: (value) => {
+                      setState(() {
+                        // print(value);
+                        anoLectivo.nombre = value;
+                        // _controller.clear();
+                      })
+                    },
+                    onFieldSubmitted: (value) {
+                      setState(() {
+                        print(value);
+                        anoLectivo.nombre = value;
+                        // _controller.clear();
+                      });
+                    },
+                    style: TextStyle(fontSize: 14),
+                    decoration: InputDecoration(
+                      labelText: "Nombre",
+                      contentPadding: EdgeInsets.all(5),
+                    ),
+                  ),
+                  SizedBox(),
                   Row(
                     children: [
                       Text(
@@ -1025,15 +1096,15 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                             fontSize: 18, fontWeight: FontWeight.normal),
                       ),
                       Text(
-                        selectedDate.toLocal().toString().split(' ')[0],
+                        anoLectivo.inicio.toLocal().toString().split(' ')[0],
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       IconButton(
                         onPressed: () {
-                          _selectDate(context);
+                          _selectDate(context, 'inicio');
                           setState(() {
-                            selectedDate = selectedDate;
+                            anoLectivo.inicio = anoLectivo.inicio;
                           });
                         },
                         icon: Icon(Icons.calendar_today_rounded,
@@ -1050,21 +1121,33 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                             fontSize: 18, fontWeight: FontWeight.normal),
                       ),
                       Text(
-                        selectedDate.toLocal().toString().split(' ')[0],
+                        anoLectivo.fin.toLocal().toString().split(' ')[0],
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       IconButton(
                         onPressed: () {
-                          _selectDate(context);
+                          _selectDate(context, 'fin');
                           setState(() {
-                            selectedDate = selectedDate;
+                            anoLectivo.fin = anoLectivo.fin;
                           });
                         },
                         icon: Icon(Icons.calendar_today_rounded,
                             color: Colors.redAccent[700], size: 20),
                       ),
                     ],
+                  ),
+                  SizedBox(),
+                  CheckboxListTile(
+                    title: Text("Estado"),
+                    value: anoLectivo.activo,
+                    onChanged: (newValue) {
+                      setState(() {
+                        anoLectivo.activo = newValue;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity
+                        .leading, //  <-- leading Checkbox
                   ),
                 ],
               );
@@ -1077,12 +1160,12 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                 child: Text('ok'),
                 onPressed: () {
                   print('ok');
-                  print(selectedDate);
+                  print(anoLectivo.toJson());
                   Navigator.of(context).pop();
                   setState(() {
-                    selectedDate = selectedDate;
+                    anoLectivo = anoLectivo;
                   });
-                  return selectedDate;
+                  return anoLectivo;
                 },
               ),
             ),

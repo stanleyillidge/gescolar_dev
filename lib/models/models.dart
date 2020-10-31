@@ -3,6 +3,25 @@ import 'package:flutter/material.dart';
 import 'string_apis.dart';
 // import 'package:animations/animations.dart';
 
+class AnoLectivo {
+  String nombre;
+  DateTime inicio;
+  DateTime fin;
+  bool activo;
+  AnoLectivo({
+    this.nombre,
+    this.inicio,
+    this.fin,
+    this.activo: true,
+  });
+  Map toJson() => {
+        'nombre': nombre,
+        'inicio': inicio,
+        'fin': fin,
+        'activo': activo,
+      };
+}
+
 class Simat {
   String ano;
   String etc;
