@@ -43,12 +43,17 @@ class _LoginPageState extends State<LoginPage> {
                         // fontWeight: FontWeight.bold,
                         color: darkMode ? Colors.white : Colors.black),
                   ),
-                  FadeInImage.assetNetwork(
+                  /* FadeInImage.assetNetwork(
                     alignment: Alignment.centerLeft, // add this
                     placeholder: 'images/LogoHappykids.png',
                     image: 'images/LogoHappykids.png',
                     // fit: BoxFit.fitWidth,
                     height: 100,
+                  ), */
+                  Image.asset(
+                    'images/LogoHappykids.png',
+                    height: 100,
+                    alignment: Alignment.centerLeft,
                   ),
                 ],
               ),

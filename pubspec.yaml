@@ -40,6 +40,7 @@ dependencies:
   flutter_bloc: ^5.0.1
   flutter_secure_storage: ^3.3.3
   flutter_tags: ^0.4.9
+  fluttertoast: ^7.1.1
   google_sign_in: ^4.5.1
   googleapis: ^0.55.0
   googleapis_auth: ^0.2.12

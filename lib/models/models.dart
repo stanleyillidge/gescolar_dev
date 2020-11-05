@@ -737,14 +737,56 @@ class Filtro {
 class NewGrado {
   String nivelEstudios;
   String nombre;
+  String codigo;
   String siguiente;
   bool siguienteTest = false;
   NewGrado();
   Map toJson() => {
         'nivelEstudios': nivelEstudios,
+        'codigo': codigo,
         'nombre': nombre,
         'siguiente': siguiente,
         'siguienteTest': siguienteTest,
+      };
+}
+
+class Posiciones {
+  // padding
+  // top
+  // bottom
+  // left
+  // right
+  Pad padding = Pad();
+  double top = 0;
+  double bottom = 0;
+  double left = 0;
+  double right = 0;
+  Posiciones({this.padding});
+  Map toJson() => {
+        'padding': (padding != null) ? padding.toJson() : Pad(),
+        'top': top,
+        'bottom': bottom,
+        'left': left,
+        'right': right,
+      };
+}
+
+class Pad {
+  double top = 0;
+  double bottom = 0;
+  double left = 0;
+  double right = 0;
+  Pad({
+    this.top,
+    this.bottom,
+    this.left,
+    this.right,
+  });
+  Map toJson() => {
+        'top': top,
+        'bottom': bottom,
+        'left': left,
+        'right': right,
       };
 }
 
