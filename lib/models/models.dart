@@ -740,7 +740,13 @@ class NewGrado {
   String codigo;
   String siguiente;
   bool siguienteTest = false;
-  NewGrado();
+  NewGrado({
+    this.nivelEstudios,
+    this.nombre,
+    this.codigo,
+    this.siguiente,
+    this.siguienteTest: false,
+  });
   Map toJson() => {
         'nivelEstudios': nivelEstudios,
         'codigo': codigo,

@@ -78,6 +78,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gescolar_dev/pages/landingPage.dart';
+import 'package:gescolar_dev/widgets/forms/institucionForm.dart';
 import 'package:hive/hive.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'models/models.dart';
@@ -91,10 +92,12 @@ void main() {
 
 var storage;
 var googleAuthStorage;
+var instStorage;
 _initStorage() async {
   storage = await Hive.openBox('myBox');
+  instStorage = await Hive.openBox('instStorage');
   googleAuthStorage = await Hive.openBox('googleAuthStorage');
-  print('Init storage');
+  print('Main/Init storage');
 }
 
 // stanley.illidge@lreginaldofischione.edu.co

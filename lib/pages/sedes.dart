@@ -9,10 +9,12 @@ import 'package:gescolar_dev/widgets/Neomorphic/neoButton.dart';
 import 'package:gescolar_dev/widgets/Neomorphic/neoCard.dart';
 import 'package:gescolar_dev/widgets/custom_switch/custom_switch.dart';
 import 'package:nm_generators/nm_generators.dart';
+import 'package:hive/hive.dart';
 
 //--- variables ------
 bool darkMode = false;
 const double filtrobtspace = 6.0;
+var storage;
 
 class Sedes extends StatefulWidget {
   Sedes({Key key}) : super(key: key);
@@ -21,7 +23,7 @@ class Sedes extends StatefulWidget {
   _SedesState createState() => _SedesState();
 }
 
-List<NewGrado> grados2 = [];
+List<NewGrado> grados = [];
 
 class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   final ValueNotifier<String> _selectedAnolectivo =
@@ -30,6 +32,27 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   //     ValueNotifier<DateTime>(DateTime.now());
   void initState() {
     super.initState();
+    _loadLocalData();
+  }
+
+  _loadLocalData() async {
+    grados = [];
+    storage = await Hive.openBox('instStorage');
+    var gradost = await storage.get('grados');
+    gradost.forEach((gradot) {
+      // print(gradot['nivelEstudios']);
+      grados.add(NewGrado(
+        nivelEstudios: gradot['nivelEstudios'],
+        nombre: gradot['nombre'],
+        codigo: gradot['codigo'],
+        siguiente: gradot['siguiente'],
+        siguienteTest: gradot['siguienteTest'],
+      ));
+    });
+    setState(() {
+      grados = grados;
+    });
+    print([gradost, grados]);
   }
 
   int _counter = 0;
@@ -48,7 +71,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   int switchValue;
   Widget get gradosList {
     return ListView.builder(
-      itemCount: grados2.length,
+      itemCount: grados.length,
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
@@ -57,7 +80,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 6.0, bottom: 2),
-                child: Text(grados2[index].nombre),
+                child: Text(grados[index].nombre),
               ),
               PopupMenuButton<int>(
                 itemBuilder: (context) => [
@@ -75,11 +98,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                 },
                 onSelected: (value) {
                   if (value == 1) {
-                    print(['Editado', grados2[index].toJson()]);
-                    _newGrado(context, grados2[index]);
+                    print(['Editado', grados[index].toJson()]);
+                    _newGrado(context, 'editar', grados[index], index);
                   } else if (value == 2) {
-                    print(['Eliminado', grados2[index].toJson()]);
-                    _newGrado(context, grados2[index]);
+                    print(['Eliminado', grados[index].toJson()]);
+                    _eliminarGrado(context, grados[index], index);
                   }
                 },
                 // icon: Icon(Icons.list),
@@ -1779,7 +1802,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                         _selectedAnolectivo.value;
                                   });
                                 },
-                                color: Colors.grey[200], //..withOpacity(0.0),
+                                color: Colors.grey[100], //..withOpacity(0.0),
                                 // emboss: true,
                                 padding: 8,
                                 borderRadius: 6,
@@ -1803,7 +1826,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                 onTap: () {
                                   _newAnolectivo(context);
                                 },
-                                color: Colors.grey[200],
+                                color: Colors.grey[100],
                                 padding: 0,
                                 height: 35,
                                 width: 35,
@@ -1827,6 +1850,9 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                                 Text("Stanley M. Illidge A."),
                                           )
                                         : Container(),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
                                     FittedBox(
                                       child: Material(
                                         elevation: 4.0,
@@ -1978,7 +2004,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                                               ),
                                                               onPressed: () =>
                                                                   _newGrado(
-                                                                      context),
+                                                                      context,
+                                                                      'crear'),
                                                               shape:
                                                                   RoundedRectangleBorder(
                                                                 borderRadius:
@@ -2094,7 +2121,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                                               ),
                                                               onPressed: () =>
                                                                   _newGrado(
-                                                                      context),
+                                                                      context,
+                                                                      'crear'),
                                                               shape:
                                                                   RoundedRectangleBorder(
                                                                 borderRadius:
@@ -2214,7 +2242,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                                                 ),
                                                                 onPressed: () =>
                                                                     _newGrado(
-                                                                        context),
+                                                                        context,
+                                                                        'crear'),
                                                                 shape:
                                                                     RoundedRectangleBorder(
                                                                   borderRadius:
@@ -2332,7 +2361,8 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                                                 ),
                                                                 onPressed: () =>
                                                                     _newGrado(
-                                                                        context),
+                                                                        context,
+                                                                        'crear'),
                                                                 shape:
                                                                     RoundedRectangleBorder(
                                                                   borderRadius:
@@ -2419,7 +2449,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   }
 
   bool checkedValue = false;
-  Future _newGrado(context, [NewGrado grado]) async {
+  Future _newGrado(context, String action, [NewGrado grado, int index]) async {
     return await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -2580,7 +2610,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                   foregroundColor:
                       MaterialStateProperty.all<Color>(Colors.redAccent[700]),
                 ),
-                child: Text('Approve'),
+                child: Text(action),
                 onPressed: () {
                   validate = true;
                   faltantes = [];
@@ -2595,10 +2625,10 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                   });
                   if (validate) {
                     setState(
-                      () => {_addGrado(grado)},
+                      () =>
+                          {_adminGrados(grado, action, index), grados = grados},
                     );
                     print([grado.toJson(), validate]);
-                    grado = NewGrado();
                     Navigator.of(context).pop();
                   } else {
                     setState(() {
@@ -2616,6 +2646,57 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       fontSize: 16.0,
                     );
                   }
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future _eliminarGrado(context, [NewGrado grado, int index]) async {
+    return await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  //your code dropdown button here
+                  Text('Cuidado'),
+                  Text(
+                      'Estas intentando eliminar un grado, estas seguro de hacerlo?'),
+                ],
+              );
+            },
+          ),
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0, bottom: 8.0),
+              child: TextButton(
+                child: Text('Si, eliminar'),
+                onPressed: () {
+                  // print(_selectedAnolectivo.value);
+                  Navigator.of(context).pop();
+                  setState(
+                    () => {
+                      _adminGrados(grados[index], 'eliminar', index),
+                      grados = grados
+                    },
+                  );
+                  return;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 45.0, bottom: 8.0),
+              child: TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
               ),
             ),
@@ -2850,8 +2931,34 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   }
 }
 
-_addGrado(NewGrado grado) {
-  grados2.add(grado);
+_adminGrados(NewGrado grado, String action, [int index]) async {
+  switch (action) {
+    case 'crear':
+      grados.add(grado);
+      break;
+    case 'editar':
+      grados[index] = NewGrado(
+        nivelEstudios: grado.nivelEstudios,
+        nombre: grado.nombre,
+        codigo: grado.codigo,
+        siguiente: grado.siguiente,
+        siguienteTest: grado.siguienteTest,
+      );
+      break;
+    case 'eliminar':
+      grados.removeAt(index);
+      break;
+    default:
+  }
+  var gs = [];
+  grados.forEach((gradot) {
+    gs.add(gradot.toJson());
+  });
+  try {
+    await storage.put('grados', gs);
+  } catch (e) {
+    print(e);
+  }
 }
 
 class CustomCard extends StatelessWidget {
