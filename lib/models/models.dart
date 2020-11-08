@@ -734,13 +734,13 @@ class Filtro {
   );
 }
 
-class NewGrado {
+class Grado {
   String nivelEstudios;
   String nombre;
   String codigo;
   String siguiente;
   bool siguienteTest = false;
-  NewGrado({
+  Grado({
     this.nivelEstudios,
     this.nombre,
     this.codigo,
@@ -753,6 +753,41 @@ class NewGrado {
         'nombre': nombre,
         'siguiente': siguiente,
         'siguienteTest': siguienteTest,
+      };
+}
+
+class Asignatura {
+  String nombre;
+  double intHoraria = 1;
+  double porcentaje = 1;
+  Asignatura({
+    this.nombre,
+    this.intHoraria = 1,
+    this.porcentaje = 1,
+  });
+  Map toJson() => {
+        'nombre': nombre,
+        'intHoraria': intHoraria,
+        'porcentaje': porcentaje,
+      };
+}
+
+class Area {
+  String nombre;
+  List<Grado> grados;
+  List<Asignatura> asignaturas;
+  bool obligatoria = false;
+  Area({
+    this.nombre,
+    this.grados,
+    this.asignaturas,
+    this.obligatoria: false,
+  });
+  Map toJson() => {
+        'nombre': nombre,
+        'grados': grados,
+        'asignaturas': asignaturas,
+        'obligatoria': obligatoria,
       };
 }
 
