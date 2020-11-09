@@ -24,10 +24,26 @@ class Sedes extends StatefulWidget {
   _SedesState createState() => _SedesState();
 }
 
+class Test {
+  bool grados = false;
+  bool areas = false;
+  Test({
+    this.grados: false,
+    this.areas: false,
+  });
+  Map toJson() => {
+        'grados': grados,
+        'areas': areas,
+      };
+}
+
 List<Grado> grados = [];
 List<Asignatura> asignaturas = [];
 List<Area> areas = [];
 List<dynamic> _grados = [];
+Asignatura _asignatura;
+Area _area;
+Test test = Test(grados: false, areas: false);
 
 class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   final ValueNotifier<String> _selectedAnolectivo =
@@ -43,6 +59,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     grados = [];
     storage = await Hive.openBox('instStorage');
     var gradost = await storage.get('grados');
+    var areast = await storage.get('areas');
     if (gradost != null) {
       gradost.forEach((gradot) {
         // print(gradot['nivelEstudios']);
@@ -56,8 +73,34 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       });
       setState(() {
         grados = grados;
+        test.grados = true;
       });
-      print([gradost, grados]);
+      print(gradost);
+    }
+    if (areast != null) {
+      areast.forEach((areat) {
+        List<Asignatura> asig = [];
+        if (areat['asignaturas'] != null) {
+          areat['asignaturas'].forEach((asigt) {
+            asig.add(Asignatura(
+              nombre: asigt['nombre'],
+              intHoraria: asigt['intHoraria'],
+              porcentaje: asigt['porcentaje'],
+            ));
+          });
+        }
+        areas.add(Area(
+          nombre: areat['nombre'],
+          grados: grados,
+          asignaturas: asig,
+          obligatoria: areat['obligatoria'],
+        ));
+      });
+      setState(() {
+        areas = areas;
+        test.areas = true;
+      });
+      print(areast);
     }
   }
 
@@ -125,40 +168,91 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       itemCount: areas.length,
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
-        return ExpansionTile(
-          title: Text(
-            areas[index].nombre,
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
+        var size = MediaQuery.of(context).size;
+        return Theme(
+          data: temaExpansionTile1,
+          child: ExpansionTile(
+            title: Text(
+              areas[index].nombre,
+              style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          children: <Widget>[
-            ListTile(
-              title: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: RaisedButton(
-                      color: Colors.redAccent[700],
-                      // icon: Icon(Icons.add),
-                      child: Text(
-                        "Añadir Asignatura",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                  RaisedButton(
+                    color: Colors.redAccent,
+                    child: Text(
+                      "Eliminar",
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
-                      onPressed: () => _newAsignatura(context, 'crear'),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    onPressed: () async => {
+                      /* await _newAsignatura(context, 'crear', _area),
+                              setState(
+                                () => {
+                                  _area = _area,
+                                  test.areas = true
+                                },
+                              ) */
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                  ),
+                  RaisedButton(
+                    color: Colors.blueAccent[700],
+                    child: Text(
+                      "Editar",
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
+                    ),
+                    onPressed: () async => {
+                      /* await _newAsignatura(context, 'crear', _area),
+                              setState(
+                                () => {
+                                  _area = _area,
+                                  test.areas = true
+                                },
+                              ) */
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
                     ),
                   ),
                 ],
               ),
-            )
-          ],
+              Container(
+                width: size.width * 0.165,
+                height: size.height * 0.15,
+                child: (areas[index].asignaturas != null)
+                    ? ListView(
+                        children: areas[index]
+                            .asignaturas
+                            .map<Widget>(
+                              (asig) => ListTile(
+                                title: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(asig.nombre),
+                                    Text(asig.intHoraria.toString() + ' hr'),
+                                    Text((asig.porcentaje * 100).toString() +
+                                        '%'),
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList())
+                    : Container(),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -176,6 +270,20 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     dividerColor: Colors.transparent,
     primaryColor: Colors.lightBlue[800],
     accentColor: Colors.redAccent[700],
+    // Define the default font family.
+    // fontFamily: 'Georgia',
+    textTheme: TextTheme(
+      headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+      headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
+      bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+    ),
+  );
+  final ThemeData temaExpansionTile1 = ThemeData(
+    // Define the default brightness and colors.
+    brightness: Brightness.light,
+    dividerColor: Colors.transparent,
+    primaryColor: Colors.lightBlue[800],
+    accentColor: Colors.blueAccent[700],
     // Define the default font family.
     // fontFamily: 'Georgia',
     textTheme: TextTheme(
@@ -411,7 +519,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                         SizedBox(
                                           width: 20,
                                         ),
-                                        (grados.length > 0)
+                                        (test.grados)
                                             ? Container(
                                                 width: 250,
                                                 decoration: neumorpDecoration,
@@ -554,7 +662,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                           SizedBox(
                                             height: 20,
                                           ),
-                                          (grados.length > 0)
+                                          (test.grados)
                                               ? Container(
                                                   width: (constraints.maxWidth >
                                                           605)
@@ -867,15 +975,16 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                   });
                   if (validate) {
                     setState(
-                      () =>
-                          {_adminGrados(grado, action, index), grados = grados},
+                      () => {
+                        _adminGrados(grado, action, index),
+                        grados = grados,
+                        test.grados = true
+                      },
                     );
                     print([grado.toJson(), validate]);
                     Navigator.of(context).pop();
                   } else {
-                    setState(() {
-                      print([validate, faltantes.toList().toString()]);
-                    });
+                    print([validate, faltantes.toList().toString()]);
                     Fluttertoast.showToast(
                       msg: 'Falta ' + faltantes.toList().toString(),
                       toastLength: Toast.LENGTH_SHORT,
@@ -951,11 +1060,12 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   Future _newArea(context, String action, [Area area, int index]) async {
     return await showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         var validate = true;
         var dataSource = [];
         List faltantes = [];
         area = (area != null) ? area : Area();
+        _area = area;
         area.grados = grados;
         grados.forEach((grado) {
           dataSource.add({
@@ -966,13 +1076,15 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         return AlertDialog(
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
+              var size = MediaQuery.of(context).size;
+              // print(['_area', _area.toJson()]);
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(left: 1.0, right: 1.0),
                     child: TextFormField(
-                      initialValue: area.nombre,
+                      initialValue: _area.nombre,
                       // controller: _controller,
                       textAlignVertical: TextAlignVertical.center,
                       // autofocus: true,
@@ -980,14 +1092,14 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       onChanged: (value) => {
                         setState(() {
                           // print(value);
-                          area.nombre = value;
+                          _area.nombre = value;
                           // _controller.clear();
                         })
                       },
                       onFieldSubmitted: (value) {
                         setState(() {
-                          print(value);
-                          area.nombre = value;
+                          // print(value);
+                          _area.nombre = value;
                           // _controller.clear();
                         });
                       },
@@ -1030,11 +1142,68 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                     onChanged: (newValue) {
                       setState(() {
                         // checkedValue = newValue;
-                        area.obligatoria = newValue;
+                        _area.obligatoria = newValue;
                       });
                     },
                     controlAffinity: ListTileControlAffinity
                         .leading, //  <-- leading Checkbox
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Asignaturas:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      RaisedButton(
+                        color: Colors.blueAccent[700],
+                        // icon: Icon(Icons.add),
+                        child: Text(
+                          "Añadir Asignatura",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () async => {
+                          // print(['crear asig en: ', area.toJson()]),
+                          await _newAsignatura(context, 'crear', _area),
+                          setState(
+                            () => {
+                              // print([action, asignatura.toJson(), area.toJson()]),
+                              // print(['#3', action, _area.toJson()]),
+                              _area = _area,
+                              test.areas = true
+                            },
+                          )
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    width: size.width * 0.2,
+                    height: size.height * 0.2,
+                    child: (_area.asignaturas != null)
+                        ? ListView(
+                            children: _area.asignaturas
+                                .map<Widget>((asig) => Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(asig.nombre),
+                                        Text(asig.intHoraria.toString()),
+                                        Text(asig.porcentaje.toString()),
+                                      ],
+                                    ))
+                                .toList())
+                        : Container(),
                   ),
                 ],
               );
@@ -1052,23 +1221,25 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                 onPressed: () {
                   validate = true;
                   faltantes = [];
-                  area.toJson().forEach((key, value) {
+                  _area.toJson().forEach((key, value) {
                     if ((key == 'nombre') && value == null) {
                       validate = false;
                       faltantes.add(key);
                     }
                   });
                   if (validate) {
-                    // setState(
-                    //   () =>
-                    //       {_adminGrados(grado, action, index), grados = grados},
-                    // );
-                    // print([grado.toJson(), validate]);
+                    setState(
+                      () => {
+                        _adminAreas(_area, action, index),
+                        _area = _area,
+                        areas = areas,
+                        test.areas = true
+                      },
+                    );
+                    // print([area.toJson(), validate]);
                     Navigator.of(context).pop();
                   } else {
-                    setState(() {
-                      print([validate, faltantes.toList().toString()]);
-                    });
+                    // print([validate, faltantes.toList().toString()]);
                     Fluttertoast.showToast(
                       msg: 'Falta ' + faltantes.toList().toString(),
                       toastLength: Toast.LENGTH_SHORT,
@@ -1090,64 +1261,124 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
     );
   }
 
-  Future _newAsignatura(context, String action,
-      [Grado grado, int index]) async {
+  Future _newAsignatura(context, String action, Area area,
+      [Asignatura asignatura, int index]) async {
     return await showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         var validate = true;
         List faltantes = [];
-        grado = (grado != null) ? grado : Grado();
+        asignatura = (asignatura != null) ? asignatura : Asignatura();
+        _asignatura = asignatura;
         return AlertDialog(
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 1.0, right: 1.0),
-                    child: TextFormField(
-                      initialValue: grado.nombre,
-                      // controller: _controller,
-                      textAlignVertical: TextAlignVertical.center,
-                      // autofocus: true,
-                      autocorrect: true,
-                      onChanged: (value) => {
-                        setState(() {
-                          // print(value);
-                          grado.nombre = value;
-                          // _controller.clear();
-                        })
-                      },
-                      onFieldSubmitted: (value) {
-                        setState(() {
-                          print(value);
-                          grado.nombre = value;
-                          // _controller.clear();
-                        });
-                      },
-                      style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(
-                        labelText: "Nombre del area",
-                        contentPadding: EdgeInsets.all(5),
+              return Container(
+                width: 260,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 1.0, right: 1.0),
+                      child: TextFormField(
+                        initialValue: asignatura.nombre,
+                        // controller: _controller,
+                        textAlignVertical: TextAlignVertical.center,
+                        // autofocus: true,
+                        autocorrect: true,
+                        onChanged: (value) => {
+                          setState(() {
+                            // print(value);
+                            asignatura.nombre = value;
+                            // _controller.clear();
+                          })
+                        },
+                        onFieldSubmitted: (value) {
+                          setState(() {
+                            // print(value);
+                            asignatura.nombre = value;
+                            // _controller.clear();
+                          });
+                        },
+                        style: TextStyle(fontSize: 14),
+                        decoration: InputDecoration(
+                          labelText: "Nombre del asignatura",
+                          contentPadding: EdgeInsets.all(5),
+                        ),
                       ),
                     ),
-                  ),
-                  CheckboxListTile(
-                    activeColor: Colors.redAccent[700],
-                    // checkColor: Colors.redAccent[700],
-                    title: Text("Obligatoria"),
-                    value: grado.siguienteTest,
-                    onChanged: (newValue) {
-                      setState(() {
-                        // checkedValue = newValue;
-                        grado.siguienteTest = newValue;
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity
-                        .leading, //  <-- leading Checkbox
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 1.0, right: 1.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 120,
+                            child: TextFormField(
+                              initialValue: asignatura.intHoraria.toString(),
+                              // controller: _controller,
+                              textAlignVertical: TextAlignVertical.center,
+                              // autofocus: true,
+                              autocorrect: true,
+                              onChanged: (value) => {
+                                setState(() {
+                                  // print(value);
+                                  asignatura.intHoraria = double.parse(value);
+                                  // _controller.clear();
+                                })
+                              },
+                              onFieldSubmitted: (value) {
+                                setState(() {
+                                  // print(value);
+                                  asignatura.intHoraria = double.parse(value);
+                                  // _controller.clear();
+                                });
+                              },
+                              style: TextStyle(fontSize: 14),
+                              decoration: InputDecoration(
+                                labelText: "Intensidad horaria",
+                                helperText: 'Numeros entre 1 - 10',
+                                helperStyle: TextStyle(fontSize: 10),
+                                contentPadding: EdgeInsets.all(5),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 120,
+                            child: TextFormField(
+                              initialValue: asignatura.porcentaje.toString(),
+                              // controller: _controller,
+                              textAlignVertical: TextAlignVertical.center,
+                              // autofocus: true,
+                              autocorrect: true,
+                              onChanged: (value) => {
+                                setState(() {
+                                  // print(value);
+                                  asignatura.porcentaje = double.parse(value);
+                                  // _controller.clear();
+                                })
+                              },
+                              onFieldSubmitted: (value) {
+                                setState(() {
+                                  // print(value);
+                                  asignatura.porcentaje = double.parse(value);
+                                  // _controller.clear();
+                                });
+                              },
+                              style: TextStyle(fontSize: 14),
+                              decoration: InputDecoration(
+                                labelText: "Porcentaje",
+                                helperText: 'Numeros entre 0.1 - 1.0',
+                                helperStyle: TextStyle(fontSize: 10),
+                                contentPadding: EdgeInsets.all(5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -1163,26 +1394,26 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                 onPressed: () {
                   validate = true;
                   faltantes = [];
-                  grado.toJson().forEach((key, value) {
-                    if ((key == 'nivelEstudios' ||
-                            key == 'nombre' ||
-                            key == 'codigo') &&
-                        value == null) {
+                  asignatura.toJson().forEach((key, value) {
+                    if ((key == 'nombre') && value == null) {
                       validate = false;
                       faltantes.add(key);
                     }
                   });
                   if (validate) {
                     setState(
-                      () =>
-                          {_adminGrados(grado, action, index), grados = grados},
+                      () => {
+                        // print([action, asignatura.toJson(), area.toJson()]),
+                        _adminAsignaturas(area, asignatura, action, index),
+                        _area = _area,
+                        areas = areas,
+                        test.areas = true
+                      },
                     );
-                    print([grado.toJson(), validate]);
+                    // print([asignatura.toJson(), validate]);
                     Navigator.of(context).pop();
                   } else {
-                    setState(() {
-                      print([validate, faltantes.toList().toString()]);
-                    });
+                    // print([validate, faltantes.toList().toString()]);
                     Fluttertoast.showToast(
                       msg: 'Falta ' + faltantes.toList().toString(),
                       toastLength: Toast.LENGTH_SHORT,
@@ -1307,7 +1538,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                     },
                     onFieldSubmitted: (value) {
                       setState(() {
-                        print(value);
+                        // print(value);
                         anoLectivo.nombre = value;
                         // _controller.clear();
                       });
@@ -1455,8 +1686,72 @@ _adminGrados(Grado grado, String action, [int index]) async {
   try {
     await storage.put('grados', gs);
   } catch (e) {
-    print(e);
+    print(['Error grados', e]);
   }
+}
+
+_adminAreas(Area area, String action, [int index]) async {
+  switch (action) {
+    case 'crear':
+      areas.add(area);
+      break;
+    case 'editar':
+      areas[index] = Area(
+        nombre: area.nombre,
+        grados: area.grados,
+        asignaturas: area.asignaturas,
+        obligatoria: area.obligatoria,
+      );
+      break;
+    case 'eliminar':
+      areas.removeAt(index);
+      break;
+    default:
+  }
+  var gs = [];
+  areas.forEach((areat) {
+    gs.add(areat.toJson());
+  });
+  try {
+    await storage.put('areas', gs);
+  } catch (e) {
+    print(['Error areas', e]);
+  }
+}
+
+_adminAsignaturas(Area area, Asignatura asignatura, String action,
+    [int index]) async {
+  _area = area;
+  _asignatura = asignatura;
+  switch (action) {
+    case 'crear':
+      print([action, asignatura.toJson(), area.toJson()]);
+      if (_area.asignaturas == null) {
+        _area.asignaturas = [];
+      }
+      _area.asignaturas.add(asignatura);
+      break;
+    case 'editar':
+      _area.asignaturas[index] = Asignatura(
+        nombre: asignatura.nombre,
+        intHoraria: asignatura.intHoraria,
+        porcentaje: asignatura.porcentaje,
+      );
+      break;
+    case 'eliminar':
+      _area.asignaturas.removeAt(index);
+      break;
+    default:
+  }
+  /* var gs = [];
+  areas.forEach((areat) {
+    gs.add(areat.toJson());
+  });
+  try {
+    await storage.put('areas', gs);
+  } catch (e) {
+    print(['Error areas', e]);
+  } */
 }
 
 class CustomCard extends StatelessWidget {

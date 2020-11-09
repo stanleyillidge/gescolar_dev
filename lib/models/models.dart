@@ -783,12 +783,20 @@ class Area {
     this.asignaturas,
     this.obligatoria: false,
   });
-  Map toJson() => {
-        'nombre': nombre,
-        'grados': grados,
-        'asignaturas': asignaturas,
-        'obligatoria': obligatoria,
-      };
+  Map toJson() {
+    List<Map> asignaturas = this.asignaturas != null
+        ? this.asignaturas.map((i) => i.toJson()).toList()
+        : null;
+    List<Map> grados = this.grados != null
+        ? this.grados.map((i) => i.toJson()).toList()
+        : null;
+    return {
+      'nombre': nombre,
+      'grados': grados,
+      'asignaturas': asignaturas,
+      'obligatoria': obligatoria,
+    };
+  }
 }
 
 class Posiciones {
