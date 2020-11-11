@@ -41,9 +41,12 @@ List<Grado> grados = [];
 List<Asignatura> asignaturas = [];
 List<Area> areas = [];
 List<dynamic> _grados = [];
+bool asignaturasTest = false;
 Asignatura _asignatura;
 Area _area;
 Test test = Test(grados: false, areas: false);
+final _formKey = GlobalKey<FormState>();
+final _procentajeController = TextEditingController();
 
 class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
   final ValueNotifier<String> _selectedAnolectivo =
@@ -213,13 +216,11 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     onPressed: () async => {
-                      /* await _newAsignatura(context, 'crear', _area),
-                              setState(
-                                () => {
-                                  _area = _area,
-                                  test.areas = true
-                                },
-                              ) */
+                      print(['editar', areas[index].toJson()]),
+                      await _newArea(context, 'editar', areas[index]),
+                      setState(
+                        () => {_area = _area, test.areas = true},
+                      )
                     },
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
@@ -229,7 +230,9 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
               ),
               Container(
                 width: size.width * 0.165,
-                height: size.height * 0.15,
+                height: (areas[index].asignaturas != null)
+                    ? (size.height * 0.075 * areas[index].asignaturas.length)
+                    : size.height * 0.075,
                 child: (areas[index].asignaturas != null)
                     ? ListView(
                         children: areas[index]
@@ -242,8 +245,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                   children: [
                                     Text(asig.nombre),
                                     Text(asig.intHoraria.toString() + ' hr'),
-                                    Text((asig.porcentaje * 100).toString() +
-                                        '%'),
+                                    Text((asig.porcentaje).toString() + '%'),
                                   ],
                                 ),
                               ),
@@ -736,7 +738,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                       ),
                                     ),
                               // add spacing
-                              SizedBox(
+                              /* SizedBox(
                                 // second child
                                 height: 20,
                               ),
@@ -775,7 +777,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                                     ),
                                   ],
                                 ),
-                              ),
+                              ), */
                             ],
                           ),
                         ),
@@ -1064,15 +1066,24 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         var validate = true;
         var dataSource = [];
         List faltantes = [];
+        asignaturas = [];
+        asignaturasTest = false;
         area = (area != null) ? area : Area();
         _area = area;
-        area.grados = grados;
-        grados.forEach((grado) {
+        if (action == 'crear') {
+          area.grados = grados;
+        }
+        area.grados.forEach((grado) {
           dataSource.add({
             "display": grado.nombre,
             "value": grado.nombre,
           });
         });
+        if (action == 'editar') {
+          dataSource.forEach((grado) {
+            _grados.add(grado['display']);
+          });
+        }
         return AlertDialog(
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
@@ -1157,31 +1168,46 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      RaisedButton(
-                        color: Colors.blueAccent[700],
-                        // icon: Icon(Icons.add),
-                        child: Text(
-                          "Añadir Asignatura",
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: () async => {
-                          // print(['crear asig en: ', area.toJson()]),
-                          await _newAsignatura(context, 'crear', _area),
-                          setState(
-                            () => {
-                              // print([action, asignatura.toJson(), area.toJson()]),
-                              // print(['#3', action, _area.toJson()]),
-                              _area = _area,
-                              test.areas = true
-                            },
-                          )
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
+                      (!asignaturasTest)
+                          ? RaisedButton(
+                              color: Colors.blueAccent[700],
+                              // icon: Icon(Icons.add),
+                              child: Text(
+                                "Añadir Asignatura",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              onPressed: () async => {
+                                // print(['crear asig en: ', area.toJson()]),
+                                await _newAsignatura(context, 'crear', _area),
+                                setState(
+                                  () => {
+                                    // print([action, asignatura.toJson(), area.toJson()]),
+                                    // print(['#3', action, _area.toJson()]),
+                                    _area = _area,
+                                    test.areas = true
+                                  },
+                                )
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            )
+                          : RaisedButton(
+                              color: Colors.grey,
+                              // icon: Icon(Icons.add),
+                              child: Text(
+                                "Añadir Asignatura",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                              onPressed: () async => {},
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
                     ],
                   ),
                   SizedBox(
@@ -1189,20 +1215,41 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                   ),
                   Container(
                     width: size.width * 0.2,
-                    height: size.height * 0.2,
+                    height: (action == 'crear')
+                        ? size.height * 0.2
+                        : (size.height * 0.06) * _area.asignaturas.length,
                     child: (_area.asignaturas != null)
-                        ? ListView(
-                            children: _area.asignaturas
-                                .map<Widget>((asig) => Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(asig.nombre),
-                                        Text(asig.intHoraria.toString()),
-                                        Text(asig.porcentaje.toString()),
-                                      ],
-                                    ))
-                                .toList())
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 15.0),
+                            child: ListView(
+                                children: _area.asignaturas
+                                    .map<Widget>((asig) => Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(asig.nombre),
+                                            Text(asig.intHoraria.toString() +
+                                                ' hr'),
+                                            Text((asig.porcentaje).toString() +
+                                                '%'),
+                                            IconButton(
+                                              onPressed: () async {
+                                                await _newAsignatura(context,
+                                                    'editar', _area, asig);
+                                                setState(
+                                                  () => {
+                                                    _area = _area,
+                                                    test.areas = true
+                                                  },
+                                                );
+                                              },
+                                              icon: Icon(Icons.edit,
+                                                  color: Colors.redAccent[400]),
+                                            ),
+                                          ],
+                                        ))
+                                    .toList()),
+                          )
                         : Container(),
                   ),
                 ],
@@ -1211,7 +1258,7 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
           ),
           actions: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(right: 15.0, bottom: 8.0),
+              padding: const EdgeInsets.only(top: 0, right: 15.0, bottom: 8.0),
               child: TextButton(
                 style: ButtonStyle(
                   foregroundColor:
@@ -1269,115 +1316,179 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
         var validate = true;
         List faltantes = [];
         asignatura = (asignatura != null) ? asignatura : Asignatura();
-        _asignatura = asignatura;
+        for (var i = 0; i < asignaturas.length; i++) {
+          if ((asignatura != null) && (index == null)) {
+            // if(asignatura==asignaturas[i]){}
+            index = (asignatura.nombre == asignaturas[i].nombre) ? i : null;
+          }
+          print(
+              ['asig', i, index, asignatura.toJson(), asignaturas[i].toJson()]);
+        }
+        _procentajeController.text = asignatura.porcentaje.toString();
         return AlertDialog(
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return Container(
                 width: 260,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(left: 1.0, right: 1.0),
-                      child: TextFormField(
-                        initialValue: asignatura.nombre,
-                        // controller: _controller,
-                        textAlignVertical: TextAlignVertical.center,
-                        // autofocus: true,
-                        autocorrect: true,
-                        onChanged: (value) => {
-                          setState(() {
-                            // print(value);
-                            asignatura.nombre = value;
-                            // _controller.clear();
-                          })
-                        },
-                        onFieldSubmitted: (value) {
-                          setState(() {
-                            // print(value);
-                            asignatura.nombre = value;
-                            // _controller.clear();
-                          });
-                        },
-                        style: TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                          labelText: "Nombre del asignatura",
-                          contentPadding: EdgeInsets.all(5),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 1.0, right: 1.0),
+                        child: TextFormField(
+                          initialValue: asignatura.nombre,
+                          // controller: _procentajeController,
+                          textAlignVertical: TextAlignVertical.center,
+                          // autofocus: true,
+                          autocorrect: true,
+                          onChanged: (value) => {
+                            setState(() {
+                              // print(value);
+                              asignatura.nombre = value;
+                              // _controller.clear();
+                            })
+                          },
+                          onFieldSubmitted: (value) {
+                            setState(() {
+                              // print(value);
+                              asignatura.nombre = value;
+                              // _controller.clear();
+                            });
+                          },
+                          style: TextStyle(fontSize: 14),
+                          decoration: InputDecoration(
+                            labelText: "Nombre del asignatura",
+                            contentPadding: EdgeInsets.all(5),
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 1.0, right: 1.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: 120,
-                            child: TextFormField(
-                              initialValue: asignatura.intHoraria.toString(),
-                              // controller: _controller,
-                              textAlignVertical: TextAlignVertical.center,
-                              // autofocus: true,
-                              autocorrect: true,
-                              onChanged: (value) => {
-                                setState(() {
-                                  // print(value);
-                                  asignatura.intHoraria = double.parse(value);
-                                  // _controller.clear();
-                                })
-                              },
-                              onFieldSubmitted: (value) {
-                                setState(() {
-                                  // print(value);
-                                  asignatura.intHoraria = double.parse(value);
-                                  // _controller.clear();
-                                });
-                              },
-                              style: TextStyle(fontSize: 14),
-                              decoration: InputDecoration(
-                                labelText: "Intensidad horaria",
-                                helperText: 'Numeros entre 1 - 10',
-                                helperStyle: TextStyle(fontSize: 10),
-                                contentPadding: EdgeInsets.all(5),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 1.0, right: 1.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 120,
+                              child: TextFormField(
+                                initialValue: asignatura.intHoraria.toString(),
+                                // controller: _controller,
+                                textAlignVertical: TextAlignVertical.center,
+                                // autofocus: true,
+                                autocorrect: true,
+                                onChanged: (value) => {
+                                  value = (value == '') ? '0' : value,
+                                  setState(() {
+                                    // print(value);
+                                    asignatura.intHoraria = double.parse(value);
+                                    // _controller.clear();
+                                  })
+                                },
+                                onFieldSubmitted: (value) {
+                                  setState(() {
+                                    // print(value);
+                                    asignatura.intHoraria = double.parse(value);
+                                    // _controller.clear();
+                                  });
+                                },
+                                style: TextStyle(fontSize: 14),
+                                decoration: InputDecoration(
+                                  labelText: "Intensidad horaria",
+                                  helperText: 'Numeros entre 1 - 10',
+                                  helperStyle: TextStyle(fontSize: 10),
+                                  contentPadding: EdgeInsets.all(5),
+                                ),
                               ),
                             ),
-                          ),
-                          Container(
-                            width: 120,
-                            child: TextFormField(
-                              initialValue: asignatura.porcentaje.toString(),
-                              // controller: _controller,
-                              textAlignVertical: TextAlignVertical.center,
-                              // autofocus: true,
-                              autocorrect: true,
-                              onChanged: (value) => {
-                                setState(() {
-                                  // print(value);
-                                  asignatura.porcentaje = double.parse(value);
-                                  // _controller.clear();
-                                })
-                              },
-                              onFieldSubmitted: (value) {
-                                setState(() {
-                                  // print(value);
-                                  asignatura.porcentaje = double.parse(value);
-                                  // _controller.clear();
-                                });
-                              },
-                              style: TextStyle(fontSize: 14),
-                              decoration: InputDecoration(
-                                labelText: "Porcentaje",
-                                helperText: 'Numeros entre 0.1 - 1.0',
-                                helperStyle: TextStyle(fontSize: 10),
-                                contentPadding: EdgeInsets.all(5),
+                            Container(
+                              width: 120,
+                              child: TextFormField(
+                                // initialValue: asignatura.porcentaje.toString(),
+                                controller: _procentajeController,
+                                textAlignVertical: TextAlignVertical.center,
+                                // autofocus: true,
+                                autocorrect: true,
+                                /* validator: (value) {
+                                  double p = 0.0;
+                                  // print(['asignaturas.length', asignaturas.length]);
+                                  switch (action) {
+                                    case 'crear':
+                                      if (asignaturas.length > 0) {
+                                        for (var i = 0;
+                                            i < asignaturas.length;
+                                            i++) {
+                                          p += asignaturas[i].porcentaje;
+                                          // print(['p+=', p, i, asignaturas[i].porcentaje]);
+                                        }
+                                        p += double.parse(value);
+                                      } else {
+                                        p = double.parse(value);
+                                      }
+                                      break;
+                                    case 'editar':
+                                      for (var i = 0;
+                                          i < asignaturas.length;
+                                          i++) {
+                                        p += asignaturas[i].porcentaje;
+                                      }
+                                      p -= asignaturas[index].porcentaje;
+                                      p += double.parse(value);
+                                      break;
+                                    default:
+                                  }
+                                  // print(['value', value, p]);
+                                  if (p == 100) {
+                                    setState(() => {asignaturasTest = true});
+                                  } else {
+                                    setState(() => {asignaturasTest = false});
+                                  }
+                                  if (p > 100) {
+                                    return 'Solo entre 0 y ' +
+                                        (double.parse(value) + (100 - p))
+                                            .toString();
+                                  } else if (p < 0) {
+                                    return 'Solo mayor que cero';
+                                  }
+                                  return null;
+                                }, */
+                                onChanged: (value) {
+                                  // _procentajeController.text =
+                                  //     (value == '') ? '0' : value;
+                                  setState(() {
+                                    asignatura.porcentaje = (value == '')
+                                        ? 0
+                                        : double.parse(
+                                            _procentajeController.text);
+                                  });
+                                },
+                                onFieldSubmitted: (value) {
+                                  setState(() {
+                                    // print(value);
+                                    asignatura.porcentaje = double.parse(
+                                        _procentajeController.text);
+                                    // _controller.clear();
+                                  });
+                                },
+                                style: TextStyle(fontSize: 14),
+                                decoration: InputDecoration(
+                                  labelText: "Porcentaje",
+                                  helperText: 'Numeros entre 0 - 100',
+                                  errorText: validatePorcentaje(
+                                      asignatura.porcentaje,
+                                      asignaturas,
+                                      action,
+                                      index),
+                                  helperStyle: TextStyle(fontSize: 10),
+                                  contentPadding: EdgeInsets.all(5),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -1394,25 +1505,62 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
                 onPressed: () {
                   validate = true;
                   faltantes = [];
+                  double p = 0.0;
+                  switch (action) {
+                    case 'crear':
+                      if (asignaturas.length > 0) {
+                        for (var i = 0; i < asignaturas.length; i++) {
+                          p += asignaturas[i].porcentaje;
+                          // print(['p+=', p, i, asignaturas[i].porcentaje]);
+                        }
+                        p += asignatura.porcentaje;
+                      } else {
+                        p = asignatura.porcentaje;
+                      }
+                      break;
+                    case 'editar':
+                      for (var i = 0; i < asignaturas.length; i++) {
+                        p += asignaturas[i].porcentaje;
+                      }
+                      p -= asignaturas[index].porcentaje;
+                      p += asignatura.porcentaje;
+                      break;
+                    default:
+                  }
+                  // print(['asignatura.porcentaje', asignatura.porcentaje, p]);
+                  if (p == 100) {
+                    setState(() => {asignaturasTest = true});
+                  } else {
+                    setState(() => {asignaturasTest = false});
+                  }
+                  print(['asignaturas.length', asignaturas.length, p]);
                   asignatura.toJson().forEach((key, value) {
                     if ((key == 'nombre') && value == null) {
                       validate = false;
                       faltantes.add(key);
                     }
                   });
-                  if (validate) {
+                  if (validate && (p <= 100)) {
+                    // if (_formKey.currentState.validate()) {
                     setState(
-                      () => {
+                      () {
                         // print([action, asignatura.toJson(), area.toJson()]),
-                        _adminAsignaturas(area, asignatura, action, index),
-                        _area = _area,
-                        areas = areas,
-                        test.areas = true
+                        if (action == 'crear') {
+                          asignaturas.add(asignatura);
+                        } else if (action == 'editar') {
+                          asignaturas[index] = asignatura;
+                        }
+                        _adminAsignaturas(area, asignatura, action, index);
+                        _procentajeController.clear();
+                        _area = _area;
+                        areas = areas;
+                        test.areas = true;
                       },
                     );
                     // print([asignatura.toJson(), validate]);
                     Navigator.of(context).pop();
-                  } else {
+                    // }
+                  } else if (!validate) {
                     // print([validate, faltantes.toList().toString()]);
                     Fluttertoast.showToast(
                       msg: 'Falta ' + faltantes.toList().toString(),
@@ -1658,6 +1806,42 @@ class _SedesState extends State<Sedes> with SingleTickerProviderStateMixin {
       },
     );
   }
+
+  String validatePorcentaje(double value,
+      [dynamic asignaturas, String action, int index]) {
+    double p = 0.0;
+    // print(['asignaturas.length', asignaturas.length]);
+    switch (action) {
+      case 'crear':
+        if (asignaturas.length > 0) {
+          for (var i = 0; i < asignaturas.length; i++) {
+            p += asignaturas[i].porcentaje;
+            // print(['p+=', p, i, asignaturas[i].porcentaje]);
+          }
+          p += value;
+        } else {
+          p = value;
+        }
+        break;
+      case 'editar':
+        for (var i = 0; i < asignaturas.length; i++) {
+          p += asignaturas[i].porcentaje;
+        }
+        p -= asignaturas[index].porcentaje;
+        p += value;
+        break;
+      default:
+    }
+    print(['value', value, p]);
+    if (p > 100) {
+      // _procentajeController.text = (value + (100 - p)).toString();
+      return 'Solo entre 0 y ' + (value + (100 - p)).toString();
+    } else if (p < 0) {
+      // _procentajeController.text = '0';
+      return 'Solo mayor que cero';
+    }
+    return null;
+  }
 }
 
 _adminGrados(Grado grado, String action, [int index]) async {
@@ -1723,9 +1907,9 @@ _adminAsignaturas(Area area, Asignatura asignatura, String action,
     [int index]) async {
   _area = area;
   _asignatura = asignatura;
+  print([action, index, asignatura.toJson(), area.toJson()]);
   switch (action) {
     case 'crear':
-      print([action, asignatura.toJson(), area.toJson()]);
       if (_area.asignaturas == null) {
         _area.asignaturas = [];
       }
